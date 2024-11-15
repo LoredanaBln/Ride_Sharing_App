@@ -1,4 +1,6 @@
 package repository.implementation;
 
-public class PassengerRepositoryImplementation {
+import repository.PassengerRepository;
+
+public class PassengerRepositoryImplementation implements PassengerRepository {
 }

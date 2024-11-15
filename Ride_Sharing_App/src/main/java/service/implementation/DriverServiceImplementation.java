@@ -1,4 +1,6 @@
 package service.implementation;
 
-public class DriverServiceImplementation {
+import service.DriverService;
+
+public class DriverServiceImplementation implements DriverService {
 }

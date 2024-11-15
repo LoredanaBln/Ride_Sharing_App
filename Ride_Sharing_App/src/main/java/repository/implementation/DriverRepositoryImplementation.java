@@ -1,4 +1,6 @@
 package repository.implementation;
 
-public class DriverRepositoryImplementation {
+import repository.DriverRepository;
+
+public class DriverRepositoryImplementation implements DriverRepository {
 }

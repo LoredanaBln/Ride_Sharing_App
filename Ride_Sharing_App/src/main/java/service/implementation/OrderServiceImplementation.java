@@ -1,4 +1,7 @@
 package service.implementation;
 
-public class OrderServiceImplementation {
+import repository.OrderRepository;
+import service.OrderService;
+
+public class OrderServiceImplementation implements OrderService {
 }

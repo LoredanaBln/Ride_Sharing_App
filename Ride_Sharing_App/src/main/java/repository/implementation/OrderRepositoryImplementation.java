@@ -1,4 +1,6 @@
 package repository.implementation;
 
-public class OrderRepositoryImplementation {
+import repository.OrderRepository;
+
+public class OrderRepositoryImplementation implements OrderRepository {
 }

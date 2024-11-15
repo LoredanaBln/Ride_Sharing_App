@@ -1,4 +1,6 @@
 package service.implementation;
 
-public class PassengerServiceImplementation {
+import service.PassengerService;
+
+public class PassengerServiceImplementation implements PassengerService {
 }
