@@ -1,4 +1,4 @@
 package repository;
 
-public interface OrderRepository {
+public interface OrderRepository extends CrudRepository{
 }

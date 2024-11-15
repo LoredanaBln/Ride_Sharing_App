@@ -1,4 +1,4 @@
 package repository;
 
-public interface PassengerRepository {
+public interface PassengerRepository extends CrudRepository{
 }

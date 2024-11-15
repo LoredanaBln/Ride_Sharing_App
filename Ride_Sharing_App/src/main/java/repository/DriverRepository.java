@@ -1,4 +1,4 @@
 package repository;
 
-public interface DriverRepository {
+public interface DriverRepository extends CrudRepository{
 }
