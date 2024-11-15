@@ -1,4 +1,4 @@
 package service;
 
-public class OrderService {
+public interface OrderService extends GenericService{
 }

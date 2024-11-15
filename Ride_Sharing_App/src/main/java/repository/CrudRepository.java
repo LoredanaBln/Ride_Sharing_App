@@ -1,4 +1,4 @@
 package repository;
 
-public class CrudRepository {
+public interface CrudRepository {
 }

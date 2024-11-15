@@ -1,4 +1,4 @@
 package service;
 
-public class PassengerService {
+public interface PassengerService extends GenericService{
 }

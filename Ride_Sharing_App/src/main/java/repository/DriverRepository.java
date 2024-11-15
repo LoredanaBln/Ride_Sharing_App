@@ -1,4 +1,4 @@
 package repository;
 
-public class DriverRepository {
+public interface DriverRepository {
 }

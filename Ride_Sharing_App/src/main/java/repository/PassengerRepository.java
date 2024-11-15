@@ -1,4 +1,4 @@
 package repository;
 
-public class PassengerRepository {
+public interface PassengerRepository {
 }

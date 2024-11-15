@@ -1,4 +1,4 @@
 package service;
 
-public class DriverService {
+public interface DriverService extends GenericService{
 }
