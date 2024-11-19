@@ -1,4 +1,4 @@
 package configuration;
 
-public class SecurityConfig {
+public class SecurityConfiguration {
 }

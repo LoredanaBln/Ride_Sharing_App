@@ -5,7 +5,7 @@ import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 
-public class HibernateConfig {
+public class HibernateConfiguration {
     private static final String HIBERNATE_CONFIGURATION_FILE = "hibernate.cfg.xml";
     private static final SessionFactory SESSION_FACTORY = buildSessionFactory();
 
