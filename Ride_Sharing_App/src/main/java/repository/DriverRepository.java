@@ -1,4 +1,6 @@
 package repository;
 
-public interface DriverRepository extends CrudRepository{
+import model.Driver;
+
+public interface DriverRepository extends CrudRepository<Driver, Integer>{
 }

@@ -1,4 +1,7 @@
 package repository;
 
-public interface OrderRepository extends CrudRepository{
+import model.Order;
+
+public interface OrderRepository extends CrudRepository<Order, Integer>{
+        Order findById(Integer id);
 }

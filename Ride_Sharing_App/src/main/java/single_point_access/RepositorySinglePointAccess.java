@@ -7,18 +7,27 @@ import repository.implementation.DriverRepositoryImplementation;
 import repository.implementation.OrderRepositoryImplementation;
 import repository.implementation.PassengerRepositoryImplementation;
 
-public record RepositorySinglePointAccess(
-        DriverRepository driverRepository,
-        OrderRepository orderRepository,
-        PassengerRepository passengerRepository
-) {
-    private static final RepositorySinglePointAccess INSTANCE = new RepositorySinglePointAccess(
-            new DriverRepositoryImplementation(),
-            new OrderRepositoryImplementation(),
-            new PassengerRepositoryImplementation()
-    );
+public class RepositorySinglePointAccess {
 
-    public static RepositorySinglePointAccess getInstance() {
-        return INSTANCE;
+    private static DriverRepository driverRepository;
+    private static OrderRepository orderRepository;
+    private static PassengerRepository passengerRepository;
+
+    static{
+        driverRepository = new DriverRepositoryImplementation();
+        orderRepository = new OrderRepositoryImplementation();
+        passengerRepository = new PassengerRepositoryImplementation();
+    }
+
+    public static DriverRepository driverRepository() {
+        return driverRepository;
+    }
+
+    public static OrderRepository orderRepository() {
+        return orderRepository;
+    }
+
+    public static PassengerRepository passengerRepository() {
+        return passengerRepository;
     }
 }

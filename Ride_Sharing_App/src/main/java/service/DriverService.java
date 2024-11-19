@@ -1,4 +1,6 @@
 package service;
 
-public interface DriverService extends GenericService{
+import model.Driver;
+
+public interface DriverService extends GenericService<Driver>{
 }

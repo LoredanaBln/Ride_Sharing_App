@@ -1,4 +1,6 @@
 package service;
 
-public interface OrderService extends GenericService{
+import model.Order;
+
+public interface OrderService extends GenericService<Order>{
 }

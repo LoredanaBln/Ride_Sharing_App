@@ -1,4 +1,6 @@
 package service;
 
-public interface PassengerService extends GenericService{
+import model.Passenger;
+
+public interface PassengerService extends GenericService<Passenger>{
 }

@@ -2,48 +2,59 @@ package model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 @Entity
 @Table(name = "drivers")
 @Data
-@Access(AccessType.FIELD)
-public class DriverR implements Serializable {
+public class Driver implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
 
-    @Column(name = "name", nullable = false)
+    @Column
     private String name;
 
-    @Column(name = "email", nullable = false, unique = true)
+    @Column
     private String email;
 
-    @Column(name = "phone_number", nullable = false)
+    @Column
     private String phoneNumber;
 
-    @Column(name = "password", nullable = false)
+    @Column
     private String password;
 
-    @Column(name = "rating")
+    @Column
     private Double rating;
 
-    @Column(name = "car_type")
+    @Column
     private String carType;
 
-    @Column(name = "license_number")
+    @Column
     private String licenseNumber;
 
-    @Column(name = "car_color")
+    @Column
     private String carColor;
 
-    @Lob
-    @Column(name = "profile_image")
+    @Column
     private byte[] imageData;
 
-    public DriverR() {
+    public Driver() {
     }
 
+    public Driver(String name, String email, String phoneNumber, String password, Double rating, String carType, String licenseNumber, String carColor, byte[] imageData) {
+        this.name = name;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.password = password;
+        this.rating = rating;
+        this.carType = carType;
+        this.licenseNumber = licenseNumber;
+        this.carColor = carColor;
+        this.imageData = imageData;
+    }
 }

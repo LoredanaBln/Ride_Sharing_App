@@ -7,18 +7,27 @@ import service.OrderService;
 import service.implementation.DriverServiceImplementation;
 import service.implementation.OrderServiceImplementation;
 
-public record ServiceSinglePointAccess(
-        DriverService driverService,
-        OrderService orderService,
-        PassengerRepository passengerRepository
-) {
-    private static final ServiceSinglePointAccess INSTANCE = new ServiceSinglePointAccess(
-            new DriverServiceImplementation(),
-            new OrderServiceImplementation(),
-            new PassengerRepositoryImplementation()
-    );
+public class ServiceSinglePointAccess {
 
-    public static ServiceSinglePointAccess getInstance() {
-        return INSTANCE;
+    private static DriverService driverService;
+    private static OrderService orderService;
+    private static PassengerRepository passengerRepository;
+
+    static {
+        driverService = new DriverServiceImplementation();
+        orderService = new OrderServiceImplementation();
+        passengerRepository = new PassengerRepositoryImplementation();
+    }
+
+    public static DriverService driverService() {
+        return driverService;
+    }
+
+    public static OrderService orderService() {
+        return orderService;
+    }
+
+    public static PassengerRepository passengerRepository() {
+        return passengerRepository;
     }
 }
