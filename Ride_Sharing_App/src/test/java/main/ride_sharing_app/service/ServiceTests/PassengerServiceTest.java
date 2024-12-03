@@ -1,6 +1,7 @@
-package main.ride_sharing_app.service;
+package main.ride_sharing_app.service.ServiceTests;
 
 import main.ride_sharing_app.model.Passenger;
+import main.ride_sharing_app.service.PassengerService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

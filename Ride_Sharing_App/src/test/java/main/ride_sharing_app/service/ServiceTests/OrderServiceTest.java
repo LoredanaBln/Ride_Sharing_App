@@ -1,13 +1,14 @@
-package main.ride_sharing_app.service;
+package main.ride_sharing_app.service.ServiceTests;
 
 import main.ride_sharing_app.model.*;
+import main.ride_sharing_app.service.DriverService;
+import main.ride_sharing_app.service.OrderService;
+import main.ride_sharing_app.service.PassengerService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDateTime;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class OrderServiceTest {

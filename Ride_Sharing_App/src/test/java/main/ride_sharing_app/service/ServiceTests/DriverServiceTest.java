@@ -1,6 +1,7 @@
-package main.ride_sharing_app.service;
+package main.ride_sharing_app.service.ServiceTests;
 
 import main.ride_sharing_app.model.Driver;
+import main.ride_sharing_app.service.DriverService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,14 +17,14 @@ class DriverServiceTest {
     void testCreateDriver() {
         Driver driver = new Driver(
                 "Jane Doe",
-                "janneta.doe@example.com",
+                "cruella.de.vil@example.com",
                 "passwordHash",
                 "+1234567890",
                 "http://example.com/images/john.jpg",
                 "Active",
                 4.9,
                 "SUV",
-                "XYZ1666",
+                "XYZ1669",
                 "Blue"
         );
         Driver savedDriver = driverService.createDriver(driver);
