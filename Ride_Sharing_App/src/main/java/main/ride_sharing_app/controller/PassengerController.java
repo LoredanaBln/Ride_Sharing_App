@@ -30,12 +30,12 @@
         @DeleteMapping("/delete/{id}")
         public ResponseEntity<Void> deleteById(@PathVariable("id") Long id) {
             passengerService.deletePassengerById(id);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+            return ResponseEntity.status(HttpStatus.OK).build();
         }
 
         @DeleteMapping("/delete")
         public ResponseEntity<Void> delete(@RequestBody Passenger passenger) {
             passengerService.deletePassenger(passenger);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+            return ResponseEntity.status(HttpStatus.OK).build();
         }
     }
