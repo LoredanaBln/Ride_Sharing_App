@@ -1,4 +1,4 @@
-package main.ride_sharing_app.service.ControllerTests;
+package main.ride_sharing_app.controller;
 
 import main.ride_sharing_app.controller.PassengerController;
 import org.junit.jupiter.api.Test;
@@ -11,7 +11,7 @@ public class PassengerControllerTest {
     private PassengerController passengerController;
 
     @Test
-    void getDPassengerById() {
+    void getPassengerById() {
         assert(passengerController.getPassenger(1L).getStatusCode().is2xxSuccessful());
     }
 }

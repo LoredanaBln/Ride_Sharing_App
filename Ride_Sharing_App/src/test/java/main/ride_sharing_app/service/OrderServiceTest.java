@@ -1,4 +1,4 @@
-package main.ride_sharing_app.service.ServiceTests;
+package main.ride_sharing_app.service;
 
 import main.ride_sharing_app.model.*;
 import main.ride_sharing_app.service.DriverService;

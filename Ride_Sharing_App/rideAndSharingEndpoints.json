@@ -1,0 +1,167 @@
+{
+  "info": {
+    "name": "RideSharingApp",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Driver Endpoints",
+      "item": [
+        {
+          "name": "Sign Up Driver",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"passwordHash\": \"hashedPassword\",\n  \"phoneNumber\": \"1234567890\",\n  \"profilePicture\": \"http://example.com/johndoe.png\",\n  \"status\": \"ACTIVE\",\n  \"rating\": 4.5,\n  \"carType\": \"Sedan\",\n  \"licenseNumber\": \"ABC123456\",\n  \"carColor\": \"Blue\"\n}"
+            },
+            "url": "http://localhost:8080/driver/signUp"
+          }
+        },
+        {
+          "name": "Get Driver by ID",
+          "request": {
+            "method": "GET",
+            "url": "http://localhost:8080/driver/id/1"
+          }
+        },
+        {
+          "name": "Delete Driver by ID",
+          "request": {
+            "method": "DELETE",
+            "url": "http://localhost:8080/driver/delete/1"
+          }
+        },
+        {
+          "name": "Delete Driver by Object",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 1,\n  \"name\": \"John Doe\"\n}"
+            },
+            "url": "http://localhost:8080/driver/delete"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Passenger Endpoints",
+      "item": [
+        {
+          "name": "Sign Up Passenger",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Jane Smith\",\n  \"email\": \"jane.smith@example.com\",\n  \"phoneNumber\": \"0987654321\",\n  \"password\": \"securePassword\",\n  \"rating\": 4.8,\n  \"imageData\": null\n}"
+            },
+            "url": "http://localhost:8080/passenger/signUp"
+          }
+        },
+        {
+          "name": "Get Passenger by ID",
+          "request": {
+            "method": "GET",
+            "url": "http://localhost:8080/passenger/id/1"
+          }
+        },
+        {
+          "name": "Delete Passenger by ID",
+          "request": {
+            "method": "DELETE",
+            "url": "http://localhost:8080/passenger/delete/1"
+          }
+        },
+        {
+          "name": "Delete Passenger by Object",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 1,\n  \"name\": \"Jane Smith\"\n}"
+            },
+            "url": "http://localhost:8080/passenger/delete"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Order Endpoints",
+      "item": [
+        {
+          "name": "Create Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"driver\": { \"id\": 1 },\n  \"passenger\": { \"id\": 2 },\n  \"startLocation\": \"Point A\",\n  \"endLocation\": \"Point B\",\n  \"status\": \"COMPLETED\",\n  \"price\": 100.0,\n  \"paymentType\": \"CARD\",\n  \"startTime\": \"2024-12-01T10:00:00\",\n  \"endTime\": \"2024-12-01T10:30:00\"\n}"
+            },
+            "url": "http://localhost:8080/order/create"
+          }
+        },
+        {
+          "name": "Get Order by ID",
+          "request": {
+            "method": "GET",
+            "url": "http://localhost:8080/order/id/1"
+          }
+        },
+        {
+          "name": "Delete Order by ID",
+          "request": {
+            "method": "DELETE",
+            "url": "http://localhost:8080/order/delete/1"
+          }
+        },
+        {
+          "name": "Delete Order by Object",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 1,\n  \"startLocation\": \"Point A\",\n  \"endLocation\": \"Point B\",\n  \"status\": \"COMPLETED\",\n  \"price\": 100.0,\n  \"paymentType\": \"CARD\",\n  \"startTime\": \"2024-12-01T10:00:00\",\n  \"endTime\": \"2024-12-01T10:30:00\"\n}"
+            },
+            "url": "http://localhost:8080/order/delete"
+          }
+        }
+      ]
+    }
+  ]
+}

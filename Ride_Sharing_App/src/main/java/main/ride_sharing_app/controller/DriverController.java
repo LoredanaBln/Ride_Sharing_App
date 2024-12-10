@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/driver")
 public class DriverController {
@@ -23,7 +25,19 @@ public class DriverController {
     }
 
     @GetMapping("/id/{id}")
-    public ResponseEntity<Driver> getDriver(@PathVariable Long id) {
+    public ResponseEntity<Optional<Driver>> getDriver(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(driverService.getDriverById(id));
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Void> deleteById(@PathVariable("id") Long id) {
+        driverService.deleteDriverById(id);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<Void> delete(@RequestBody Driver driver) {
+        driverService.deleteDriver(driver);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
