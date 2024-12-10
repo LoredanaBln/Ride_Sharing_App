@@ -5,6 +5,7 @@ import main.ride_sharing_app.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class OrderService {
@@ -27,8 +28,8 @@ public class OrderService {
         orderRepository.deleteById(id);
     }
 
-    public Order getOrderById(Long id) {
-        return orderRepository.findById(id).orElseThrow(() -> new RuntimeException("Order not found"));
+    public Optional<Order> getOrderById(Long id) {
+        return orderRepository.findById(id);
     }
 
     public List<Order> getAllOrders() {

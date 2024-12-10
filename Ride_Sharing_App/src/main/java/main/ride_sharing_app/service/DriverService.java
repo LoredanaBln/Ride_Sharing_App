@@ -5,6 +5,7 @@ import main.ride_sharing_app.repository.DriverRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class DriverService {
@@ -27,8 +28,8 @@ public class DriverService {
         driverRepository.delete(driver);
     }
 
-    public Driver getDriverById(Long id) {
-        return driverRepository.findById(id).orElseThrow(() -> new RuntimeException("Driver not found"));
+    public Optional<Driver> getDriverById(Long id) {
+        return driverRepository.findById(id);
     }
 
     public List<Driver> getAllDrivers() {

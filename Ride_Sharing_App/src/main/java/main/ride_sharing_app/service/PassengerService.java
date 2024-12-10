@@ -19,7 +19,7 @@ public class PassengerService {
         return passengerRepository.save(passenger);
     }
 
-    public void deleteDriver(Passenger passenger){
+    public void deletePassenger(Passenger passenger){
         passengerRepository.delete(passenger);
     }
 
@@ -29,5 +29,9 @@ public class PassengerService {
 
     public List<Passenger> getAllPassengers() {
         return passengerRepository.findAll();
+    }
+
+    public void deletePassengerById(Long id) {
+        passengerRepository.deleteById(id);
     }
 }

@@ -1,15 +1,15 @@
 package main.ride_sharing_app.model;
 
+import lombok.Getter;
+
+@Getter
 public enum PaymentType{
     CASH("Cash"), CREDIT_CARD("Credit Card"), PAYPAL("Paypal");
 
-    private String displayPaymentType;
+    private final String displayPaymentType;
 
     PaymentType(String displayType) {
         this.displayPaymentType = displayType;
     }
 
-    public String getDisplayPaymentType() {
-        return displayPaymentType;
-    }
 }
