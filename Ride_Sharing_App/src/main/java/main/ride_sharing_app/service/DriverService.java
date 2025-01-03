@@ -35,4 +35,8 @@ public class DriverService {
     public List<Driver> getAllDrivers() {
         return driverRepository.findAll();
     }
+
+    public Driver updateDriver(Driver driver) {
+        return driverRepository.save(driver);
+    }
 }

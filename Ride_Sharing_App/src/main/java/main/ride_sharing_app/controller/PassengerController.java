@@ -38,4 +38,9 @@
             passengerService.deletePassenger(passenger);
             return ResponseEntity.status(HttpStatus.OK).build();
         }
+
+        @PutMapping("/update")
+        public  ResponseEntity<Passenger> updatePassenger(@RequestBody Passenger passenger) {
+            return ResponseEntity.status(HttpStatus.OK).body(passengerService.updatePassenger(passenger));
+        }
     }

@@ -40,4 +40,9 @@ public class DriverController {
         driverService.deleteDriver(driver);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
+    @PutMapping("/update")
+    public ResponseEntity<Driver> updateDriver(@RequestBody Driver driver) {
+       return ResponseEntity.status(HttpStatus.OK).body(driverService.updateDriver(driver));
+    }
 }

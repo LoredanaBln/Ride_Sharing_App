@@ -54,6 +54,23 @@
             },
             "url": "http://localhost:8080/driver/delete"
           }
+        },
+        {
+          "name": "Update Driver",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n \"id\": 67, \n \"name\": \"Johnnis Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"passwordHash\": \"hashedPassword\",\n  \"phoneNumber\": \"1234567890\",\n  \"profilePicture\": \"http://example.com/johndoe.png\",\n  \"status\": \"ACTIVE\",\n  \"rating\": 4.5,\n  \"carType\": \"Sedan\",\n  \"licenseNumber\": \"ABC123456\",\n  \"carColor\": \"Blue\"\n}"
+            },
+            "url": "http://localhost:8080/driver/update"
+          }
         }
       ]
     },
@@ -106,6 +123,23 @@
               "raw": "{\n  \"id\": 1,\n  \"name\": \"Jane Smith\"\n}"
             },
             "url": "http://localhost:8080/passenger/delete"
+          }
+        },
+        {
+          "name": "Update Passenger",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n \"id\": 1, \n \"name\": \"Jane Smith\",\n  \"email\": \"jane.smith@example.com\",\n  \"phoneNumber\": \"0987654321\",\n  \"password\": \"securePassword\",\n  \"rating\": 4.8,\n  \"imageData\": null\n}"
+            },
+            "url": "http://localhost:8080/passenger/update"
           }
         }
       ]

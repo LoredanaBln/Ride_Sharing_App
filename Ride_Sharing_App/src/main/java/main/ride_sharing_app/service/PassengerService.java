@@ -34,4 +34,8 @@ public class PassengerService {
     public void deletePassengerById(Long id) {
         passengerRepository.deleteById(id);
     }
+
+    public Passenger updatePassenger(Passenger passenger){
+        return passengerRepository.save(passenger);
+    }
 }
