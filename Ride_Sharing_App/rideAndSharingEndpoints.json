@@ -71,6 +71,61 @@
             },
             "url": "http://localhost:8080/driver/update"
           }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"oldPassword\": \"currentPassword123\",\n  \"newPassword\": \"newSecurePassword456\"\n}"
+            },
+            "url": "http://localhost:8080/driver/changePassword"
+          }
+        },
+        {
+          "name": "Request Password Reset - Driver",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john.doe@example.com\"\n}"
+            },
+            "url": "http://localhost:8080/driver/requestPasswordReset"
+          }
+        },
+        {
+          "name": "Confirm Password Reset - Driver",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"received-token-from-email\",\n  \"newPassword\": \"newSecurePassword123\"\n}"
+            },
+            "url": "http://localhost:8080/driver/confirmPasswordReset"
+          }
         }
       ]
     },
@@ -140,6 +195,61 @@
               "raw": "{\n \"id\": 1, \n \"name\": \"Jane Smith\",\n  \"email\": \"jane.smith@example.com\",\n  \"phoneNumber\": \"0987654321\",\n  \"password\": \"securePassword\",\n  \"rating\": 4.8,\n  \"imageData\": null\n}"
             },
             "url": "http://localhost:8080/passenger/update"
+          }
+        },
+        {
+          "name": "Change Passenger Password",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"oldPassword\": \"currentPassword123\",\n  \"newPassword\": \"newSecurePassword456\"\n}"
+            },
+            "url": "http://localhost:8080/passenger/changePassword"
+          }
+        },
+        {
+          "name": "Request Password Reset - Passenger",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"jane.smith@example.com\"\n}"
+            },
+            "url": "http://localhost:8080/passenger/requestPasswordReset"
+          }
+        },
+        {
+          "name": "Confirm Password Reset - Passenger",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"received-token-from-email\",\n  \"newPassword\": \"newSecurePassword123\"\n}"
+            },
+            "url": "http://localhost:8080/passenger/confirmPasswordReset"
           }
         }
       ]

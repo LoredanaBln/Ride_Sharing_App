@@ -1,11 +1,16 @@
 package main.ride_sharing_app.controller;
 
+import main.ride_sharing_app.dto.PasswordChangeRequest;
+import main.ride_sharing_app.dto.PasswordResetRequest;
+import main.ride_sharing_app.dto.PasswordResetConfirmation;
 import main.ride_sharing_app.model.Driver;
 import main.ride_sharing_app.service.DriverService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Optional;
 
@@ -44,5 +49,38 @@ public class DriverController {
     @PutMapping("/update")
     public ResponseEntity<Driver> updateDriver(@RequestBody Driver driver) {
        return ResponseEntity.status(HttpStatus.OK).body(driverService.updateDriver(driver));
+    }
+
+    @PostMapping("/requestPasswordReset")
+    public ResponseEntity<Void> requestPasswordReset(@RequestBody PasswordResetRequest request) {
+        driverService.requestPasswordReset(request.getEmail());
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/confirmPasswordReset")
+    public ResponseEntity<Void> confirmPasswordReset(@RequestBody PasswordResetConfirmation request) {
+        driverService.confirmPasswordReset(request.getToken(), request.getNewPassword());
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/changePassword")
+    public ResponseEntity<Void> changePassword(
+        @RequestBody PasswordChangeRequest request,
+        @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        try {
+            // Get driver by email from authenticated user
+            Driver driver = driverService.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("Driver not found"));
+            
+            driverService.changePassword(
+                driver.getId(),
+                request.getOldPassword(), 
+                request.getNewPassword()
+            );
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }
