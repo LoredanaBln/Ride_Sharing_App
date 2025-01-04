@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Ride_Sharing_App.Ride_Sharing_App.main~1.iml" filepath="$PROJECT_DIR$/.idea/modules/Ride_Sharing_App.Ride_Sharing_App.main~1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Ride_Sharing_App.main.iml" filepath="$PROJECT_DIR$/.idea/modules/Ride_Sharing_App.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/project_is.iml" filepath="$PROJECT_DIR$/.idea/project_is.iml" />
     </modules>
   </component>
