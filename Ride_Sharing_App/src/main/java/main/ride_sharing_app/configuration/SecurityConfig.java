@@ -14,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.http.HttpMethod;
 
 @Configuration
 @EnableWebSecurity
@@ -37,6 +38,9 @@ public class SecurityConfig {
                         .requestMatchers("/auth/login").permitAll()
                         .requestMatchers("/passenger/requestPasswordReset", "/passenger/confirmPasswordReset").permitAll()
                         .requestMatchers("/driver/requestPasswordReset", "/driver/confirmPasswordReset").permitAll()
+                        .requestMatchers("/order/nearbyDrivers").permitAll()
+                        .requestMatchers("/order/create").permitAll()
+                        .requestMatchers("/order/id/{id}").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

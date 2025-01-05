@@ -5,7 +5,7 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 !**/src/main/resources/application.properties
-Ride_Sharing_Appsrc/main/resources/application.properties
+Ride_Sharing_App/src/main/resources/application.properties
 
 ### STS ###
 .apt_generated

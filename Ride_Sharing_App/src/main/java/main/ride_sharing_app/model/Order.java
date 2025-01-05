@@ -31,8 +31,8 @@ public class Order {
     @Column(name = "end_location")
     private String endLocation;
 
-    @Column(name = "status")
     @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
     private OrderStatus status;
 
     @Column(name = "price")
@@ -47,6 +47,27 @@ public class Order {
 
     @Column(name = "end_time")
     private LocalDateTime endTime;
+
+    @Column(name = "estimated_duration")
+    private Integer estimatedDurationMinutes;
+
+    @Column(name = "actual_duration")
+    private Integer actualDurationMinutes;
+
+    @Column(name = "estimated_distance")
+    private Double estimatedDistanceKm;
+
+    @Column(name = "actual_distance")
+    private Double actualDistanceKm;
+
+    @Column(name = "cancellation_reason")
+    private String cancellationReason;
+
+    @Column(name = "passenger_notes")
+    private String passengerNotes;
+
+    @Column(name = "driver_notes")
+    private String driverNotes;
 
     public Order(Driver driver, Passenger passenger, String startLocation, String endLocation, OrderStatus status, Double price, PaymentType paymentType, LocalDateTime startTime, LocalDateTime endTime) {
         this.driver = driver;
