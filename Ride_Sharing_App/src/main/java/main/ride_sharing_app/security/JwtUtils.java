@@ -21,7 +21,6 @@ public class JwtUtils {
     private static final long EXPIRATION_TIME = 86400000; // 24 hours
 
     public JwtUtils() {
-        // Generate a secure random key
         Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
         this.secretKey = Base64.getEncoder().encodeToString(key.getEncoded());
     }
