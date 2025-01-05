@@ -63,5 +63,3 @@ mvnw.cmd
 *.iml
 .settings/
 .project
-.classpath
-.factorypath
