@@ -41,6 +41,8 @@ public class SecurityConfig {
                         .requestMatchers("/order/nearbyDrivers").permitAll()
                         .requestMatchers("/order/create").permitAll()
                         .requestMatchers("/order/id/{id}").permitAll()
+                        .requestMatchers("/test/geocode", "/test/route").permitAll()
+                        .requestMatchers("/auth/admin/login").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
