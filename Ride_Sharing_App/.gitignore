@@ -40,3 +40,26 @@ out/
 
 ### Mac ###
 ../DS_Store
+
+### Database ###
+*.db
+*.sql
+*.sqlite
+
+### Logs ###
+*.log
+
+### Generated Files ###
+target/
+.mvn/
+mvnw
+mvnw.cmd
+
+### IDE specific ###
+.idea/
+.idea_modules/
+*.iws
+*.ipr
+*.iml
+.settings/
+.project

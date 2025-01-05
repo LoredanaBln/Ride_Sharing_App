@@ -22,3 +22,37 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# Testing
+/coverage
+
+# Production
+/build
+
+# Misc
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Package managers
+yarn.lock
+package-lock.json
+
+# Cache
+.cache/
+.parcel-cache/
+
+# TypeScript
+*.tsbuildinfo
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
