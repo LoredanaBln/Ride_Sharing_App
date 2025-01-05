@@ -7,6 +7,11 @@ import main.ride_sharing_app.repository.DriverRepository;
 import main.ride_sharing_app.repository.PassengerRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -14,6 +19,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.ArrayList;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class OrderService {
@@ -24,15 +31,18 @@ public class OrderService {
     private final DriverRepository driverRepository;
     private final PassengerRepository passengerRepository;
     private final LocationService locationService;
+    private final ScheduledExecutorService scheduledExecutorService;
 
     public OrderService(OrderRepository orderRepository, 
                        DriverRepository driverRepository,
                        PassengerRepository passengerRepository,
-                       LocationService locationService) {
+                       LocationService locationService,
+                       ScheduledExecutorService scheduledExecutorService) {
         this.orderRepository = orderRepository;
         this.driverRepository = driverRepository;
         this.passengerRepository = passengerRepository;
         this.locationService = locationService;
+        this.scheduledExecutorService = scheduledExecutorService;
     }
 
     @Transactional
@@ -67,7 +77,7 @@ public class OrderService {
         // Save the initial order
         order = orderRepository.save(order);
 
-        // Try to find an available driver with retries
+        // Try to find an available driver
         Driver assignedDriver = findAndAssignDriver(
             order,
             orderDTO.getStartLatitude(),
@@ -79,6 +89,12 @@ public class OrderService {
             order.setCancellationReason("No available drivers found");
             return orderRepository.save(order);
         }
+
+        // Schedule a timeout task instead of polling
+        Order finalOrder = order;
+        scheduledExecutorService.schedule(() -> {
+            checkOrderTimeout(finalOrder.getId());
+        }, DRIVER_ACCEPT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
         return order;
     }
@@ -156,7 +172,8 @@ public class OrderService {
 
     public List<Driver> findNearbyDrivers(Double latitude, Double longitude, Double radiusKm) {
         return driverRepository.findAll().stream()
-            .filter(driver -> "AVAILABLE".equals(driver.getStatus()))
+            .filter(driver -> "AVAILABLE".equals(driver.getStatus()) 
+                && isDriverLoggedIn(driver.getEmail()))
             .filter(driver -> isDriverWithinRadius(driver, latitude, longitude, radiusKm))
             .collect(Collectors.toList());
     }
@@ -281,51 +298,35 @@ public class OrderService {
         return closestDriver;
     }
 
-    private boolean tryAssignDriver(Order order, Driver driver) {
+    @Async
+    protected boolean tryAssignDriver(Order order, Driver driver) {
         // Set driver as pending for this order
         driver.setStatus("PENDING_ACCEPTANCE");
         driverRepository.save(driver);
         
         // Save the temporary assignment
         order.setDriver(driver);
-        order.setStatus(OrderStatus.PENDING);
-        orderRepository.save(order);
-
-        // Wait for driver acceptance
-        LocalDateTime timeout = LocalDateTime.now().plusSeconds(DRIVER_ACCEPT_TIMEOUT_SECONDS);
+        order.setStatus(OrderStatus.PENDING_DRIVER);
+        Order savedOrder = orderRepository.save(order);
         
-        while (LocalDateTime.now().isBefore(timeout)) {
-            // Refresh order status from database
-            Order currentOrder = orderRepository.findById(order.getId()).orElse(null);
-            
-            if (currentOrder != null) {
-                if (currentOrder.getStatus() == OrderStatus.ACCEPTED) {
-                    return true; // Driver accepted
-                } else if (currentOrder.getStatus() == OrderStatus.REJECTED) {
-                    // Reset driver status
+        // Return the order immediately so the client isn't blocked
+        return true;
+    }
+
+    @Transactional
+    public void checkOrderTimeout(Long orderId) {
+        orderRepository.findById(orderId).ifPresent(order -> {
+            if (order.getStatus() == OrderStatus.PENDING_DRIVER) {
+                Driver driver = order.getDriver();
+                if (driver != null) {
                     driver.setStatus("AVAILABLE");
                     driverRepository.save(driver);
-                    return false;
                 }
+                order.setDriver(null);
+                order.setStatus(OrderStatus.DRIVER_TIMEOUT);
+                orderRepository.save(order);
             }
-            
-            try {
-                Thread.sleep(1000); // Wait 1 second before checking again
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                return false;
-            }
-        }
-
-        // Timeout occurred
-        driver.setStatus("AVAILABLE");
-        driverRepository.save(driver);
-        
-        order.setDriver(null);
-        order.setStatus(OrderStatus.PENDING);
-        orderRepository.save(order);
-        
-        return false;
+        });
     }
 
     // Add endpoint for driver to accept/reject order
@@ -349,6 +350,22 @@ public class OrderService {
 
         driverRepository.save(driver);
         return orderRepository.save(order);
+    }
+
+    private boolean isDriverLoggedIn(String email) {
+        try {
+            // Check if there's a valid authentication context
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if (auth != null && auth.getPrincipal() instanceof UserDetails) {
+                UserDetails userDetails = (UserDetails) auth.getPrincipal();
+                return userDetails.getUsername().equals(email) 
+                    && userDetails.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_DRIVER"));
+            }
+            return false;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
 

@@ -10,8 +10,6 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.http.HttpMethod;
@@ -32,6 +30,12 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .securityContext(context -> context
+                        .requireExplicitSave(true)
+                )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/driver/id/{id}", "/passenger/id/{id}").permitAll()
                         .requestMatchers("/passenger/signUp", "/driver/signUp").permitAll()
@@ -39,24 +43,15 @@ public class SecurityConfig {
                         .requestMatchers("/passenger/requestPasswordReset", "/passenger/confirmPasswordReset").permitAll()
                         .requestMatchers("/driver/requestPasswordReset", "/driver/confirmPasswordReset").permitAll()
                         .requestMatchers("/order/nearbyDrivers").permitAll()
-                        .requestMatchers("/order/create").permitAll()
                         .requestMatchers("/order/id/{id}").permitAll()
                         .requestMatchers("/test/geocode", "/test/route").permitAll()
                         .requestMatchers("/auth/admin/login").permitAll()
                         .anyRequest().authenticated()
                 )
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtUtils, userDetailsService),
                         UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 
     @Bean

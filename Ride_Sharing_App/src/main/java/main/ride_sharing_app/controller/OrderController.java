@@ -4,7 +4,11 @@ import main.ride_sharing_app.dto.OrderDTO;
 import main.ride_sharing_app.model.Order;
 import main.ride_sharing_app.model.Driver;
 import main.ride_sharing_app.model.OrderStatus;
+import main.ride_sharing_app.model.Passenger;
 import main.ride_sharing_app.service.OrderService;
+import main.ride_sharing_app.security.JwtUtils;
+import main.ride_sharing_app.repository.DriverRepository;
+import main.ride_sharing_app.repository.PassengerRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,13 +20,35 @@ import java.util.Optional;
 @RequestMapping("/order")
 public class OrderController {
     private final OrderService orderService;
+    private final JwtUtils jwtUtils;
+    private final DriverRepository driverRepository;
+    private final PassengerRepository passengerRepository;
 
-    public OrderController(OrderService orderService) {
+    public OrderController(OrderService orderService, 
+                         JwtUtils jwtUtils,
+                         DriverRepository driverRepository,
+                         PassengerRepository passengerRepository) {
         this.orderService = orderService;
+        this.jwtUtils = jwtUtils;
+        this.driverRepository = driverRepository;
+        this.passengerRepository = passengerRepository;
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Order> createOrder(@RequestBody OrderDTO orderDTO) {
+    public ResponseEntity<Order> createOrder(
+        @RequestBody OrderDTO orderDTO,
+        @RequestHeader("Authorization") String token) {
+        
+        // Get passenger email from JWT token
+        String passengerEmail = jwtUtils.getUsernameFromToken(token.substring(7));
+        
+        // Find passenger by email
+        Passenger passenger = passengerRepository.findByEmail(passengerEmail)
+            .orElseThrow(() -> new RuntimeException("Passenger not found"));
+            
+        // Set the passenger ID in the DTO
+        orderDTO.setPassengerId(passenger.getId());
+
         return ResponseEntity.ok(orderService.createOrder(orderDTO));
     }
 
@@ -89,5 +115,42 @@ public class OrderController {
     public ResponseEntity<Void> delete(@RequestBody Order order) {
         orderService.deleteOrder(order);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{orderId}/accept")
+    public ResponseEntity<?> acceptOrder(
+            @PathVariable Long orderId,
+            @RequestHeader("Authorization") String token) {
+        
+        // Get driver email from JWT token
+        String driverEmail = jwtUtils.getUsernameFromToken(token.substring(7));
+        
+        // Find driver by email
+        Driver driver = driverRepository.findByEmail(driverEmail)
+            .orElseThrow(() -> new RuntimeException("Driver not found"));
+            
+        try {
+            Order updatedOrder = orderService.handleDriverResponse(orderId, driver.getId(), true);
+            return ResponseEntity.ok(updatedOrder);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/{orderId}/reject")
+    public ResponseEntity<?> rejectOrder(
+            @PathVariable Long orderId,
+            @RequestHeader("Authorization") String token) {
+        
+        String driverEmail = jwtUtils.getUsernameFromToken(token.substring(7));
+        Driver driver = driverRepository.findByEmail(driverEmail)
+            .orElseThrow(() -> new RuntimeException("Driver not found"));
+            
+        try {
+            Order updatedOrder = orderService.handleDriverResponse(orderId, driver.getId(), false);
+            return ResponseEntity.ok(updatedOrder);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

@@ -49,6 +49,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-mail'
 
     implementation 'com.google.guava:guava:31.1-jre'
+
+    implementation 'de.mkammerer:argon2-jvm:2.11'
 }
 
 tasks.named('test') {
