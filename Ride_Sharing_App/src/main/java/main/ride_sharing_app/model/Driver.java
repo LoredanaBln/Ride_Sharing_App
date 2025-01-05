@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "drivers")
 @Data
@@ -44,6 +46,15 @@ public class Driver {
 
     @Column(name = "car_color", nullable = false)
     private String carColor;
+
+    @Column(name = "last_latitude")
+    private Double lastLatitude;
+
+    @Column(name = "last_longitude")
+    private Double lastLongitude;
+
+    @Column(name = "location_updated_at")
+    private LocalDateTime locationUpdatedAt;
 
     public Driver(String name, String email, String passwordHash, String phoneNumber,
                   String profilePicture, String status, Double rating, String carType,

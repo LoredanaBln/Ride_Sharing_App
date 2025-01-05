@@ -71,6 +71,61 @@
             },
             "url": "http://localhost:8080/driver/update"
           }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"oldPassword\": \"currentPassword123\",\n  \"newPassword\": \"newSecurePassword456\"\n}"
+            },
+            "url": "http://localhost:8080/driver/changePassword"
+          }
+        },
+        {
+          "name": "Request Password Reset - Driver",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john.doe@example.com\"\n}"
+            },
+            "url": "http://localhost:8080/driver/requestPasswordReset"
+          }
+        },
+        {
+          "name": "Confirm Password Reset - Driver",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"received-token-from-email\",\n  \"newPassword\": \"newSecurePassword123\"\n}"
+            },
+            "url": "http://localhost:8080/driver/confirmPasswordReset"
+          }
         }
       ]
     },
@@ -141,6 +196,61 @@
             },
             "url": "http://localhost:8080/passenger/update"
           }
+        },
+        {
+          "name": "Change Passenger Password",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"oldPassword\": \"currentPassword123\",\n  \"newPassword\": \"newSecurePassword456\"\n}"
+            },
+            "url": "http://localhost:8080/passenger/changePassword"
+          }
+        },
+        {
+          "name": "Request Password Reset - Passenger",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"jane.smith@example.com\"\n}"
+            },
+            "url": "http://localhost:8080/passenger/requestPasswordReset"
+          }
+        },
+        {
+          "name": "Confirm Password Reset - Passenger",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"received-token-from-email\",\n  \"newPassword\": \"newSecurePassword123\"\n}"
+            },
+            "url": "http://localhost:8080/passenger/confirmPasswordReset"
+          }
         }
       ]
     },
@@ -155,11 +265,15 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
               }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"driver\": { \"id\": 1 },\n  \"passenger\": { \"id\": 2 },\n  \"startLocation\": \"Point A\",\n  \"endLocation\": \"Point B\",\n  \"status\": \"COMPLETED\",\n  \"price\": 100.0,\n  \"paymentType\": \"CARD\",\n  \"startTime\": \"2024-12-01T10:00:00\",\n  \"endTime\": \"2024-12-01T10:30:00\"\n}"
+              "raw": "{\n  \"passengerId\": 1,\n  \"startLocation\": \"123 Main St\",\n  \"endLocation\": \"456 Oak Ave\",\n  \"startLatitude\": 44.4268,\n  \"startLongitude\": 26.1025,\n  \"endLatitude\": 44.4323,\n  \"endLongitude\": 26.1061,\n  \"paymentType\": \"CREDIT_CARD\"\n}"
             },
             "url": "http://localhost:8080/order/create"
           }
@@ -172,16 +286,63 @@
           }
         },
         {
-          "name": "Delete Order by ID",
+          "name": "Get Passenger Orders",
           "request": {
-            "method": "DELETE",
-            "url": "http://localhost:8080/order/delete/1"
+            "method": "GET",
+            "url": "http://localhost:8080/order/passenger/1"
           }
         },
         {
-          "name": "Delete Order by Object",
+          "name": "Get Driver Orders",
           "request": {
-            "method": "DELETE",
+            "method": "GET",
+            "url": "http://localhost:8080/order/driver/1"
+          }
+        },
+        {
+          "name": "Assign Driver to Order",
+          "request": {
+            "method": "PUT",
+            "url": "http://localhost:8080/order/1/assignDriver/1"
+          }
+        },
+        {
+          "name": "Update Order Status",
+          "request": {
+            "method": "PUT",
+            "url": "http://localhost:8080/order/1/status?status=ACCEPTED"
+          }
+        },
+        {
+          "name": "Complete Order",
+          "request": {
+            "method": "PUT",
+            "url": "http://localhost:8080/order/1/complete"
+          }
+        },
+        {
+          "name": "Cancel Order",
+          "request": {
+            "method": "PUT",
+            "url": "http://localhost:8080/order/1/cancel?reason=Passenger cancelled"
+          }
+        },
+        {
+          "name": "Find Nearby Drivers",
+          "request": {
+            "method": "GET",
+            "url": "http://localhost:8080/order/nearbyDrivers?latitude=44.4268&longitude=26.1025&radiusKm=5.0"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Order Flow",
+      "item": [
+        {
+          "name": "1. Create Order",
+          "request": {
+            "method": "POST",
             "header": [
               {
                 "key": "Content-Type",
@@ -190,12 +351,101 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"id\": 1,\n  \"startLocation\": \"Point A\",\n  \"endLocation\": \"Point B\",\n  \"status\": \"COMPLETED\",\n  \"price\": 100.0,\n  \"paymentType\": \"CARD\",\n  \"startTime\": \"2024-12-01T10:00:00\",\n  \"endTime\": \"2024-12-01T10:30:00\"\n}"
+              "raw": "{\n  \"passengerId\": 1,\n  \"startLocation\": \"123 Main St\",\n  \"endLocation\": \"456 Oak Ave\",\n  \"startLatitude\": 44.4268,\n  \"startLongitude\": 26.1025,\n  \"endLatitude\": 44.4323,\n  \"endLongitude\": 26.1061,\n  \"paymentType\": \"CREDIT_CARD\"\n}"
             },
-            "url": "http://localhost:8080/order/delete"
+            "url": "http://localhost:8080/order/create"
+          }
+        },
+        {
+          "name": "2. Driver Accept Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{driver_token}}"
+              }
+            ],
+            "url": "http://localhost:8080/driver/order/{{orderId}}/respond?accept=true"
+          }
+        },
+        {
+          "name": "3. Driver Reject Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{driver_token}}"
+              }
+            ],
+            "url": "http://localhost:8080/driver/order/{{orderId}}/respond?accept=false"
+          }
+        },
+        {
+          "name": "4. Complete Order",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{driver_token}}"
+              }
+            ],
+            "url": "http://localhost:8080/order/{{orderId}}/complete"
+          }
+        },
+        {
+          "name": "5. Cancel Order",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{driver_token}}"
+              }
+            ],
+            "url": "http://localhost:8080/order/{{orderId}}/cancel?reason=Customer requested cancellation"
+          }
+        },
+        {
+          "name": "Get Order Status",
+          "request": {
+            "method": "GET",
+            "url": "http://localhost:8080/order/id/{{orderId}}"
+          }
+        },
+        {
+          "name": "Find Nearby Drivers",
+          "request": {
+            "method": "GET",
+            "url": "http://localhost:8080/order/nearbyDrivers?latitude=44.4268&longitude=26.1025&radiusKm=5.0"
+          }
+        },
+        {
+          "name": "Update Driver Location",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{driver_token}}"
+              }
+            ],
+            "url": "http://localhost:8080/driver/updateLocation?latitude=44.4268&longitude=26.1025"
           }
         }
       ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "driver_token",
+      "value": "your_jwt_token_here"
+    },
+    {
+      "key": "orderId",
+      "value": "1"
     }
   ]
 }

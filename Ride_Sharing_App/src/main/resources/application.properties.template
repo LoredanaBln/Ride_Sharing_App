@@ -1,0 +1,24 @@
+spring.application.name=Ride_Sharing_App
+
+# Database Configuration
+spring.datasource.url=jdbc:postgresql://your-db-host:5432/your-db-name
+spring.datasource.username=your-username
+spring.datasource.password=your-password
+spring.datasource.driver-class-name=org.postgresql.Driver
+
+# JPA/Hibernate Configuration
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.hibernate.ddl-auto=update
+
+# SendGrid Configuration
+spring.mail.host=smtp.sendgrid.net
+spring.mail.port=587
+spring.mail.username=apikey
+spring.mail.password=your-sendgrid-api-key
+spring.mail.sender=your-verified-email@domain.com
+spring.mail.sender.name=Ride Sharing App
+spring.mail.properties.mail.smtp.from=${spring.mail.sender}
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true 

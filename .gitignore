@@ -1,11 +1,14 @@
+# Spring Boot configuration files
+src/main/resources/application.properties
+src/main/resources/application.properties.local
+
+# Other common Java/Spring Boot ignores
 HELP.md
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
-!**/src/main/resources/application.properties
-Ride_Sharing_App/src/main/resources/application.properties
 
 ### STS ###
 .apt_generated
@@ -20,7 +23,6 @@ bin/
 !**/src/test/**/bin/
 
 ### IntelliJ IDEA ###
-./../.idea
 .idea
 *.iws
 *.iml
@@ -29,15 +31,5 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-
 ### VS Code ###
-.vscode/
-
-### Mac ###
-../DS_Store
+.vscode/ 
