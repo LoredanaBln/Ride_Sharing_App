@@ -23,13 +23,16 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final DriverRepository driverRepository;
     private final PassengerRepository passengerRepository;
+    private final LocationService locationService;
 
     public OrderService(OrderRepository orderRepository, 
                        DriverRepository driverRepository,
-                       PassengerRepository passengerRepository) {
+                       PassengerRepository passengerRepository,
+                       LocationService locationService) {
         this.orderRepository = orderRepository;
         this.driverRepository = driverRepository;
         this.passengerRepository = passengerRepository;
+        this.locationService = locationService;
     }
 
     @Transactional
@@ -45,13 +48,21 @@ public class OrderService {
         order.setStartTime(LocalDateTime.now());
         order.setPaymentType(orderDTO.getPaymentType());
         order.setPrice(calculateEstimatedPrice(orderDTO));
-        order.setEstimatedDistanceKm(calculateEstimatedDistance(
-            orderDTO.getStartLatitude(), 
-            orderDTO.getStartLongitude(),
-            orderDTO.getEndLatitude(), 
+
+        // Get route information
+        GeoLocation startLocation = new GeoLocation(
+            orderDTO.getStartLatitude(),
+            orderDTO.getStartLongitude()
+        );
+        GeoLocation endLocation = new GeoLocation(
+            orderDTO.getEndLatitude(),
             orderDTO.getEndLongitude()
-        ));
-        order.setEstimatedDurationMinutes(estimateDuration(order.getEstimatedDistanceKm()));
+        );
+        
+        RouteInfo routeInfo = locationService.getRoute(startLocation, endLocation);
+        
+        order.setEstimatedDistanceKm(routeInfo.getDistanceInKm());
+        order.setEstimatedDurationMinutes(routeInfo.getDurationInMinutes());
 
         // Save the initial order
         order = orderRepository.save(order);
@@ -153,7 +164,18 @@ public class OrderService {
     ///TODO IMPLEMENT ACTUAL LOGIC
     private boolean isDriverWithinRadius(Driver driver, Double latitude, 
                                        Double longitude, Double radiusKm) {
-        return true; // Placeholder
+        if (driver.getLastLatitude() == null || driver.getLastLongitude() == null) {
+            return false;
+        }
+
+        GeoLocation driverLocation = new GeoLocation(
+            driver.getLastLatitude(),
+            driver.getLastLongitude()
+        );
+        GeoLocation requestLocation = new GeoLocation(latitude, longitude);
+        
+        RouteInfo route = locationService.getRoute(driverLocation, requestLocation);
+        return route.getDistanceInKm() <= radiusKm;
     }
 
     public Order assignDriver(Long orderId, Long driverId) {
