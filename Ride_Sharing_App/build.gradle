@@ -51,6 +51,15 @@ dependencies {
     implementation 'com.google.guava:guava:31.1-jre'
 
     implementation 'de.mkammerer:argon2-jvm:2.11'
+
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.webjars:sockjs-client:1.5.1'
+    implementation 'org.webjars:stomp-websocket:2.3.4'
+
+    testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+    implementation 'org.springframework.security:spring-security-messaging'
 }
 
 tasks.named('test') {

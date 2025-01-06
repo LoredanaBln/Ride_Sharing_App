@@ -6,11 +6,11 @@ import main.ride_sharing_app.service.LocationService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/test")
-public class TestController {
+@RequestMapping("/testMap")
+public class TestMapController {
     private final LocationService locationService;
     
-    public TestController(LocationService locationService) {
+    public TestMapController(LocationService locationService) {
         this.locationService = locationService;
     }
     

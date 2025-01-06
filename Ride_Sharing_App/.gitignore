@@ -56,10 +56,9 @@ mvnw
 mvnw.cmd
 
 ### IDE specific ###
-.idea/
-.idea_modules/
+# IntelliJ IDEA
+.idea/**
 *.iws
-*.ipr
 *.iml
-.settings/
-.project
+*.ipr
+.idea_modules/

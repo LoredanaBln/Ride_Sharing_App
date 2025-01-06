@@ -33,7 +33,8 @@ public class Driver {
     private String profilePicture;
 
     @Column(name = "status", nullable = false)
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private DriverStatus status;
 
     @Column(name = "rating")
     private Double rating;
@@ -64,7 +65,7 @@ public class Driver {
         this.passwordHash = passwordHash;
         this.phoneNumber = phoneNumber;
         this.profilePicture = profilePicture;
-        this.status = status;
+        this.status = DriverStatus.valueOf(status);
         this.rating = rating;
         this.carType = carType;
         this.licenseNumber = licenseNumber;
