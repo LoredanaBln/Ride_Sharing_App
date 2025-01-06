@@ -32,7 +32,7 @@ public class Driver {
     @Column(name = "profile_picture")
     private String profilePicture;
 
-    @Column(name = "status", nullable = false)
+    @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private DriverStatus status;
 

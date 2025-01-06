@@ -1,13 +1,13 @@
-import { WebSocketTest } from './components/WebSocketTest';
-import './App.css';
+import { Provider } from 'react-redux';
+import { store } from './store/store.ts';
+import SignUpPassenger from "./pages/SignUpPassenger.tsx";
 
 function App() {
-  return (
-    <div className="App">
-      <h1>Ride Sharing App</h1>
-      <WebSocketTest />
-    </div>
-  );
+    return (
+        <Provider store={store}>
+            <SignUpPassenger />
+        </Provider>
+    );
 }
 
 export default App;
