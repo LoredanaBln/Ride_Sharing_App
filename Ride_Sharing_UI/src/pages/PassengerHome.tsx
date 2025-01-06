@@ -1,64 +1,104 @@
 import React from "react";
-import { MapContainer, TileLayer } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
 import { useNavigate } from "react-router-dom";
+import "../styles/driverHome.css";
 
 const PassengerHome: React.FC = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    const openDrawer = () => {
-        const drawer = document.getElementById("drawer");
-        drawer?.classList.add("open");
-    };
+  const openDrawer = () => {
+    const drawer = document.getElementById("drawer");
+    drawer?.classList.add("open");
+  };
 
-    const closeDrawer = () => {
-        const drawer = document.getElementById("drawer");
-        drawer?.classList.remove("open");
-    };
+  const closeDrawer = () => {
+    const drawer = document.getElementById("drawer");
+    drawer?.classList.remove("open");
+  };
 
-    return (
-        <div className="home-page">
-            {/* Drawer Menu */}
-            <div id="drawer" className="drawer">
-                <div className="drawer-content">
-                    <button onClick={closeDrawer}>Close</button>
-                    <ul>
-                        <li onClick={() => navigate("/payment")}>Payment Page</li>
-                        <li onClick={() => navigate("/support")}>Support Page</li>
-                        <li onClick={() => navigate("/about")}>About Page</li>
-                    </ul>
-                </div>
-            </div>
-
-            {/* Search Bar */}
-            <div className="search-bar">
-                <input type="text" placeholder="Search for a ride..." />
-                <button>Search</button>
-            </div>
-
-            {/* Map */}
-            <div className="map-container">
-                <MapContainer center={[51.505, -0.09]} zoom={13} style={{ height: "300px", width: "100%" }}>
-                    <TileLayer
-                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                        attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-                    />
-                </MapContainer>
-            </div>
-
-            {/* Bottom Menu */}
-            <div className="bottom-menu">
-                <button onClick={() => navigate("/")}>Home</button>
-                <button onClick={() => navigate("/account")}>My Account</button>
-                <button onClick={() => navigate("/rides-history")}>Rides History</button>
-            </div>
-
-            {/* Open Drawer Button */}
-            <button className="drawer-button" onClick={openDrawer}>
-                Menu
+  return (
+    <div className="home-page">
+      <div id="drawer" className="drawer">
+        <div className="drawer-content">
+          <div className="drawer-header">
+            <h2>Menu</h2>
+            <button className="close-button" onClick={closeDrawer}>
+              ×
             </button>
+          </div>
+          <nav className="drawer-nav">
+            <ul>
+              <li>
+                <button
+                  onClick={() => {
+                    closeDrawer();
+                    navigate("/payment");
+                  }}
+                >
+                  Payment
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => {
+                    closeDrawer();
+                    navigate("/support");
+                  }}
+                >
+                  Support
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => {
+                    closeDrawer();
+                    navigate("/about");
+                  }}
+                >
+                  About
+                </button>
+              </li>
+            </ul>
+          </nav>
         </div>
-    );
+      </div>
+
+      <header className="top-bar">
+        <button className="menu-button" onClick={openDrawer}>
+          <span className="menu-icon">☰</span>
+        </button>
+        <div className="search-bar">
+          <input
+            type="text"
+            placeholder="Where would you like to go?"
+            aria-label="Search destination"
+          />
+          <button className="search-button">Search</button>
+        </div>
+      </header>
+
+      <main className="map-container">
+        <h1>HERE MAY LAY THE MAP</h1>
+      </main>
+
+      <nav className="bottom-nav">
+        <button className="nav-button" onClick={() => navigate("/")}>
+          <span className="icon">🏠</span>
+          <span>Home</span>
+        </button>
+        <button className="nav-button" onClick={() => navigate("/account")}>
+          <span className="icon">👤</span>
+          <span>Account</span>
+        </button>
+        <button
+          className="nav-button"
+          onClick={() => navigate("/rides-history")}
+        >
+          <span className="icon">🕒</span>
+          <span>History</span>
+        </button>
+      </nav>
+    </div>
+  );
 };
 
 export default PassengerHome;
