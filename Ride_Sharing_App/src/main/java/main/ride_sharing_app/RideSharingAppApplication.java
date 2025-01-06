@@ -10,7 +10,8 @@ import org.springframework.context.annotation.ComponentScan;
     "main.ride_sharing_app.websocket.controller",
     "main.ride_sharing_app.service",
     "main.ride_sharing_app.configuration",
-    "main.ride_sharing_app.security"
+    "main.ride_sharing_app.security",
+    "main.ride_sharing_app.repository",
 })
 public class RideSharingAppApplication {
 
