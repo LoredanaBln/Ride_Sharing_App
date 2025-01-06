@@ -5,6 +5,58 @@
   },
   "item": [
     {
+      "name": "Authentication Endpoints",
+      "item": [
+        {
+          "name": "Driver Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": "http://localhost:8080/auth/driver/login"
+          }
+        },
+        {
+          "name": "Passenger Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"jane.smith@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": "http://localhost:8080/auth/passenger/login"
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{refresh_token}}"
+              }
+            ],
+            "url": "http://localhost:8080/auth/refresh"
+          }
+        }
+      ]
+    },
+    {
       "name": "Driver Endpoints",
       "item": [
         {
@@ -125,6 +177,45 @@
               "raw": "{\n  \"token\": \"received-token-from-email\",\n  \"newPassword\": \"newSecurePassword123\"\n}"
             },
             "url": "http://localhost:8080/driver/confirmPasswordReset"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Driver Location Endpoints",
+      "item": [
+        {
+          "name": "Update Driver Location",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{driver_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"latitude\": 44.4268,\n  \"longitude\": 26.1025\n}"
+            },
+            "url": "http://localhost:8080/driver/location"
+          }
+        },
+        {
+          "name": "Get Driver Current Location",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{driver_token}}"
+              }
+            ],
+            "url": "http://localhost:8080/driver/location/{{driverId}}"
           }
         }
       ]
@@ -436,6 +527,306 @@
           }
         }
       ]
+    },
+    {
+      "name": "WebSocket Endpoints",
+      "item": [
+        {
+          "name": "Driver Location Updates Stream",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{driver_token}}"
+              },
+              {
+                "key": "Connection",
+                "value": "Upgrade"
+              },
+              {
+                "key": "Upgrade",
+                "value": "websocket"
+              }
+            ],
+            "url": "ws://localhost:8080/ws/driver/location"
+          },
+          "description": "WebSocket connection for streaming driver location updates. Send location updates in format: {\"latitude\": 44.4268, \"longitude\": 26.1025}"
+        },
+        {
+          "name": "Order Status Updates Stream",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              },
+              {
+                "key": "Connection",
+                "value": "Upgrade"
+              },
+              {
+                "key": "Upgrade",
+                "value": "websocket"
+              }
+            ],
+            "url": "ws://localhost:8080/ws/order/{{orderId}}/status"
+          },
+          "description": "WebSocket connection for receiving real-time order status updates"
+        },
+        {
+          "name": "Driver Availability Stream",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{driver_token}}"
+              },
+              {
+                "key": "Connection",
+                "value": "Upgrade"
+              },
+              {
+                "key": "Upgrade",
+                "value": "websocket"
+              }
+            ],
+            "url": "ws://localhost:8080/ws/driver/availability"
+          },
+          "description": "WebSocket connection for updating driver availability status"
+        },
+        {
+          "name": "Chat Stream",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              },
+              {
+                "key": "Connection",
+                "value": "Upgrade"
+              },
+              {
+                "key": "Upgrade",
+                "value": "websocket"
+              }
+            ],
+            "url": "ws://localhost:8080/ws/chat/{{orderId}}"
+          },
+          "description": "WebSocket connection for real-time chat between driver and passenger"
+        },
+        {
+          "name": "Nearby Orders Stream",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{driver_token}}"
+              },
+              {
+                "key": "Connection",
+                "value": "Upgrade"
+              },
+              {
+                "key": "Upgrade",
+                "value": "websocket"
+              }
+            ],
+            "url": "ws://localhost:8080/ws/driver/nearby-orders"
+          },
+          "description": "WebSocket connection for receiving notifications about new nearby orders"
+        }
+      ]
+    },
+    {
+      "name": "WebSocket Test Endpoints",
+      "item": [
+        {
+          "name": "Test Message",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "Hello from client!"
+            },
+            "url": "http://localhost:8080/app/websocket.test.message"
+          },
+          "description": "Test endpoint for basic WebSocket messaging"
+        },
+        {
+          "name": "Send Order Notification",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": 1,\n  \"status\": \"ACCEPTED\",\n  \"message\": \"Test order notification\",\n  \"timestamp\": 1234567890\n}"
+            },
+            "url": "http://localhost:8080/app/order.notification/{{orderId}}"
+          },
+          "description": "Send order status notification through WebSocket"
+        },
+        {
+          "name": "Send Driver Location Update",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{driver_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"driverId\": 1,\n  \"orderId\": 1,\n  \"latitude\": 44.4268,\n  \"longitude\": 26.1025,\n  \"timestamp\": 1234567890\n}"
+            },
+            "url": "http://localhost:8080/app/driver.location/{{driverId}}"
+          },
+          "description": "Send driver location update through WebSocket"
+        },
+        {
+          "name": "Send Chat Message",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": 1,\n  \"senderId\": \"driver1\",\n  \"senderType\": \"DRIVER\",\n  \"content\": \"Test chat message\",\n  \"timestamp\": 1234567890\n}"
+            },
+            "url": "http://localhost:8080/app/chat.message/{{orderId}}"
+          },
+          "description": "Send chat message through WebSocket"
+        }
+      ]
+    },
+    {
+      "name": "WebSocket Subscriptions",
+      "item": [
+        {
+          "name": "Subscribe to Test Messages",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "url": "ws://localhost:8080/topic/test"
+          },
+          "description": "Subscribe to test messages"
+        },
+        {
+          "name": "Subscribe to Order Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "url": "ws://localhost:8080/topic/orders/{{orderId}}/status"
+          },
+          "description": "Subscribe to order status updates"
+        },
+        {
+          "name": "Subscribe to Driver Location",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "url": "ws://localhost:8080/topic/drivers/{{driverId}}/location"
+          },
+          "description": "Subscribe to driver location updates"
+        },
+        {
+          "name": "Subscribe to Chat Messages",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{user_token}}"
+              }
+            ],
+            "url": "ws://localhost:8080/topic/chat/{{orderId}}"
+          },
+          "description": "Subscribe to chat messages for a specific order"
+        }
+      ]
+    },
+    {
+      "name": "WebSocket Connection",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Sec-WebSocket-Protocol",
+            "value": "v10.stomp, v11.stomp"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{user_token}}"
+          }
+        ],
+        "url": "ws://localhost:8080/ws"
+      },
+      "description": "Initial WebSocket connection endpoint. Use this first before sending messages.",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "// STOMP connection frame",
+              "const connect = `CONNECT",
+              "accept-version:1.1,1.0",
+              "heart-beat:10000,10000",
+              "",
+              "\\u0000`;",
+              "",
+              "pm.environment.set('stompConnect', connect);"
+            ]
+          }
+        }
+      ]
     }
   ],
   "variable": [
@@ -444,8 +835,21 @@
       "value": "your_jwt_token_here"
     },
     {
+      "key": "refresh_token",
+      "value": "your_refresh_token_here"
+    },
+    {
       "key": "orderId",
       "value": "1"
+    },
+    {
+      "key": "driverId",
+      "value": "1"
+    },
+    {
+      "key": "user_token",
+      "value": "your_user_jwt_token_here"
     }
   ]
 }
+

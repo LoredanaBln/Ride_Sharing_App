@@ -5,6 +5,13 @@ import main.ride_sharing_app.model.*;
 import main.ride_sharing_app.repository.OrderRepository;
 import main.ride_sharing_app.repository.DriverRepository;
 import main.ride_sharing_app.repository.PassengerRepository;
+import main.ride_sharing_app.websocket.controller.LocationWebSocketController;
+import main.ride_sharing_app.websocket.controller.OrderNotificationController;
+import main.ride_sharing_app.websocket.message.LocationUpdateMessage;
+import main.ride_sharing_app.websocket.message.OrderNotificationMessage;
+import main.ride_sharing_app.websocket.dto.OrderNotificationDTO;
+import main.ride_sharing_app.websocket.dto.LocationUpdateDTO;
+import main.ride_sharing_app.websocket.util.WebSocketConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.scheduling.annotation.Async;
@@ -12,6 +19,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -21,6 +29,7 @@ import java.util.stream.Collectors;
 import java.util.ArrayList;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
 
 @Service
 public class OrderService {
@@ -32,17 +41,23 @@ public class OrderService {
     private final PassengerRepository passengerRepository;
     private final LocationService locationService;
     private final ScheduledExecutorService scheduledExecutorService;
+    private final OrderNotificationController notificationController;
+    private final LocationWebSocketController locationController;
 
     public OrderService(OrderRepository orderRepository, 
                        DriverRepository driverRepository,
                        PassengerRepository passengerRepository,
                        LocationService locationService,
-                       ScheduledExecutorService scheduledExecutorService) {
+                       ScheduledExecutorService scheduledExecutorService,
+                       OrderNotificationController notificationController,
+                       LocationWebSocketController locationController) {
         this.orderRepository = orderRepository;
         this.driverRepository = driverRepository;
         this.passengerRepository = passengerRepository;
         this.locationService = locationService;
         this.scheduledExecutorService = scheduledExecutorService;
+        this.notificationController = notificationController;
+        this.locationController = locationController;
     }
 
     @Transactional
@@ -76,6 +91,27 @@ public class OrderService {
 
         // Save the initial order
         order = orderRepository.save(order);
+
+        // Notify nearby drivers about new order
+        List<Driver> nearbyDrivers = findNearbyDrivers(
+            orderDTO.getStartLatitude(),
+            orderDTO.getStartLongitude(),
+            5.0 // 5km radius
+        );
+        
+        OrderNotificationDTO notification = new OrderNotificationDTO(
+            order.getId(),
+            OrderStatus.PENDING.toString(),
+            "New ride request",
+            System.currentTimeMillis()
+        );
+        
+        notificationController.notifyNearbyDrivers(
+            notification,
+            nearbyDrivers.stream()
+                .map(Driver::getId)
+                .collect(Collectors.toList())
+        );
 
         // Try to find an available driver
         Driver assignedDriver = findAndAssignDriver(
@@ -146,7 +182,7 @@ public class OrderService {
         );
         
         Driver driver = order.getDriver();
-        driver.setStatus("AVAILABLE");
+        driver.setStatus(DriverStatus.AVAILABLE);
         driverRepository.save(driver);
         
         return orderRepository.save(order);
@@ -163,7 +199,7 @@ public class OrderService {
         
         if (order.getDriver() != null) {
             Driver driver = order.getDriver();
-            driver.setStatus("AVAILABLE");
+            driver.setStatus(DriverStatus.AVAILABLE);
             driverRepository.save(driver);
         }
         
@@ -172,7 +208,7 @@ public class OrderService {
 
     public List<Driver> findNearbyDrivers(Double latitude, Double longitude, Double radiusKm) {
         return driverRepository.findAll().stream()
-            .filter(driver -> "AVAILABLE".equals(driver.getStatus()) 
+            .filter(driver -> DriverStatus.AVAILABLE.equals(driver.getStatus())
                 && isDriverLoggedIn(driver.getEmail()))
             .filter(driver -> isDriverWithinRadius(driver, latitude, longitude, radiusKm))
             .collect(Collectors.toList());
@@ -267,7 +303,7 @@ public class OrderService {
     }
 
     private Driver findNextClosestDriver(Double latitude, Double longitude, List<Driver> excludeDrivers) {
-        List<Driver> availableDrivers = driverRepository.findByStatus("AVAILABLE")
+        List<Driver> availableDrivers = driverRepository.findByStatus(DriverStatus.AVAILABLE)
             .stream()
             .filter(driver -> !excludeDrivers.contains(driver))
             .toList();
@@ -301,7 +337,7 @@ public class OrderService {
     @Async
     protected boolean tryAssignDriver(Order order, Driver driver) {
         // Set driver as pending for this order
-        driver.setStatus("PENDING_ACCEPTANCE");
+        driver.setStatus(DriverStatus.PENDING_ACCEPTANCE);
         driverRepository.save(driver);
         
         // Save the temporary assignment
@@ -319,7 +355,7 @@ public class OrderService {
             if (order.getStatus() == OrderStatus.PENDING_DRIVER) {
                 Driver driver = order.getDriver();
                 if (driver != null) {
-                    driver.setStatus("AVAILABLE");
+                    driver.setStatus(DriverStatus.AVAILABLE);
                     driverRepository.save(driver);
                 }
                 order.setDriver(null);
@@ -341,15 +377,26 @@ public class OrderService {
         if (accepted) {
             order.setStatus(OrderStatus.ACCEPTED);
             order.setDriver(driver);
-            driver.setStatus("BUSY");
+            driver.setStatus(DriverStatus.BUSY);
         } else {
             order.setStatus(OrderStatus.REJECTED);
             order.setDriver(null);
-            driver.setStatus("AVAILABLE");
+            driver.setStatus(DriverStatus.AVAILABLE);
         }
 
         driverRepository.save(driver);
-        return orderRepository.save(order);
+        Order savedOrder = orderRepository.save(order);
+
+        // Notify passenger about driver's response
+        OrderNotificationDTO notification = new OrderNotificationDTO(
+            orderId,
+            savedOrder.getStatus().toString(),
+            accepted ? "Driver accepted your ride" : "Driver rejected your ride",
+            System.currentTimeMillis()
+        );
+        notificationController.handleOrderNotification(orderId, notification);
+
+        return savedOrder;
     }
 
     private boolean isDriverLoggedIn(String email) {
@@ -366,6 +413,26 @@ public class OrderService {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    @Transactional
+    public void updateDriverLocation(Long driverId, Long orderId, Double latitude, Double longitude) {
+        LocationUpdateDTO locationUpdate = new LocationUpdateDTO(
+            driverId,
+            orderId,
+            latitude,
+            longitude,
+            System.currentTimeMillis()
+        );
+        locationController.handleLocationUpdate(driverId, locationUpdate);
+
+        // Update driver's last known location
+        Driver driver = driverRepository.findById(driverId)
+            .orElseThrow(() -> new RuntimeException("Driver not found"));
+        driver.setLastLatitude(latitude);
+        driver.setLastLongitude(longitude);
+        driver.setLocationUpdatedAt(LocalDateTime.now());
+        driverRepository.save(driver);
     }
 }
 
