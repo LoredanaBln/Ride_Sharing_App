@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { login } from "../api/loginApi";
 import { AppDispatch, RootState } from '../store/store';
 import '../styles/login.css';
 import {useNavigate} from "react-router-dom";
 import {logout} from "../slices/loginSlice.ts";
+import {login} from "../api/loginApi.ts";
 
 const Login: React.FC = () => {
     const [email, setEmail] = useState('');
@@ -16,16 +16,25 @@ const Login: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const result = await dispatch(login({ email, password }));
+        console.log(result);
 
         if (login.fulfilled.match(result)) {
             if (result.payload.role === 'ROLE_PASSENGER') {
                 navigate('/passenger-home');
-            } else if (result.payload.role === 'DRIVER') {
+            } else if (result.payload.role === 'ROLE_DRIVER') {
                 navigate('/driver-home');
             } else {
                 dispatch(logout());
             }
         }
+    };
+
+    const handleSignUpPassenger = () => {
+        navigate('/signup-passenger');
+    };
+
+    const handleSignUpDriver = () => {
+        navigate('/signup-driver');
     };
 
     return (
@@ -52,7 +61,7 @@ const Login: React.FC = () => {
                             id="password"
                             name="password"
                             type="password"
-                            autoComplete="current-password"
+                            autoComplete={"current-password"}
                             required
                             className="password-input"
                             placeholder="Password"
@@ -66,7 +75,7 @@ const Login: React.FC = () => {
                     <button
                         type="button"
                         className="forgot-password-button"
-                        onClick={() => {/* Add forgot password logic */}}
+                        onClick={() => navigate('/reset-password')}
                     >
                         Forgot Password?
                     </button>
@@ -94,14 +103,14 @@ const Login: React.FC = () => {
                         <button
                             type="button"
                             className="signup-button driver"
-                            onClick={() => {/* Add driver signup logic */}}
+                            onClick={handleSignUpDriver}
                         >
                             Sign up as Driver
                         </button>
                         <button
                             type="button"
                             className="signup-button passenger"
-                            onClick={() => {/* Add passenger signup logic */}}
+                            onClick={handleSignUpPassenger}
                         >
                             Sign up as Passenger
                         </button>
