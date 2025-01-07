@@ -1,6 +1,6 @@
 import '../styles/myAccount.css';
 
-function MyAccountPage() {
+function DriverAccountPage() {
     return (
         <div className="account-container">
             <h1>My Account</h1>
@@ -8,4 +8,4 @@ function MyAccountPage() {
     );
 }
 
-export default MyAccountPage;
+export default DriverAccountPage;
