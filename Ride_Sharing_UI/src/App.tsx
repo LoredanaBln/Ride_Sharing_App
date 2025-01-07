@@ -21,10 +21,13 @@ function App() {
                     <Route path="/reset-password" element={<ChangePassword/>}/>
                     <Route path="/driver-home" element={<DriverHomePage/>}/>
                     <Route path="/my-account-driver" element={<DriverAccountPage/>}/>
+                    <Route path="/payment" element={<div> Payment</div>}/>
                     <Route path="/support" element={<div>Support Page</div>}/>
                     <Route path="/about" element={<div>About Page</div>}/>
-                    <Route path="/account" element={<div>Account Page</div>}/>
-                    <Route path="/rides-history" element={<div>Rides History Page</div>}/>
+                    <Route path="/account-driver" element={<div>My Account driver</div>}/>
+                    <Route path="/account-passenger" element={<div>My Account passenger</div>}/>
+                    <Route path="/driver-rides-history" element={<div>Driver rides History Page</div>}/>
+                    <Route path="/passenger-rides-history" element={<div>Passenger rides History Page</div>}/>
                 </Routes>
             </BrowserRouter>
         </Provider>

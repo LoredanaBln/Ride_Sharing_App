@@ -1,106 +1,103 @@
-import React from "react";
-import {useNavigate} from "react-router-dom";
+import {useState} from "react";
 import "../styles/passengerHome.css";
+import "../styles/drawer_menu.css";
+import mapImage from "../images/map.jpg";
+import arrowIcon from "../images/arrow.png";
+import menu from "../images/menu.png";
+import search from "../images/search.png";
+import my_location from "../images/my_location.png";
+import pay from "../images/pay.png";
+import back from "../images/back.png";
+import support from "../images/support.png"
+import about from "../images/about.png"
+import logout from "../images/logout.png"
 
-const PassengerHome: React.FC = () => {
+import {useNavigate} from "react-router-dom";
+
+function PassengerHome() {
+    const [isMenuVisible, setIsMenuVisible] = useState(false);
+    const [isDrawerVisible, setIsDrawerVisible] = useState(false);
     const navigate = useNavigate();
 
-    const openDrawer = () => {
-        const drawer = document.getElementById("drawer");
-        drawer?.classList.add("open");
-    };
-
-    const closeDrawer = () => {
-        const drawer = document.getElementById("drawer");
-        drawer?.classList.remove("open");
+    const handleMenuToggle = () => {
+        setIsMenuVisible(!isMenuVisible);
     };
 
     return (
-        <div className="container">
-            <div className="home-page">
-                <div id="drawer" className="drawer">
-                    <div className="drawer-content">
-                        <div className="drawer-header">
-                            <h2>Menu</h2>
-                            <button className="close-button" onClick={closeDrawer}>
-                                ×
-                            </button>
-                        </div>
-                        <nav className="drawer-nav">
-                            <ul>
-                                <li>
-                                    <button
-                                        onClick={() => {
-                                            closeDrawer();
-                                            navigate("/payment");
-                                        }}
-                                    >
-                                        Payment
-                                    </button>
-                                </li>
-                                <li>
-                                    <button
-                                        onClick={() => {
-                                            closeDrawer();
-                                            navigate("/support");
-                                        }}
-                                    >
-                                        Support
-                                    </button>
-                                </li>
-                                <li>
-                                    <button
-                                        onClick={() => {
-                                            closeDrawer();
-                                            navigate("/about");
-                                        }}
-                                    >
-                                        About
-                                    </button>
-                                </li>
-                            </ul>
-                        </nav>
-                    </div>
+        <div className="passenger-container">
+            <div id="drawer" className={`drawer ${isDrawerVisible ? "visible" : ""}`}>
+                <div className="drawer-content">
+                    <button onClick={() => setIsDrawerVisible(false)}>
+                        <img src={back} alt="back" className="back-icon"/>
+                    </button>
+                    <ul>
+                        <li onClick={() => navigate("/payment")}>
+                            <img src={pay} alt="pay" className="pay-icon"/>
+                            Payment
+                        </li>
+                        <li onClick={() => navigate("/support")}>
+                            <img src={support} alt="pay" className="pay-icon"/>
+                            Support
+                        </li>
+                        <li onClick={() => navigate("/about")}>
+                            <img src={about} alt="pay" className="pay-icon"/>
+                            About
+                        </li>
+                        <li>
+                            <img src={logout} alt="logout" className="pay-icon"/>
+                            Logout
+                        </li>
+                    </ul>
                 </div>
+            </div>
 
-                <header className="top-bar">
-                    <button className="menu-button" onClick={openDrawer}>
-                        <span className="menu-icon">☰</span>
+            <div className="search-bar-container">
+                <button
+                    onClick={() => setIsDrawerVisible(true)}
+                    className="drawer-menu-button"
+                >
+                    <img src={menu} alt="menu" className="menu-icon"/>
+
+                </button>
+                <div className="search-input-wrapper">
+                    <img
+                        src={search} alt="search"
+                        className="search-icon"
+                    />
+                    <input type="text" className="search-input" placeholder="Where to?"/>
+                </div>
+            </div>
+
+            <div className="map-container">
+                <img src={mapImage} alt="map" className="map-image"/>
+            </div>
+
+            <div className="button-bar">
+                <div className="menu-wrapper">
+                    <button className="location-button-pass">
+                        <img src={my_location} alt="expand" className="location-icon"/>
                     </button>
-                    <div className="search-bar">
-                        <input
-                            type="text"
-                            placeholder="Where would you like to go?"
-                            aria-label="Search destination"
-                        />
-                        <button className="search-button">Search</button>
+                    <div className={`expanded-menu ${isMenuVisible ? "visible" : ""}`}>
+                        <button className="menu-item">
+                            <span>Home</span>
+                        </button>
+                        <button className="menu-item">
+                            <span>Account</span>
+                        </button>
+                        <button className="menu-item">
+                            <span>History</span>
+                        </button>
                     </div>
-                </header>
-
-                <main className="map-container">
-                    <h1>HERE MAY LAY THE MAP</h1>
-                </main>
-
-                <nav className="bottom-nav">
-                    <button className="nav-button" onClick={() => navigate("/")}>
-                        <span className="icon">🏠</span>
-                        <span>Home</span>
-                    </button>
-                    <button className="nav-button" onClick={() => navigate("/account")}>
-                        <span className="icon">👤</span>
-                        <span>Account</span>
-                    </button>
                     <button
-                        className="nav-button"
-                        onClick={() => navigate("/rides-history")}
+                        className={`expand-button ${isMenuVisible ? "expanded" : ""}`}
+                        onClick={handleMenuToggle}
                     >
-                        <span className="icon">🕒</span>
-                        <span>History</span>
+                        <img src={arrowIcon} alt="expand"/>
                     </button>
-                </nav>
+                </div>
             </div>
         </div>
     );
-};
+}
 
 export default PassengerHome;

@@ -33,7 +33,7 @@ function SignUpPassenger() {
     };
 
     return (
-        <div className="container">
+        <div className="signupcontainer">
             <div className="signup-container">
                 <h1 className="signup-title">Passenger Sign Up</h1>
 
