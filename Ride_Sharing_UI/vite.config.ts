@@ -10,12 +10,11 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      // This handles modules that expect Node.js globals
-      global: {}
+      global: 'window'
     }
   },
   define: {
-    // This adds missing globals that some modules expect
     global: 'window'
-  }
+  },
+  assetsInclude: ['**/*.png', '**/*.jpg']
 })
