@@ -1,0 +1,203 @@
+.container {
+    height: 1190px;
+    width: 550px;
+    position: relative;
+    background: transparent;
+    padding: 20px;
+    margin-left: -150px;
+}
+
+.map-container {
+    height: 100%;
+    width: 100%;
+    position: relative;
+    background: white;
+    border-radius: 40px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(202, 188, 188, 0.1), 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.map-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.button-bar {
+    position: absolute;
+    left: 50%;
+    bottom: 60px;  
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.6rem;
+    background: transparent;
+    border-radius: 40px;
+    z-index: 1000;
+    width: calc(100% - 80px);
+}
+
+.menu-button {
+    position: absolute;
+    top: 45px;
+    left: 45px;
+    width: 60px;
+    height: 60px;
+    border-radius: 20px;
+    background: #2b7d27;
+    border: none;
+    cursor: pointer;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    z-index: 2;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+}
+
+.menu-button:hover {
+    background-color: #359830;
+    box-shadow: 0 0 0 4px rgba(43, 125, 39, 0.2);
+}
+
+.menu-button img {
+    width: 30px;
+    height: 30px;
+}
+
+.location-button {
+    width: 60px;
+    height: 60px;
+    border-radius: 20px;
+    background: #2b7d27;
+    border: none;
+    cursor: pointer;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: absolute;
+    left: 2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+}
+
+.location-button:hover {
+    background-color: #359830;
+    box-shadow: 0 0 0 4px rgba(43, 125, 39, 0.2);
+}
+
+.location-button img {
+    width: 30px;
+    height: 30px;
+}
+
+.online-toggle {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 20px;
+    font-size: 1.6rem;
+    font-weight: 400;
+    color: white;
+    background: #2b7d27;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+}
+
+.online-toggle:hover {
+    background-color: #359830;
+    box-shadow: 0 0 0 4px rgba(43, 125, 39, 0.2);
+}
+
+.menu-wrapper {
+    position: absolute;
+    right: 2rem;
+    bottom: 50%;
+    transform: translateY(50%);
+}
+
+.expanded-menu {
+    position: absolute;
+    bottom: -10px;
+    right: -10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    opacity: 0;
+    transform: translateY(10px);
+    visibility: hidden;
+    transition: opacity 0.3s ease-out, transform 0.3s ease-out, visibility 0.3s;
+    background: white;
+    padding: 10px 10px;
+    padding-bottom: 90px;
+    border-radius: 25px;
+    box-shadow: 0 4px 6px rgba(202, 188, 188, 0.1), 0 1px 3px rgba(0, 0, 0, 0.1);
+    width: 60px;
+}
+
+.expanded-menu.visible {
+    opacity: 1;
+    transform: translateY(0);
+    visibility: visible;
+}
+
+.expand-button {
+    width: 60px;
+    height: 60px;
+    border-radius: 20px;
+    background: #2b7d27;
+    border: none;
+    cursor: pointer;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+}
+
+.expand-button:hover {
+    background-color: #359830;
+    box-shadow: 0 0 0 4px rgba(43, 125, 39, 0.2);
+}
+
+.expand-button.expanded img {
+    transform: rotate(180deg);
+}
+
+.expand-button img {
+    width: 40px;
+    height: 40px;
+    transition: transform 0.3s ease;
+}
+
+.menu-item {
+    width: 60px;
+    height: 60px;
+    border-radius: 20px;
+    background: #3a5838;
+    border: none;
+    cursor: pointer;
+    color: white;
+    font-size: 1.4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+}
+
+.menu-item:hover {
+    background-color: #359830;
+    box-shadow: 0 0 0 4px rgba(43, 125, 39, 0.2);
+}
