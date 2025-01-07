@@ -43,8 +43,8 @@ function PassengerHome() {
                             <img src={about} alt="pay" className="pay-icon"/>
                             About
                         </li>
-                        <li onClick={() => navigate("/logout")}>
-                            <img src={logout} alt="pay" className="pay-icon"/>
+                        <li>
+                            <img src={logout} alt="logout" className="pay-icon"/>
                             Logout
                         </li>
                     </ul>

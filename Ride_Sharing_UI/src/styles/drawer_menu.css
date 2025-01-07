@@ -1,76 +1,104 @@
 #drawer {
-    position: fixed;
-    left: 1556px;
-    top: 0;
-    width: 250px;
-    height: 500px;
-    background-color: white;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
-    z-index: 9999;
-    margin-top: 108px;
-    opacity: 0;
-    visibility: hidden;
-    border-radius: 20px;
-    transition: opacity 0.3s ease-out, visibility 0.3s;
+  position: fixed;
+  left: 1556px;
+  top: 0;
+  width: 250px;
+  height: 500px;
+  background-color: white;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+  margin-top: 108px;
+  opacity: 0;
+  visibility: hidden;
+  border-radius: 20px;
+  transition: opacity 0.3s ease-out, visibility 0.3s;
 }
 
 #drawer.visible {
-    opacity: 1;
-    visibility: visible;
+  opacity: 1;
+  visibility: visible;
 }
 
-#drawer button {
-    position: absolute;
-    right: 10px;
-    top: 10px;
-    padding: 8px 12px;
-    border: none;
-    background: none;
-    cursor: pointer;
+#drawer-button {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  padding: 8px 12px;
+  border: none;
+  background: none;
+  cursor: pointer;
 }
 
 #drawer ul {
-    list-style: none;
-    padding: 50px 10px 0 0;
-    margin: 0;
+  list-style: none;
+  padding: 50px 10px 0 0;
+  margin: 0;
 }
 
 #drawer li {
-    padding: 20px 20px;
-    border-bottom: 1px solid #eee;
-    cursor: pointer;
-    transition: background-color 0.2s;
+  padding: 20px 20px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
 #drawer li:hover {
-    background-color: #d4ffbf;
+  background-color: #d4ffbf;
 }
 
 .drawer-content li {
-    display: flex;
-    align-items: center;
-    font-size: 1.5rem;
-    gap: 20px;
-    padding: 20px;
-    cursor: pointer;
+  display: flex;
+  align-items: center;
+  font-size: 1.5rem;
+  gap: 20px;
+  padding: 20px;
+  cursor: pointer;
+}
+
+.pay-icon {
+  width: 40px;
+  height: 40px;
+  padding-left: 20px;
+}
+
+.back-icon {
+  width: 30px;
+  height: 30px;
 }
 
 .drawer-menu-button {
-    width: 70px;
-    height: 70px;
-    border: none;
-    border-radius: 25px;
-    background: #2b7d27;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: all 0.2s ease;
-    color: #1f2937;
+  width: 70px;
+  height: 70px;
+  border: none;
+  border-radius: 25px;
+  background: #2b7d27;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  color: #1f2937;
 }
 
 .drawer-menu-button:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    background: #f8f8f8;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background: #f8f8f8;
+}
+
+.drawer-content button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  position: absolute;
+  left: 10px;
+  top: 10px;
+}
+
+.back-icon {
+  width: 30px;
+  height: 30px;
 }
