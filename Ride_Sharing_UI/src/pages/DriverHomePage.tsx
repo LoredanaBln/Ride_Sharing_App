@@ -5,7 +5,7 @@ import arrowIcon from '../images/arrow.png';
 import homeIcon from '../images/home.png';
 import accountIcon from '../images/account.png';
 import historyIcon from '../images/history.png';
-import menuIcon from '../images/menu.png';
+import menuIcon from '../images/menu_icon.png';
 import locationIcon from '../images/location.png';
 
 function DriverHomePage() {

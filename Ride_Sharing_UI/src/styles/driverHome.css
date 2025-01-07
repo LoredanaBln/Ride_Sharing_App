@@ -26,7 +26,7 @@
 .button-bar {
     position: absolute;
     left: 50%;
-    bottom: 60px;
+    bottom: 60px;  
     transform: translateX(-50%);
     display: flex;
     align-items: center;
@@ -62,8 +62,8 @@
 }
 
 .menu-button img {
-    width: 25px;
-    height: 25px;
+    width: 30px;
+    height: 30px;
 }
 
 .location-button {
@@ -92,8 +92,8 @@
 }
 
 .location-button img {
-    width: 25px;
-    height: 25px;
+    width: 30px;
+    height: 30px;
 }
 
 .online-toggle {
@@ -194,7 +194,7 @@
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
 }
 
 .menu-item:hover {
