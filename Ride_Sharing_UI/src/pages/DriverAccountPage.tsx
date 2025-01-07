@@ -1,4 +1,4 @@
-import '../styles/myAccount.css';
+import '../styles/driverAccount.css';
 
 function DriverAccountPage() {
     return (
