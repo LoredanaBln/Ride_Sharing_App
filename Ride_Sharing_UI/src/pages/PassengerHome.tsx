@@ -74,7 +74,7 @@ function PassengerHome() {
 
             <div className="button-bar">
                 <div className="menu-wrapper">
-                    <button className="location-button">
+                    <button className="location-button-pass">
                         <img src={my_location} alt="expand" className="location-icon"/>
                     </button>
                     <div className={`expanded-menu ${isMenuVisible ? "visible" : ""}`}>

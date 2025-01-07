@@ -24,14 +24,12 @@
   },
   "include": [
     "src",
-    "src//.png",
-    "src//.jpg"
+    "src/**/*.png",
+    "src/**/*.jpg"
   ],
   "references": [
     {
       "path": "./tsconfig.node.json"
     }
   ]
-  "include": ["src", "src/**/*.png", "src/**/*.jpg"],
-  "references": [{ "path": "./tsconfig.node.json" }]
 }

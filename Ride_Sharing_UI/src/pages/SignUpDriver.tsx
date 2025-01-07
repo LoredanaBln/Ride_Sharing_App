@@ -37,7 +37,7 @@ function SignUpDriver() {
     };
 
     return (
-        <div className="container">
+        <div className="signupcontainer">
             <div className="signup-container">
                 <h1 className="signup-title">Driver Sign Up</h1>
 
