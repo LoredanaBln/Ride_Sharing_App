@@ -2,7 +2,8 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchPassengerRides } from "../api/passengerGetOrders.ts";
 import { AppDispatch, RootState } from "../store/store.ts";
-import "../styles/passengerRidesHistory.css"
+import "../styles/passengerRidesHistory.css";
+import { motion } from "framer-motion";
 
 function PassengerRidesHistory() {
   const dispatch = useDispatch<AppDispatch>();
@@ -18,29 +19,62 @@ function PassengerRidesHistory() {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className="history-container">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="history-container"
+    >
+      <motion.div
+        initial={{ y: -20 }}
+        animate={{ y: 0 }}
+        className="history-header"
+      >
+        <h1>My Rides</h1>
+        <p className="subtitle">Your journey history</p>
+      </motion.div>
       <div className="rides-list">
-        {rides.map((ride) => (
-          <div key={ride.id} className="ride-item">
+        {rides.map((ride, index) => (
+          <motion.div
+            key={ride.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1 }}
+            className="ride-item"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            {/*<div className="ride-status">*/}
+            {/*  <span className={`status-badge ${ride.status?.toLowerCase()}`}>*/}
+            {/*    {ride.status || "Completed"}*/}
+            {/*  </span>*/}
+            {/*</div>*/}
             <div className="ride-details">
-              <p>
-                <strong>From:</strong> {ride.startLocation}
-              </p>
-              <p>
-                <strong>To:</strong> {ride.endLocation}
-              </p>
-              <p>
-                <strong>Date:</strong>{" "}
-                {new Date(ride.date).toLocaleDateString()}
-              </p>
-              <p>
-                <strong>Price:</strong> ${ride.price}
-              </p>
+              <div className="location-group">
+                <p className="location">
+                  <i className="fas fa-map-marker-alt start-icon"></i>
+                  <span>{ride.startLocation}</span>
+                </p>
+                <div className="location-divider"></div>
+                <p className="location">
+                  <i className="fas fa-map-marker-alt end-icon"></i>
+                  <span>{ride.endLocation}</span>
+                </p>
+              </div>
+              <div className="ride-info">
+                <p>
+                  <i className="far fa-calendar"></i>
+                  {new Date(ride.date).toLocaleDateString()}
+                </p>
+                <p className="price">
+                  <i className="fas fa-dollar-sign"></i>
+                  {Number(ride.price).toFixed(2)}
+                </p>
+              </div>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 }
 
