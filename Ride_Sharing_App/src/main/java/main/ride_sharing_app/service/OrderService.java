@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 public class OrderService {
     private static final int MAX_DRIVER_ATTEMPTS = 5;
     private static final long DRIVER_ACCEPT_TIMEOUT_SECONDS = 30;
-    
+
     private final OrderRepository orderRepository;
     private final DriverRepository driverRepository;
     private final PassengerRepository passengerRepository;
@@ -44,13 +44,13 @@ public class OrderService {
     private final OrderNotificationController notificationController;
     private final LocationWebSocketController locationController;
 
-    public OrderService(OrderRepository orderRepository, 
-                       DriverRepository driverRepository,
-                       PassengerRepository passengerRepository,
-                       LocationService locationService,
-                       ScheduledExecutorService scheduledExecutorService,
-                       OrderNotificationController notificationController,
-                       LocationWebSocketController locationController) {
+    public OrderService(OrderRepository orderRepository,
+                        DriverRepository driverRepository,
+                        PassengerRepository passengerRepository,
+                        LocationService locationService,
+                        ScheduledExecutorService scheduledExecutorService,
+                        OrderNotificationController notificationController,
+                        LocationWebSocketController locationController) {
         this.orderRepository = orderRepository;
         this.driverRepository = driverRepository;
         this.passengerRepository = passengerRepository;
@@ -63,7 +63,7 @@ public class OrderService {
     @Transactional
     public Order createOrder(OrderDTO orderDTO) {
         Passenger passenger = passengerRepository.findById(orderDTO.getPassengerId())
-            .orElseThrow(() -> new RuntimeException("Passenger not found"));
+                .orElseThrow(() -> new RuntimeException("Passenger not found"));
 
         Order order = new Order();
         order.setPassenger(passenger);
@@ -76,16 +76,16 @@ public class OrderService {
 
         // Get route information
         GeoLocation startLocation = new GeoLocation(
-            orderDTO.getStartLatitude(),
-            orderDTO.getStartLongitude()
+                orderDTO.getStartLatitude(),
+                orderDTO.getStartLongitude()
         );
         GeoLocation endLocation = new GeoLocation(
-            orderDTO.getEndLatitude(),
-            orderDTO.getEndLongitude()
+                orderDTO.getEndLatitude(),
+                orderDTO.getEndLongitude()
         );
-        
+
         RouteInfo routeInfo = locationService.getRoute(startLocation, endLocation);
-        
+
         order.setEstimatedDistanceKm(routeInfo.getDistanceInKm());
         order.setEstimatedDurationMinutes(routeInfo.getDurationInMinutes());
 
@@ -94,30 +94,30 @@ public class OrderService {
 
         // Notify nearby drivers about new order
         List<Driver> nearbyDrivers = findNearbyDrivers(
-            orderDTO.getStartLatitude(),
-            orderDTO.getStartLongitude(),
-            5.0 // 5km radius
+                orderDTO.getStartLatitude(),
+                orderDTO.getStartLongitude(),
+                5.0 // 5km radius
         );
-        
+
         OrderNotificationDTO notification = new OrderNotificationDTO(
-            order.getId(),
-            OrderStatus.PENDING.toString(),
-            "New ride request",
-            System.currentTimeMillis()
+                order.getId(),
+                OrderStatus.PENDING.toString(),
+                "New ride request",
+                System.currentTimeMillis()
         );
-        
+
         notificationController.notifyNearbyDrivers(
-            notification,
-            nearbyDrivers.stream()
-                .map(Driver::getId)
-                .collect(Collectors.toList())
+                notification,
+                nearbyDrivers.stream()
+                        .map(Driver::getId)
+                        .collect(Collectors.toList())
         );
 
         // Try to find an available driver
         Driver assignedDriver = findAndAssignDriver(
-            order,
-            orderDTO.getStartLatitude(),
-            orderDTO.getStartLongitude()
+                order,
+                orderDTO.getStartLatitude(),
+                orderDTO.getStartLongitude()
         );
 
         if (assignedDriver == null) {
@@ -138,16 +138,16 @@ public class OrderService {
     private Double calculateEstimatedPrice(OrderDTO orderDTO) {
         double basePrice = 5.0;
         double distancePrice = calculateEstimatedDistance(
-            orderDTO.getStartLatitude(), 
-            orderDTO.getStartLongitude(),
-            orderDTO.getEndLatitude(), 
-            orderDTO.getEndLongitude()
+                orderDTO.getStartLatitude(),
+                orderDTO.getStartLongitude(),
+                orderDTO.getEndLatitude(),
+                orderDTO.getEndLongitude()
         ) * 2.0; // $2 per km
         return basePrice + distancePrice;
     }
 
-    private Double calculateEstimatedDistance(Double startLat, Double startLon, 
-                                            Double endLat, Double endLon) {
+    private Double calculateEstimatedDistance(Double startLat, Double startLon,
+                                              Double endLat, Double endLon) {
         // Haversine formula for calculating distance between coordinates
         final int R = 6371; // Earth's radius in kilometers
 
@@ -157,115 +157,121 @@ public class OrderService {
                 + Math.cos(Math.toRadians(startLat)) * Math.cos(Math.toRadians(endLat))
                 * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        
+
         return R * c;
     }
 
     private Integer estimateDuration(Double distanceKm) {
         // Assuming average speed of 50 km/h in city
-        return (int)(distanceKm * 6/5);
+        return (int) (distanceKm * 6 / 5);
     }
 
     @Transactional
     public Order completeOrder(Long orderId) {
         Order order = orderRepository.findById(orderId)
-            .orElseThrow(() -> new RuntimeException("Order not found"));
-        
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
         if (order.getDriver() == null) {
             throw new RuntimeException("Cannot complete order: no driver assigned");
         }
-        
+
         order.setStatus(OrderStatus.COMPLETED);
         order.setEndTime(LocalDateTime.now());
         order.setActualDurationMinutes(
-            (int) ChronoUnit.MINUTES.between(order.getStartTime(), order.getEndTime())
+                (int) ChronoUnit.MINUTES.between(order.getStartTime(), order.getEndTime())
         );
-        
+
         Driver driver = order.getDriver();
         driver.setStatus(DriverStatus.AVAILABLE);
         driverRepository.save(driver);
-        
+
         return orderRepository.save(order);
     }
 
     @Transactional
     public Order cancelOrder(Long orderId, String reason) {
         Order order = orderRepository.findById(orderId)
-            .orElseThrow(() -> new RuntimeException("Order not found"));
-        
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
         order.setStatus(OrderStatus.CANCELED);
         order.setCancellationReason(reason);
         order.setEndTime(LocalDateTime.now());
-        
+
         if (order.getDriver() != null) {
             Driver driver = order.getDriver();
             driver.setStatus(DriverStatus.AVAILABLE);
             driverRepository.save(driver);
         }
-        
+
         return orderRepository.save(order);
     }
 
     public List<Driver> findNearbyDrivers(Double latitude, Double longitude, Double radiusKm) {
         return driverRepository.findAll().stream()
-            .filter(driver -> DriverStatus.AVAILABLE.equals(driver.getStatus())
-                && isDriverLoggedIn(driver.getEmail()))
-            .filter(driver -> isDriverWithinRadius(driver, latitude, longitude, radiusKm))
-            .collect(Collectors.toList());
+                .filter(driver -> DriverStatus.AVAILABLE.equals(driver.getStatus())
+                        && isDriverLoggedIn(driver.getEmail()))
+                .filter(driver -> isDriverWithinRadius(driver, latitude, longitude, radiusKm))
+                .collect(Collectors.toList());
     }
 
     ///TODO IMPLEMENT ACTUAL LOGIC
-    private boolean isDriverWithinRadius(Driver driver, Double latitude, 
-                                       Double longitude, Double radiusKm) {
+    private boolean isDriverWithinRadius(Driver driver, Double latitude,
+                                         Double longitude, Double radiusKm) {
         if (driver.getLastLatitude() == null || driver.getLastLongitude() == null) {
             return false;
         }
 
         GeoLocation driverLocation = new GeoLocation(
-            driver.getLastLatitude(),
-            driver.getLastLongitude()
+                driver.getLastLatitude(),
+                driver.getLastLongitude()
         );
         GeoLocation requestLocation = new GeoLocation(latitude, longitude);
-        
+
         RouteInfo route = locationService.getRoute(driverLocation, requestLocation);
         return route.getDistanceInKm() <= radiusKm;
     }
 
     public Order assignDriver(Long orderId, Long driverId) {
         Order order = orderRepository.findById(orderId)
-            .orElseThrow(() -> new RuntimeException("Order not found"));
-        
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
         Driver driver = driverRepository.findById(driverId)
-            .orElseThrow(() -> new RuntimeException("Driver not found"));
-        
+                .orElseThrow(() -> new RuntimeException("Driver not found"));
+
         order.setDriver(driver);
         order.setStatus(OrderStatus.ACCEPTED);
-        
+
         return orderRepository.save(order);
     }
 
     public Order updateOrderStatus(Long orderId, OrderStatus status) {
         Order order = orderRepository.findById(orderId)
-            .orElseThrow(() -> new RuntimeException("Order not found"));
-        
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
         order.setStatus(status);
         if (status == OrderStatus.COMPLETED) {
             order.setEndTime(LocalDateTime.now());
         }
-        
+
         return orderRepository.save(order);
     }
 
     public List<Order> getOrdersByPassenger(Long passengerId) {
         Passenger passenger = passengerRepository.findById(passengerId)
-            .orElseThrow(() -> new RuntimeException("Passenger not found"));
+                .orElseThrow(() -> new RuntimeException("Passenger not found"));
         return orderRepository.findByPassenger(passenger);
     }
 
     public List<Order> getOrdersByDriver(Long driverId) {
         Driver driver = driverRepository.findById(driverId)
-            .orElseThrow(() -> new RuntimeException("Driver not found"));
+                .orElseThrow(() -> new RuntimeException("Driver not found"));
         return orderRepository.findByDriver(driver);
+    }
+
+    public List<Order> getOrdersByPassengerEmail(String email) {
+        Passenger passenger = passengerRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Passenger not found"));
+        return orderRepository.findByPassenger(passenger);
     }
 
     public Optional<Order> getOrderById(Long id) {
@@ -282,10 +288,10 @@ public class OrderService {
 
     private Driver findAndAssignDriver(Order order, Double latitude, Double longitude) {
         List<Driver> triedDrivers = new ArrayList<>();
-        
+
         for (int attempt = 0; attempt < MAX_DRIVER_ATTEMPTS; attempt++) {
             Driver nextClosestDriver = findNextClosestDriver(latitude, longitude, triedDrivers);
-            
+
             if (nextClosestDriver == null) {
                 return null; // No more available drivers
             }
@@ -304,10 +310,10 @@ public class OrderService {
 
     private Driver findNextClosestDriver(Double latitude, Double longitude, List<Driver> excludeDrivers) {
         List<Driver> availableDrivers = driverRepository.findByStatus(DriverStatus.AVAILABLE)
-            .stream()
-            .filter(driver -> !excludeDrivers.contains(driver))
-            .toList();
-        
+                .stream()
+                .filter(driver -> !excludeDrivers.contains(driver))
+                .toList();
+
         if (availableDrivers.isEmpty()) {
             return null;
         }
@@ -318,12 +324,12 @@ public class OrderService {
         for (Driver driver : availableDrivers) {
             Double driverLat = driver.getLastLatitude();
             Double driverLon = driver.getLastLongitude();
-            
+
             if (driverLat != null && driverLon != null) {
                 double distance = calculateEstimatedDistance(
-                    latitude, longitude, driverLat, driverLon
+                        latitude, longitude, driverLat, driverLon
                 );
-                
+
                 if (distance < minDistance) {
                     minDistance = distance;
                     closestDriver = driver;
@@ -339,12 +345,12 @@ public class OrderService {
         // Set driver as pending for this order
         driver.setStatus(DriverStatus.PENDING_ACCEPTANCE);
         driverRepository.save(driver);
-        
+
         // Save the temporary assignment
         order.setDriver(driver);
         order.setStatus(OrderStatus.PENDING_DRIVER);
         Order savedOrder = orderRepository.save(order);
-        
+
         // Return the order immediately so the client isn't blocked
         return true;
     }
@@ -369,10 +375,10 @@ public class OrderService {
     @Transactional
     public Order handleDriverResponse(Long orderId, Long driverId, boolean accepted) {
         Order order = orderRepository.findById(orderId)
-            .orElseThrow(() -> new RuntimeException("Order not found"));
-        
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
         Driver driver = driverRepository.findById(driverId)
-            .orElseThrow(() -> new RuntimeException("Driver not found"));
+                .orElseThrow(() -> new RuntimeException("Driver not found"));
 
         if (accepted) {
             order.setStatus(OrderStatus.ACCEPTED);
@@ -389,10 +395,10 @@ public class OrderService {
 
         // Notify passenger about driver's response
         OrderNotificationDTO notification = new OrderNotificationDTO(
-            orderId,
-            savedOrder.getStatus().toString(),
-            accepted ? "Driver accepted your ride" : "Driver rejected your ride",
-            System.currentTimeMillis()
+                orderId,
+                savedOrder.getStatus().toString(),
+                accepted ? "Driver accepted your ride" : "Driver rejected your ride",
+                System.currentTimeMillis()
         );
         notificationController.handleOrderNotification(orderId, notification);
 
@@ -405,9 +411,9 @@ public class OrderService {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             if (auth != null && auth.getPrincipal() instanceof UserDetails) {
                 UserDetails userDetails = (UserDetails) auth.getPrincipal();
-                return userDetails.getUsername().equals(email) 
-                    && userDetails.getAuthorities().stream()
-                    .anyMatch(a -> a.getAuthority().equals("ROLE_DRIVER"));
+                return userDetails.getUsername().equals(email)
+                        && userDetails.getAuthorities().stream()
+                        .anyMatch(a -> a.getAuthority().equals("ROLE_DRIVER"));
             }
             return false;
         } catch (Exception e) {
@@ -418,17 +424,17 @@ public class OrderService {
     @Transactional
     public void updateDriverLocation(Long driverId, Long orderId, Double latitude, Double longitude) {
         LocationUpdateDTO locationUpdate = new LocationUpdateDTO(
-            driverId,
-            orderId,
-            latitude,
-            longitude,
-            System.currentTimeMillis()
+                driverId,
+                orderId,
+                latitude,
+                longitude,
+                System.currentTimeMillis()
         );
         locationController.handleLocationUpdate(driverId, locationUpdate);
 
         // Update driver's last known location
         Driver driver = driverRepository.findById(driverId)
-            .orElseThrow(() -> new RuntimeException("Driver not found"));
+                .orElseThrow(() -> new RuntimeException("Driver not found"));
         driver.setLastLatitude(latitude);
         driver.setLastLongitude(longitude);
         driver.setLocationUpdatedAt(LocalDateTime.now());

@@ -46,6 +46,7 @@ public class SecurityConfig {
                         .requestMatchers("/driver/id/{id}", "/passenger/id/{id}").permitAll()
                         .requestMatchers("/passenger/signUp", "/driver/signUp").permitAll()
                         .requestMatchers("/auth/login").permitAll()
+                        .requestMatchers("/passengerEmail/{passengerEmail}").permitAll()
                         .requestMatchers("/passenger/requestPasswordReset", "/passenger/confirmPasswordReset").permitAll()
                         .requestMatchers("/driver/requestPasswordReset", "/driver/confirmPasswordReset").permitAll()
                         .requestMatchers("/order/nearbyDrivers").permitAll()

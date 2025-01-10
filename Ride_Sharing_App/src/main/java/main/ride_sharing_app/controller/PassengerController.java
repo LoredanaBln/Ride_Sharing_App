@@ -12,6 +12,8 @@
     import org.springframework.web.bind.annotation.*;
     import org.springframework.security.core.annotation.AuthenticationPrincipal;
     import org.springframework.security.core.userdetails.UserDetails;
+    import main.ride_sharing_app.model.Order;
+    import java.util.List;
 
     @RestController
     @RequestMapping("/passenger")
@@ -81,4 +83,5 @@
             passengerService.confirmPasswordReset(request.getToken(), request.getNewPassword());
             return ResponseEntity.ok().build();
         }
+
     }

@@ -8,6 +8,7 @@ import SignUpDriver from "./pages/SignUpDriver.tsx";
 import ChangePassword from "./pages/ChangePassword.tsx";
 import DriverHomePage from "./pages/DriverHomePage.tsx";
 import DriverAccountPage from "./pages/DriverAccountPage.tsx";
+import PassengerRidesHistory from "./pages/PassengerRidesHistory.tsx";
 
 function App() {
     return (
@@ -27,7 +28,7 @@ function App() {
                     <Route path="/account-driver" element={<div>My Account driver</div>}/>
                     <Route path="/account-passenger" element={<div>My Account passenger</div>}/>
                     <Route path="/driver-rides-history" element={<div>Driver rides History Page</div>}/>
-                    <Route path="/passenger-rides-history" element={<div>Passenger rides History Page</div>}/>
+                    <Route path="/passenger-rides-history" element={<PassengerRidesHistory/>}/>
                 </Routes>
             </BrowserRouter>
         </Provider>
