@@ -1,0 +1,119 @@
+{
+  "info": {
+    "name": "Payment Tests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Setup Stripe Customer",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{passenger_token}}"
+          }
+        ],
+        "url": "http://localhost:8080/payment/setupCustomer/{id}"
+      }
+    },
+    {
+      "name": "2. Create Test Payment Method",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{stripe_secret_key}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "url": "https://api.stripe.com/v1/payment_methods",
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "type",
+              "value": "card"
+            },
+            {
+              "key": "card[number]",
+              "value": "4242424242424242"
+            },
+            {
+              "key": "card[exp_month]",
+              "value": "12"
+            },
+            {
+              "key": "card[exp_year]",
+              "value": "2024"
+            },
+            {
+              "key": "card[cvc]",
+              "value": "123"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "3. Attach Payment Method",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{passenger_token}}"
+          }
+        ],
+        "url": "http://localhost:8080/payment/attachPaymentMethod?paymentMethodId={{payment_method_id}}&customerId={{customer_id}}"
+      }
+    },
+    {
+      "name": "4. Create Order",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{passenger_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"passengerId\": 1,\n  \"startLocation\": \"123 Main St\",\n  \"endLocation\": \"456 Oak Ave\",\n  \"startLatitude\": 44.4268,\n  \"startLongitude\": 26.1025,\n  \"endLatitude\": 44.4323,\n  \"endLongitude\": 26.1061,\n  \"paymentType\": \"CREDIT_CARD\"\n}"
+        },
+        "url": "http://localhost:8080/order/create"
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "stripe_secret_key",
+      "value": "your_stripe_secret_key"
+    },
+    {
+      "key": "payment_method_id",
+      "value": "pm_..."
+    },
+    {
+      "key": "customer_id",
+      "value": "cus_..."
+    }
+  ]
+} 

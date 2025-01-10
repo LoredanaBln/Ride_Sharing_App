@@ -3,6 +3,8 @@ package main.ride_sharing_app.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import main.ride_sharing_app.model.payment.PaymentStatus;
+import main.ride_sharing_app.model.payment.PaymentType;
 
 import java.time.LocalDateTime;
 
@@ -68,6 +70,13 @@ public class Order {
 
     @Column(name = "driver_notes")
     private String driverNotes;
+
+    @Column(name = "payment_status")
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus paymentStatus = PaymentStatus.PENDING;
+
+    @Column(name = "payment_intent_id")
+    private String paymentIntentId;
 
     public Order(Driver driver, Passenger passenger, String startLocation, String endLocation, OrderStatus status, Double price, PaymentType paymentType, LocalDateTime startTime, LocalDateTime endTime) {
         this.driver = driver;

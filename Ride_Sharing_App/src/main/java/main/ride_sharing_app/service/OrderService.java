@@ -2,24 +2,24 @@ package main.ride_sharing_app.service;
 
 import main.ride_sharing_app.dto.OrderDTO;
 import main.ride_sharing_app.model.*;
+import main.ride_sharing_app.model.location.GeoLocation;
+import main.ride_sharing_app.model.location.RouteInfo;
+import main.ride_sharing_app.model.payment.PaymentStatus;
 import main.ride_sharing_app.repository.OrderRepository;
 import main.ride_sharing_app.repository.DriverRepository;
 import main.ride_sharing_app.repository.PassengerRepository;
 import main.ride_sharing_app.websocket.controller.LocationWebSocketController;
 import main.ride_sharing_app.websocket.controller.OrderNotificationController;
-import main.ride_sharing_app.websocket.message.LocationUpdateMessage;
-import main.ride_sharing_app.websocket.message.OrderNotificationMessage;
 import main.ride_sharing_app.websocket.dto.OrderNotificationDTO;
 import main.ride_sharing_app.websocket.dto.LocationUpdateDTO;
-import main.ride_sharing_app.websocket.util.WebSocketConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
+import com.stripe.exception.StripeException;
+import com.stripe.model.PaymentIntent;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -43,6 +43,7 @@ public class OrderService {
     private final ScheduledExecutorService scheduledExecutorService;
     private final OrderNotificationController notificationController;
     private final LocationWebSocketController locationController;
+    private final PaymentService paymentService;
 
     public OrderService(OrderRepository orderRepository, 
                        DriverRepository driverRepository,
@@ -50,7 +51,8 @@ public class OrderService {
                        LocationService locationService,
                        ScheduledExecutorService scheduledExecutorService,
                        OrderNotificationController notificationController,
-                       LocationWebSocketController locationController) {
+                       LocationWebSocketController locationController,
+                       PaymentService paymentService) {
         this.orderRepository = orderRepository;
         this.driverRepository = driverRepository;
         this.passengerRepository = passengerRepository;
@@ -58,10 +60,14 @@ public class OrderService {
         this.scheduledExecutorService = scheduledExecutorService;
         this.notificationController = notificationController;
         this.locationController = locationController;
+        this.paymentService = paymentService;
     }
 
     @Transactional
     public Order createOrder(OrderDTO orderDTO) {
+        // Calculate estimated price first
+        double estimatedPrice = calculateEstimatedPrice(orderDTO);
+        
         Passenger passenger = passengerRepository.findById(orderDTO.getPassengerId())
             .orElseThrow(() -> new RuntimeException("Passenger not found"));
 
@@ -72,7 +78,8 @@ public class OrderService {
         order.setStatus(OrderStatus.PENDING);
         order.setStartTime(LocalDateTime.now());
         order.setPaymentType(orderDTO.getPaymentType());
-        order.setPrice(calculateEstimatedPrice(orderDTO));
+        order.setPrice(estimatedPrice);
+        order.setPaymentStatus(PaymentStatus.PENDING);
 
         // Get route information
         GeoLocation startLocation = new GeoLocation(
@@ -88,6 +95,15 @@ public class OrderService {
         
         order.setEstimatedDistanceKm(routeInfo.getDistanceInKm());
         order.setEstimatedDurationMinutes(routeInfo.getDurationInMinutes());
+
+        // Create payment intent but don't confirm
+        try {
+            PaymentIntent intent = paymentService.createPaymentIntent(order);
+            order.setPaymentIntentId(intent.getId());
+            order.setPaymentStatus(PaymentStatus.PENDING);
+        } catch (StripeException e) {
+            throw new RuntimeException("Payment setup failed: " + e.getMessage());
+        }
 
         // Save the initial order
         order = orderRepository.save(order);
@@ -375,6 +391,15 @@ public class OrderService {
             .orElseThrow(() -> new RuntimeException("Driver not found"));
 
         if (accepted) {
+            try {
+                // Confirm the payment when driver accepts
+                paymentService.confirmPayment(order);
+                order.setPaymentStatus(PaymentStatus.COMPLETED);
+            } catch (StripeException e) {
+                order.setPaymentStatus(PaymentStatus.FAILED);
+                throw new RuntimeException("Payment failed: " + e.getMessage());
+            }
+            
             order.setStatus(OrderStatus.ACCEPTED);
             order.setDriver(driver);
             driver.setStatus(DriverStatus.BUSY);
