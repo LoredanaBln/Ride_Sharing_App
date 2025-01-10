@@ -8,6 +8,7 @@ import SignUpDriver from "./pages/SignUpDriver.tsx";
 import ChangePassword from "./pages/ChangePassword.tsx";
 import DriverHomePage from "./pages/DriverHomePage.tsx";
 import DriverAccountPage from "./pages/DriverAccountPage.tsx";
+import PassengerAccountPage from "./pages/PassengerAccountPage.tsx";
 
 function App() {
     return (
@@ -21,9 +22,9 @@ function App() {
                     <Route path="/reset-password" element={<ChangePassword/>}/>
                     <Route path="/driver-home" element={<DriverHomePage/>}/>
                     <Route path="/my-account-driver" element={<DriverAccountPage/>}/>
+                    <Route path="/my-account-passenger" element={<PassengerAccountPage/>}/>
                     <Route path="/support" element={<div>Support Page</div>}/>
                     <Route path="/about" element={<div>About Page</div>}/>
-                    <Route path="/account" element={<div>Account Page</div>}/>
                     <Route path="/rides-history" element={<div>Rides History Page</div>}/>
                 </Routes>
             </BrowserRouter>

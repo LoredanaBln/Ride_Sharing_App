@@ -1,9 +1,15 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import "../styles/passengerHome.css";
+import {useSelector} from "react-redux";
+import {RootState} from "../store/store.ts";
+import {fetchPassengerByEmail} from "../api/passengerRetrievalByEmail.ts";
 
 const PassengerHome: React.FC = () => {
     const navigate = useNavigate();
+    const userEmail: string = useSelector((state: RootState): string => state.auth.userEmail!);
+    const [passenger, setPassenger] = useState<any>(null);
+        const [ , setError] = useState<string | null>(null);
 
     const openDrawer = () => {
         const drawer = document.getElementById("drawer");
@@ -14,6 +20,22 @@ const PassengerHome: React.FC = () => {
         const drawer = document.getElementById("drawer");
         drawer?.classList.remove("open");
     };
+
+
+    useEffect(() => {
+        const fetchPassenger = async () => {
+            try {
+                const data = await fetchPassengerByEmail(userEmail);
+                setPassenger(data);
+                setError(null);
+            } catch (err: unknown) {
+                if (err instanceof Error)
+                    setError(err.message || "An error occurred while fetching passenger data");
+            }
+        };
+
+        fetchPassenger();
+    }, [userEmail]);
 
     return (
         <div className="container">
@@ -79,6 +101,9 @@ const PassengerHome: React.FC = () => {
 
                 <main className="map-container">
                     <h1>HERE MAY LAY THE MAP</h1>
+                    <div className="passenger-details">
+                        <p><strong>Email:</strong> {userEmail}</p>
+                    </div>
                 </main>
 
                 <nav className="bottom-nav">
@@ -86,7 +111,8 @@ const PassengerHome: React.FC = () => {
                         <span className="icon">🏠</span>
                         <span>Home</span>
                     </button>
-                    <button className="nav-button" onClick={() => navigate("/account")}>
+                    <button className="nav-button"
+                            onClick={() => navigate("/my-account-passenger", {state: {passenger}})}>
                         <span className="icon">👤</span>
                         <span>Account</span>
                     </button>
