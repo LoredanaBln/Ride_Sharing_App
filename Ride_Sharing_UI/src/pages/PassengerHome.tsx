@@ -8,7 +8,7 @@ import {fetchPassengerByEmail} from "../api/passengerRetrievalByEmail.ts";
 const PassengerHome: React.FC = () => {
     const navigate = useNavigate();
     const userEmail: string = useSelector((state: RootState): string => state.auth.userEmail!);
-    const [passenger, setPassenger] = useState<any>(null);
+    const [passenger, setPassenger] = useState<unknown>(null);
         const [ , setError] = useState<string | null>(null);
 
     const openDrawer = () => {
