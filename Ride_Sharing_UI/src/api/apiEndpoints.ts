@@ -7,7 +7,9 @@ export const API_ENDPOINTS = {
     PASSENGER_REQUEST_RESET_PASSWORD: `${BASE_URL}passenger/requestPasswordReset`,
     PASSENGER_CONFIRM_RESET_PASSWORD: `${BASE_URL}passenger/confirmPasswordReset`,
     PASSENGER_GET_ORDERS: `${BASE_URL}order/passengerOrder`,
-    PASSENGER_GET_BY_EMAIL: `${BASE_URL}passenger/email/`,
+    PASSENGER_GET_BY_EMAIL : `${BASE_URL}passenger/email/`,
+    DRIVER_GET_BY_EMAIL : `${BASE_URL}driver/email/`,
+    DRIVER_UPDATE : `${BASE_URL}driver/update`,
     GET_LOCATION: `${BASE_URL}location/geocode`,
     GET_ROUTE: `${BASE_URL}location/route`,
 }

@@ -84,7 +84,7 @@
             return ResponseEntity.ok().build();
         }
 
-            @GetMapping("email/{email}")
+        @GetMapping("email/{email}")
         public ResponseEntity<Passenger> getPassengerByEmail(@PathVariable String email) {
             return passengerService.findByEmail(email)
                     .map(passenger -> ResponseEntity.ok().body(passenger))

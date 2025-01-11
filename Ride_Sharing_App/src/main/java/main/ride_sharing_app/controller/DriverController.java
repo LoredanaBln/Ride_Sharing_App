@@ -118,4 +118,11 @@ public class DriverController {
         Order updatedOrder = orderService.handleDriverResponse(orderId, driver.getId(), accept);
         return ResponseEntity.ok(updatedOrder);
     }
+
+    @GetMapping("email/{email}")
+    public ResponseEntity<Driver> getDriverByEmail(@PathVariable String email) {
+        return driverService.findByEmail(email)
+                .map(driver -> ResponseEntity.ok().body(driver))
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
 }
