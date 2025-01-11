@@ -81,4 +81,11 @@
             passengerService.confirmPasswordReset(request.getToken(), request.getNewPassword());
             return ResponseEntity.ok().build();
         }
+
+            @GetMapping("email/{email}")
+        public ResponseEntity<Passenger> getPassengerByEmail(@PathVariable String email) {
+            return passengerService.findByEmail(email)
+                    .map(passenger -> ResponseEntity.ok().body(passenger))
+                    .orElseGet(() -> ResponseEntity.notFound().build());
+        }
     }
