@@ -1,4 +1,5 @@
 export interface RouteInfo {
-    distance: number;
-    duration: number;
+  distance: number;
+  duration: number;
+  geometry: string;
 }
