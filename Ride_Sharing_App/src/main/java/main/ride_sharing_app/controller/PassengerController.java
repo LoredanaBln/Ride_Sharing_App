@@ -12,6 +12,8 @@
     import org.springframework.web.bind.annotation.*;
     import org.springframework.security.core.annotation.AuthenticationPrincipal;
     import org.springframework.security.core.userdetails.UserDetails;
+    import main.ride_sharing_app.model.Order;
+    import java.util.List;
 
     @RestController
     @RequestMapping("/passenger")
@@ -88,4 +90,5 @@
                     .map(passenger -> ResponseEntity.ok().body(passenger))
                     .orElseGet(() -> ResponseEntity.notFound().build());
         }
+
     }

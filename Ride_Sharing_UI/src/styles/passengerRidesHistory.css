@@ -1,0 +1,160 @@
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
+
+.history-container {
+    background-color: white;
+    height: 1210px;
+    width: 550px;
+    margin-top: 20px;
+    border-radius: 40px;
+    padding: 2.3em 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    -ms-overflow-style: none !important;
+    scrollbar-width: none !important;
+}
+
+.history-header {
+    width: 100%;
+    max-width: 800px;
+    text-align: left;
+    margin-bottom: 2rem;
+    padding: 0 1rem;
+}
+
+.history-header h1 {
+    font-size: 2.5rem;
+    color: #1a1a1a;
+    margin: 0;
+    font-weight: 700;
+}
+
+.history-header .subtitle {
+    color: #666;
+    font-size: 1.3rem;
+    margin-top: 0.5rem;
+    font-weight: 100;
+}
+
+.rides-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 800px;
+    padding: 0 1rem;
+}
+
+.ride-item {
+    background-color: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.ride-status {
+    margin-bottom: 1rem;
+}
+
+.status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.completed {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+}
+
+.cancelled {
+    background-color: #ffebee;
+    color: #c62828;
+}
+
+.location-group {
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.location {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 0.5rem 0;
+}
+
+.location i {
+    font-size: 1.2rem;
+}
+
+.start-icon {
+    color: #4caf50;
+}
+
+.end-icon {
+    color: #f44336;
+}
+
+.location-divider {
+    width: 2px;
+    height: 20px;
+    background-color: #ddd;
+    margin-left: 0.6rem;
+}
+
+.ride-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+}
+
+.ride-info p {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    color: #666;
+}
+
+.ride-info i {
+    color: #888;
+}
+
+.price {
+    font-weight: 600;
+    color: #1a1a1a !important;
+}
+
+@media (max-width: 600px) {
+    .history-container {
+        padding: 1rem;
+    }
+    
+    .history-header h1 {
+        font-size: 2rem;
+    }
+    
+    .ride-item {
+        padding: 1rem;
+    }
+}
+
+.history-container {
+    scrollbar-width: thin;
+    scrollbar-color: #888 #f1f1f1;
+}
+
+.history-container {
+    scroll-behavior: smooth;
+}

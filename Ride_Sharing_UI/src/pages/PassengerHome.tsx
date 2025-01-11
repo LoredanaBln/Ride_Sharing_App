@@ -11,6 +11,9 @@ import back from "../images/back.png";
 import support from "../images/support.png"
 import about from "../images/about.png"
 import logout from "../images/logout.png"
+import homeIcon from "../images/home.png";
+import accountIcon from "../images/account.png";
+import historyIcon from "../images/history.png";
 
 import {useNavigate} from "react-router-dom";
 import {RootState} from "../store/store.ts";
@@ -103,16 +106,18 @@ function PassengerHome() {
                         <img src={my_location} alt="expand" className="location-icon"/>
                     </button>
                     <div className={`expanded-menu ${isMenuVisible ? "visible" : ""}`}>
-                        <button className="menu-item">
-                            <span>Home</span>
+                        <button className="menu-item" onClick={() => navigate("/passenger-home")}>
+                            <img src={homeIcon} alt="home" className="location-icon"/>
                         </button>
                         <button onClick={() => navigate("/my-account-passenger", {state: {passenger}})}
                                 className="menu-item">
-                            <span>Account</span>
+                            <img src={accountIcon} alt="account" className="location-icon"/>
                         </button>
-                        <button className="menu-item">
-                            <span>History</span>
+
+                        <button className="menu-item" onClick={() => navigate("/passenger-rides-history")}>
+                            <img src={historyIcon} alt="history" className="location-icon"/>
                         </button>
+
                     </div>
                     <button
                         className={`expand-button ${isMenuVisible ? "expanded" : ""}`}
