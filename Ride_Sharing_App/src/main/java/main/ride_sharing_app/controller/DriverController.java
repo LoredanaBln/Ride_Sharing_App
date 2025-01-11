@@ -4,12 +4,14 @@ import main.ride_sharing_app.dto.PasswordChangeRequest;
 import main.ride_sharing_app.dto.PasswordResetRequest;
 import main.ride_sharing_app.dto.PasswordResetConfirmation;
 import main.ride_sharing_app.model.Driver;
+import main.ride_sharing_app.model.DriverStatus;
 import main.ride_sharing_app.model.Order;
 import main.ride_sharing_app.service.DriverService;
 import main.ride_sharing_app.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -55,6 +57,17 @@ public class DriverController {
     @PutMapping("/update")
     public ResponseEntity<Driver> updateDriver(@RequestBody Driver driver) {
        return ResponseEntity.status(HttpStatus.OK).body(driverService.updateDriver(driver));
+    }
+
+    @PutMapping("/goOnline")
+    public ResponseEntity<Driver> goOnline(@AuthenticationPrincipal UserDetails userDetails) {
+        try {
+            Driver driver = driverService.findByEmail(userDetails.getUsername()).orElseThrow(() -> new RuntimeException("Driver not found"));
+            driver.setStatus(DriverStatus.AVAILABLE);
+            return ResponseEntity.status(HttpStatus.OK).body(driverService.updateDriver(driver));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
     }
 
     @PostMapping("/requestPasswordReset")

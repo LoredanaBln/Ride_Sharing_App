@@ -44,6 +44,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/driver/id/{id}", "/passenger/id/{id}").permitAll()
+                        .requestMatchers("/driver/goOnline").permitAll()
                         .requestMatchers("/passenger/signUp", "/driver/signUp").permitAll()
                         .requestMatchers("/passenger/email/{email}").permitAll()
                         .requestMatchers("/driver/email/{email}").permitAll()
