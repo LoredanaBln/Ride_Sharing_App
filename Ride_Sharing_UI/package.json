@@ -12,6 +12,7 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
+    "@mapbox/polyline": "^1.2.1",
     "@mui/material": "^6.3.1",
     "@reduxjs/toolkit": "^2.3.0",
     "@stomp/stompjs": "^7.0.0",
@@ -32,6 +33,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",
+    "@types/mapbox__polyline": "^1.0.5",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@types/sockjs-client": "^1.5.4",

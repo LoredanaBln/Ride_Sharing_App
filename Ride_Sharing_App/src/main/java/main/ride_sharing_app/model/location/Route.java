@@ -5,5 +5,6 @@ import lombok.Data;
 public class Route {
     private Double distance;
     private Double duration;
+    private String geometry;
 }
 

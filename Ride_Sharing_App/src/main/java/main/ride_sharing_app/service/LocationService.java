@@ -87,7 +87,7 @@ public class LocationService {
             return cached;
         }
         
-        String url = String.format("%s/%f,%f;%f,%f?overview=false",
+        String url = String.format("%s/%f,%f;%f,%f?overview=full",
             OSRM_API,
             start.getLongitude(), start.getLatitude(),
             end.getLongitude(), end.getLatitude()
@@ -100,7 +100,11 @@ public class LocationService {
         
         if (response.getBody() != null && response.getBody().getRoutes().length > 0) {
             Route route = response.getBody().getRoutes()[0];
-            RouteInfo result = new RouteInfo(route.getDistance(), route.getDuration());
+            RouteInfo result = new RouteInfo(
+                route.getDistance(), 
+                route.getDuration(),
+                route.getGeometry()
+            );
             routeCache.put(cacheKey, result);
             return result;
         }

@@ -63,70 +63,70 @@ function DriverHomePage() {
   };
 
   return (
-    <div className="drivercontainer">
-      <div id="drawer" className={`drawer ${isDrawerVisible ? "visible" : ""}`}>
-        <div className="drawer-content">
-          <button onClick={() => setIsDrawerVisible(false)}>
-            <img src={back} alt="back" className="back-icon" />
-          </button>
-          <ul>
-            <li onClick={() => navigate("/payment")}>
-              <img src={pay} alt="pay" className="pay-icon" />
-              Payment
-            </li>
-            <li onClick={() => navigate("/support")}>
-              <img src={support} alt="pay" className="pay-icon" />
-              Support
-            </li>
-            <li onClick={() => navigate("/about")}>
-              <img src={about} alt="pay" className="pay-icon" />
-              About
-            </li>
-            <li onClick={handleLogout}>
-              <img src={logoutIcon} alt="pay" className="pay-icon" />
-              Logout
-            </li>
-          </ul>
+      <div className="drivercontainer">
+        <div id="drawer" className={`drawer ${isDrawerVisible ? "visible" : ""}`}>
+          <div className="drawer-content">
+            <button onClick={() => setIsDrawerVisible(false)}>
+              <img src={back} alt="back" className="back-icon" />
+            </button>
+            <ul>
+              <li onClick={() => navigate("/payment")}>
+                <img src={pay} alt="pay" className="pay-icon" />
+                Payment
+              </li>
+              <li onClick={() => navigate("/support")}>
+                <img src={support} alt="pay" className="pay-icon" />
+                Support
+              </li>
+              <li onClick={() => navigate("/about")}>
+                <img src={about} alt="pay" className="pay-icon" />
+                About
+              </li>
+              <li onClick={handleLogout}>
+                <img src={logoutIcon} alt="pay" className="pay-icon" />
+                Logout
+              </li>
+            </ul>
+          </div>
         </div>
-      </div>
-      <div className="map-container">
-        <img src={mapImage} alt="map" className="map-image" />
-        <button
-          onClick={() => setIsDrawerVisible(true)}
-          className="drawer-menu-button"
-        >
-          <img src={menu} alt="menu" className="menu-icon" />
-        </button>
-      </div>
-      <div className="button-bar">
-        <button className="location-button">
-          <img src={locationIcon} alt="location" />
-        </button>
-        <button className="online-toggle">Go Online</button>
-        <div className="menu-wrapper">
-          <div className={`expanded-menu ${isMenuVisible ? "visible" : ""}`}>
-            <button className="menu-item">
-              <img src={homeIcon} alt="home" className="home-icon" />
-            </button>
+        <div className="map-container">
+          <img src={mapImage} alt="map" className="map-image" />
+          <button
+              onClick={() => setIsDrawerVisible(true)}
+              className="drawer-menu-button"
+          >
+            <img src={menu} alt="menu" className="menu-icon" />
+          </button>
+        </div>
+        <div className="button-bar">
+          <button className="location-button">
+            <img src={locationIcon} alt="location" />
+          </button>
+          <button className="online-toggle">Go Online</button>
+          <div className="menu-wrapper">
+            <div className={`expanded-menu ${isMenuVisible ? "visible" : ""}`}>
+              <button className="menu-item">
+                <img src={homeIcon} alt="home" className="home-icon" />
+              </button>
+              <button
+                  onClick={() => navigate("/my-account-driver")}
+                  className="menu-item"
+              >
+                <img src={accountIcon} alt="home" className="account-icon" />
+              </button>
+              <button className="menu-item">
+                <img src={historyIcon} alt="history" className="history-icon" />
+              </button>
+            </div>
             <button
-              onClick={() => navigate("/my-account-driver")}
-              className="menu-item"
+                className={`expand-button ${isMenuVisible ? "expanded" : ""}`}
+                onClick={handleMenuToggle}
             >
-              <img src={accountIcon} alt="home" className="account-icon" />
-            </button>
-            <button className="menu-item">
-              <img src={historyIcon} alt="history" className="history-icon" />
+              <img src={arrowIcon} alt="expand" />
             </button>
           </div>
-          <button
-            className={`expand-button ${isMenuVisible ? "expanded" : ""}`}
-            onClick={handleMenuToggle}
-          >
-            <img src={arrowIcon} alt="expand" />
-          </button>
         </div>
       </div>
-    </div>
   );
 }
 

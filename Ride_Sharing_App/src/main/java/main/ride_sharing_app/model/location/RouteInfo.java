@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 public class RouteInfo {
     private Double distanceInMeters;
     private Double durationInSeconds;
+    private String geometry;
     
     public Double getDistanceInKm() {
         return distanceInMeters / 1000;

@@ -3,7 +3,7 @@ import { GeoLocation } from "../types/location.ts";
 import { RouteInfo } from "../types/locationInfo.ts";
 import { API_ENDPOINTS } from "./apiEndpoints.ts";
 
-export const locationRouteApi = {
+export const getRouteApi = {
     getRoute: async (
         start: GeoLocation,
         end: GeoLocation

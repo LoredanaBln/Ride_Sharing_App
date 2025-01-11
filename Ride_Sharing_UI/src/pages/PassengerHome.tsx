@@ -19,30 +19,42 @@ import {RootState} from "../store/store.ts";
 import {useDispatch, useSelector} from "react-redux";
 import {fetchPassengerByEmail} from "../api/passengerRetrievalByEmail.ts";
 import { logout } from "../slices/loginSlice.ts";
-import {MapContainer, TileLayer, Marker} from "react-leaflet";
+import {MapContainer, TileLayer, Marker, Polyline} from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import {GeoLocation} from "../types/location.ts";
+import {getLocationCoordinatesApi} from "../api/getLocationCoordinatesApi.ts";
+import polyline from "@mapbox/polyline";
+import {getRouteApi} from "../api/getRouteApi.ts";
+import L from "leaflet";
+import {RouteInfo} from "../types/locationInfo.ts";
+import {Passenger} from "../types/passenger.ts";
 
 function PassengerHome() {
-    const [isMenuVisible, setIsMenuVisible] = useState(false);
-    const [isDrawerVisible, setIsDrawerVisible] = useState(false);
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
+    const [isMenuVisible, setIsMenuVisible] = useState(false);
+    const [isDrawerVisible, setIsDrawerVisible] = useState(false);
+
     const userEmail = useSelector((state: RootState) => state.auth.userEmail)!;
-    const [passenger, setPassenger] = useState<unknown>(null);
-    const [error, setError] = useState<string | null>(null);
+    const [passenger, setPassenger] = useState<Passenger | null>(null);
+    const [, setError] = useState<string | null>(null);
     const [defaultPosition] = useState<[number, number]>([46.7712, 23.6236,]); // Cluj-Napoca
     const [searchValue, setSearchValue] = useState("");
     const [currentLocation, setCurrentLocation] = useState<GeoLocation | null>(
         null
     );
     const [map, setMap] = useState<L.Map | null>(null);
+    const [destination, setDestination] = useState<GeoLocation | null>(null);
+    const [routeCoordinates, setRouteCoordinates] = useState<[number, number][]>(
+        []
+    );
+    const [routeInfo, setRouteInfo] = useState<RouteInfo | null>(null);
 
     useEffect(() => {
         const fetchPassenger = async () => {
             try {
-                const data = await fetchPassengerByEmail(userEmail);
+                const data: Passenger | null = await fetchPassengerByEmail(userEmail);
                 setPassenger(data);
                 console.log("Fetched passenger data:", data);
                 setError(null);
@@ -54,6 +66,37 @@ function PassengerHome() {
         };
         fetchPassenger();
     }, [userEmail]);
+
+    const handleSearch = async () => {
+        try {
+            if (searchValue.trim() && currentLocation) {
+                const coordinates = await getLocationCoordinatesApi.getCoordinates(
+                    searchValue
+                );
+                setDestination(coordinates);
+
+                const route = await getRouteApi.getRoute(currentLocation, coordinates);
+
+                const decodedCoordinates = polyline.decode(route.geometry);
+                const formattedCoordinates = decodedCoordinates.map(
+                    ([lat, lng]: [number, number]) => [lat, lng] as [number, number]
+                );
+                setRouteCoordinates(formattedCoordinates);
+
+                if (map) {
+                    const bounds = formattedCoordinates.reduce(
+                        (bounds, coord) => bounds.extend(coord),
+                        L.latLngBounds(formattedCoordinates[0], formattedCoordinates[0])
+                    );
+                    map.fitBounds(bounds);
+                }
+
+                setRouteInfo(route);
+            }
+        } catch (error) {
+            console.error("Error searching location or getting route:", error);
+        }
+    };
 
     useEffect(() => {
         handleMyLocationClick();
@@ -135,6 +178,11 @@ function PassengerHome() {
                         placeholder="Where to?"
                         value={searchValue}
                         onChange={(e) => setSearchValue(e.target.value)}
+                        onKeyPress={(e) => {
+                            if (e.key === "Enter") {
+                                handleSearch();
+                            }
+                        }}
                     />
                 </div>
             </div>
@@ -154,6 +202,17 @@ function PassengerHome() {
                     {currentLocation && (
                         <Marker
                             position={[currentLocation.latitude, currentLocation.longitude]}
+                        />
+                    )}
+                    {destination && (
+                        <Marker position={[destination.latitude, destination.longitude]}/>
+                    )}
+                    {routeCoordinates.length > 0 && (
+                        <Polyline
+                            positions={routeCoordinates}
+                            color="blue"
+                            weight={4}
+                            opacity={0.7}
                         />
                     )}
                 </MapContainer>
