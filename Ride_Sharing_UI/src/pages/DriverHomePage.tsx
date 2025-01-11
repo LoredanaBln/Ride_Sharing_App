@@ -12,16 +12,54 @@ import back from "../images/back.png";
 import pay from "../images/pay.png";
 import support from "../images/support.png";
 import about from "../images/about.png";
-import logout from "../images/logout.png";
+import logoutIcon from "../images/logout.png";
+
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../slices/loginSlice.ts";
+import { fetchDriverByEmail } from "../api/driverRetrievalByEmail.ts";
+import { updateDriver } from "../api/driverUpdate.ts";
+
 
 function DriverHomePage() {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [isDrawerVisible, setIsDrawerVisible] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const userEmail = useSelector((state: any)=> state.auth.userEmail)!;
 
   const handleMenuToggle = () => {
     setIsMenuVisible(!isMenuVisible);
+  };
+
+  const handleLogout = async () => {
+    if (!userEmail) {
+      console.error("User email not found in state");
+      return;
+    }
+
+    try {
+      const driver = await fetchDriverByEmail(userEmail);
+
+      if (!driver || typeof driver !== "object" || !("id" in driver)) {
+        console.error("Driver not found or invalid response");
+        return;
+      }
+
+      const updatedDriver = {
+        ...driver,
+        status: "OFFLINE",
+      };
+
+      await updateDriver(updatedDriver);
+
+      dispatch(logout());
+
+      navigate("/");
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
   };
 
   return (
@@ -44,8 +82,8 @@ function DriverHomePage() {
               <img src={about} alt="pay" className="pay-icon" />
               About
             </li>
-            <li>
-              <img src={logout} alt="pay" className="pay-icon" />
+            <li onClick={handleLogout}>
+              <img src={logoutIcon} alt="pay" className="pay-icon" />
               Logout
             </li>
           </ul>

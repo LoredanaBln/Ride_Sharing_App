@@ -9,15 +9,16 @@ import pay from "../images/pay.png";
 import back from "../images/back.png";
 import support from "../images/support.png";
 import about from "../images/about.png";
-import logout from "../images/logout.png";
+import logoutIcon from "../images/logout.png";
 import homeIcon from "../images/home.png";
 import accountIcon from "../images/account.png";
 import historyIcon from "../images/history.png";
 
 import {useNavigate} from "react-router-dom";
 import {RootState} from "../store/store.ts";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {fetchPassengerByEmail} from "../api/passengerRetrievalByEmail.ts";
+import { logout } from "../slices/loginSlice.ts";
 import {MapContainer, TileLayer, Marker} from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import {GeoLocation} from "../types/location.ts";
@@ -26,10 +27,11 @@ function PassengerHome() {
     const [isMenuVisible, setIsMenuVisible] = useState(false);
     const [isDrawerVisible, setIsDrawerVisible] = useState(false);
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const userEmail = useSelector((state: RootState) => state.auth.userEmail)!;
-    const [passenger, setPassenger] = useState<any>(null);
-    const [, setError] = useState<string | null>(null);
+    const [passenger, setPassenger] = useState<unknown>(null);
+    const [error, setError] = useState<string | null>(null);
     const [defaultPosition] = useState<[number, number]>([46.7712, 23.6236,]); // Cluj-Napoca
     const [searchValue, setSearchValue] = useState("");
     const [currentLocation, setCurrentLocation] = useState<GeoLocation | null>(
@@ -46,9 +48,7 @@ function PassengerHome() {
                 setError(null);
             } catch (err: unknown) {
                 if (err instanceof Error) {
-                    setError(
-                        err.message || "An error occurred while fetching passenger data"
-                    );
+                    setError(err.message || "An error occurred while fetching passenger data");
                 }
             }
         };
@@ -61,6 +61,15 @@ function PassengerHome() {
 
     const handleMenuToggle = () => {
         setIsMenuVisible(!isMenuVisible);
+    };
+
+    const handleLogout = () => {
+        setPassenger(null);
+        setError(null);
+
+        dispatch(logout());
+
+        navigate('/');
     };
 
     const handleMyLocationClick = () => {
@@ -103,8 +112,8 @@ function PassengerHome() {
                             <img src={about} alt="pay" className="pay-icon"/>
                             About
                         </li>
-                        <li>
-                            <img src={logout} alt="logout" className="pay-icon"/>
+                        <li onClick={handleLogout}>
+                            <img src={logoutIcon} alt="logout" className="pay-icon"/>
                             Logout
                         </li>
                     </ul>
