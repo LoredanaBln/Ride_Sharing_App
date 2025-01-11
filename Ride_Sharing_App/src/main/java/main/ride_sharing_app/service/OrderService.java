@@ -67,7 +67,7 @@ public class OrderService {
     public Order createOrder(OrderDTO orderDTO) {
         // Calculate estimated price first
         double estimatedPrice = calculateEstimatedPrice(orderDTO);
-        
+
         Passenger passenger = passengerRepository.findById(orderDTO.getPassengerId())
             .orElseThrow(() -> new RuntimeException("Passenger not found"));
 
@@ -284,6 +284,12 @@ public class OrderService {
         return orderRepository.findByDriver(driver);
     }
 
+    public List<Order> getOrdersByPassengerEmail(String email) {
+        Passenger passenger = passengerRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Passenger not found"));
+        return orderRepository.findByPassenger(passenger);
+    }
+
     public Optional<Order> getOrderById(Long id) {
         return orderRepository.findById(id);
     }
@@ -399,7 +405,7 @@ public class OrderService {
                 order.setPaymentStatus(PaymentStatus.FAILED);
                 throw new RuntimeException("Payment failed: " + e.getMessage());
             }
-            
+
             order.setStatus(OrderStatus.ACCEPTED);
             order.setDriver(driver);
             driver.setStatus(DriverStatus.BUSY);

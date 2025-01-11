@@ -11,6 +11,8 @@ import main.ride_sharing_app.repository.DriverRepository;
 import main.ride_sharing_app.repository.PassengerRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -60,6 +62,18 @@ public class OrderController {
     @GetMapping("/passenger/{passengerId}")
     public ResponseEntity<List<Order>> getPassengerOrders(@PathVariable Long passengerId) {
         return ResponseEntity.ok(orderService.getOrdersByPassenger(passengerId));
+    }
+
+    @GetMapping("/passengerOrder")
+    public ResponseEntity<List<Order>> getLoggedPassengerOrders(@AuthenticationPrincipal UserDetails userDetails) {
+        try {
+            Passenger passenger = passengerRepository.findByEmail(userDetails.getUsername())
+                    .orElseThrow(() -> new RuntimeException("Passenger not found"));
+            List<Order> orders = orderService.getOrdersByPassenger(passenger.getId());
+            return ResponseEntity.ok(orders);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @GetMapping("/driver/{driverId}")
