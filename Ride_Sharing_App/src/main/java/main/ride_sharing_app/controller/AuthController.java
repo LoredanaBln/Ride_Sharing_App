@@ -1,7 +1,10 @@
 package main.ride_sharing_app.controller;
 
 import main.ride_sharing_app.dto.LoginRequest;
+import main.ride_sharing_app.model.Driver;
+import main.ride_sharing_app.model.DriverStatus;
 import main.ride_sharing_app.security.JwtUtils;
+import main.ride_sharing_app.service.DriverService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,10 +21,12 @@ public class AuthController {
     
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
+    private final DriverService driverService;
 
-    public AuthController(AuthenticationManager authenticationManager, JwtUtils jwtUtils) {
+    public AuthController(AuthenticationManager authenticationManager, JwtUtils jwtUtils, DriverService driverService) {
         this.authenticationManager = authenticationManager;
         this.jwtUtils = jwtUtils;
+        this.driverService = driverService;
     }
     
     @PostMapping("/login")
@@ -33,6 +38,12 @@ public class AuthController {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String role = userDetails.getAuthorities().iterator().next().getAuthority();
         String token = jwtUtils.generateToken(userDetails.getUsername(), role);
+
+        Driver driver =  driverService.findByEmail(userDetails.getUsername()).orElse(null);
+        if (driver != null) {
+            driver.setStatus(DriverStatus.OFFLINE);
+            driverService.updateDriver(driver);
+        }
         
         return ResponseEntity.ok(token);
     }
