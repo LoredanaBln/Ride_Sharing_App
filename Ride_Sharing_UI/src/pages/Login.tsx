@@ -19,6 +19,7 @@ const Login: React.FC = () => {
         console.log(result);
 
         if (login.fulfilled.match(result)) {
+
             if (result.payload.role === 'ROLE_PASSENGER') {
                 navigate('/passenger-home');
             } else if (result.payload.role === 'ROLE_DRIVER') {

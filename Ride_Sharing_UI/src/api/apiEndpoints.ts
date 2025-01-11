@@ -6,4 +6,5 @@ export const API_ENDPOINTS = {
     SIGN_UP_PASSENGER : `${BASE_URL}/passenger/signUp`,
     PASSENGER_REQUEST_RESET_PASSWORD : `${BASE_URL}/passenger/requestPasswordReset`,
     PASSENGER_CONFIRM_RESET_PASSWORD : `${BASE_URL}/passenger/confirmPasswordReset`,
+    PASSENGER_GET_BY_EMAIL : `${BASE_URL}/passenger/email/`,
 }
