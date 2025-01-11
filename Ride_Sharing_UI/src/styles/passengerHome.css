@@ -11,12 +11,14 @@
 }
 
 .map-container {
+  position: relative;
   height: 100%;
   width: 100%;
-  position: relative;
-  background: white;
-  border-radius: 40px;
-  overflow: hidden;
+}
+
+.leaflet-container {
+  height: 100%;
+  width: 100%;
 }
 
 .map-image {
@@ -211,7 +213,10 @@
 }
 
 .location-button:hover {
-  background-color: #359830;
+  background-color: #44b100;
   box-shadow: 0 0 0 4px rgba(43, 125, 39, 0.2);
 }
 
+.leaflet-control-zoom {
+  display: none !important;
+}
