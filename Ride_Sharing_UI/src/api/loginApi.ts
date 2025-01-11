@@ -39,10 +39,13 @@ export const login = createAsyncThunk(
             }
             const role = decodedToken.role || decodedToken.authorities;
 
+            const userEmail = decodedToken.sub;
+
             localStorage.setItem('token', token);
             localStorage.setItem('userRole', role);
+            localStorage.setItem('userEmail', userEmail);
 
-            return { token, role };
+            return { token, role, userEmail };
         } catch (err: unknown) {
             if (err instanceof Error) {
                 console.error('Login error:', err);
