@@ -37,7 +37,7 @@ function PassengerHome() {
     const [isDrawerVisible, setIsDrawerVisible] = useState(false);
 
     const userEmail = useSelector((state: RootState) => state.auth.userEmail)!;
-    const [passenger, setPassenger] = useState<any>(null);
+    const [passenger, setPassenger] = useState<Passenger | null>(null);
     const [, setError] = useState<string | null>(null);
     const [defaultPosition] = useState<[number, number]>([46.7712, 23.6236,]); // Cluj-Napoca
     const [searchValue, setSearchValue] = useState("");
