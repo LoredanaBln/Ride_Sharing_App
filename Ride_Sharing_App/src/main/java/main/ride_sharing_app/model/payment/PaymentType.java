@@ -1,4 +1,4 @@
-package main.ride_sharing_app.model;
+package main.ride_sharing_app.model.payment;
 
 import lombok.Getter;
 

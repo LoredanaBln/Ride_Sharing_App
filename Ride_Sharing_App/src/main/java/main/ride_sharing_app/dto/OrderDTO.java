@@ -1,7 +1,7 @@
 package main.ride_sharing_app.dto;
 
 import lombok.Data;
-import main.ride_sharing_app.model.PaymentType;
+import main.ride_sharing_app.model.payment.PaymentType;
 
 @Data
 public class OrderDTO {

@@ -52,6 +52,7 @@ public class SecurityConfig {
                         .requestMatchers("/order/id/{id}").permitAll()
                         .requestMatchers("/test/geocode", "/test/route").permitAll()
                         .requestMatchers("/auth/admin/login").permitAll()
+                        .requestMatchers("/payment/setupCustomer/**", "/payment/attachPaymentMethod/**", "/payment/createPaymentIntent/**", "/payment/webhook").permitAll()
                         .requestMatchers("/ws/**").permitAll()
                         .anyRequest().authenticated()
                 )

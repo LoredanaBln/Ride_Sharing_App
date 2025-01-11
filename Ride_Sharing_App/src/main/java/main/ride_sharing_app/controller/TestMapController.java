@@ -1,7 +1,7 @@
 package main.ride_sharing_app.controller;
 
-import main.ride_sharing_app.model.GeoLocation;
-import main.ride_sharing_app.model.RouteInfo;
+import main.ride_sharing_app.model.location.GeoLocation;
+import main.ride_sharing_app.model.location.RouteInfo;
 import main.ride_sharing_app.service.LocationService;
 import org.springframework.web.bind.annotation.*;
 

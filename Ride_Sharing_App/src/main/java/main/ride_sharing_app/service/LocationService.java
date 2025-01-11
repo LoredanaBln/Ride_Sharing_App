@@ -1,9 +1,9 @@
 package main.ride_sharing_app.service;
 
-import main.ride_sharing_app.model.GeoLocation;
-import main.ride_sharing_app.model.RouteInfo;
-import main.ride_sharing_app.model.NominatimResponse;
-import main.ride_sharing_app.model.OSRMResponse;
+import main.ride_sharing_app.model.location.GeoLocation;
+import main.ride_sharing_app.model.location.RouteInfo;
+import main.ride_sharing_app.model.location.NominatimResponse;
+import main.ride_sharing_app.model.location.OSRMResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +13,7 @@ import com.google.common.util.concurrent.RateLimiter;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
-import main.ride_sharing_app.model.Route;
+import main.ride_sharing_app.model.location.Route;
 
 @Service
 public class LocationService {
