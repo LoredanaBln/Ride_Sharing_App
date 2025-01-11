@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import "../styles/passengerHome.css";
 import "../styles/drawer_menu.css";
 import mapImage from "../images/map.jpg";
@@ -13,11 +13,36 @@ import about from "../images/about.png"
 import logout from "../images/logout.png"
 
 import {useNavigate} from "react-router-dom";
+import {RootState} from "../store/store.ts";
+import {useSelector} from "react-redux";
+import {fetchPassengerByEmail} from "../api/passengerRetrievalByEmail.ts";
 
 function PassengerHome() {
     const [isMenuVisible, setIsMenuVisible] = useState(false);
     const [isDrawerVisible, setIsDrawerVisible] = useState(false);
     const navigate = useNavigate();
+
+    const userEmail = useSelector((state: RootState) => state.auth.userEmail)!;
+    const [passenger, setPassenger] = useState<any>(null);
+    const [error, setError] = useState<string | null>(null);
+
+
+    useEffect(() => {
+        const fetchPassenger = async () => {
+            try {
+                const data = await fetchPassengerByEmail(userEmail);
+                setPassenger(data);
+                console.log("Fetched passenger data:", data);
+                setError(null); // Clear any previous errors
+            } catch (err: unknown) {
+                if (err instanceof Error) {
+                    setError(err.message || "An error occurred while fetching passenger data");
+                }
+            }
+        };
+
+        fetchPassenger();
+    }, [userEmail]);
 
     const handleMenuToggle = () => {
         setIsMenuVisible(!isMenuVisible);
@@ -81,7 +106,8 @@ function PassengerHome() {
                         <button className="menu-item">
                             <span>Home</span>
                         </button>
-                        <button className="menu-item">
+                        <button onClick={() => navigate("/my-account-passenger", {state: {passenger}})}
+                                className="menu-item">
                             <span>Account</span>
                         </button>
                         <button className="menu-item">
