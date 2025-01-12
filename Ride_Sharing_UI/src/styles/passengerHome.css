@@ -11,12 +11,14 @@
 }
 
 .map-container {
+  position: relative;
   height: 100%;
   width: 100%;
-  position: relative;
-  background: white;
-  border-radius: 40px;
-  overflow: hidden;
+}
+
+.leaflet-container {
+  height: 100%;
+  width: 100%;
 }
 
 .map-image {
@@ -139,6 +141,7 @@
   z-index: 1000;
   display: flex;
   align-items: center;
+  text-align: left;
 }
 
 .search-input-wrapper {
@@ -148,7 +151,7 @@
 
 .search-icon {
   position: absolute;
-  left: 50px;
+  left: 35px;
   top: 50%;
   transform: translateY(-50%);
   width: 24px;
@@ -176,11 +179,12 @@
   padding: 1.5rem 2rem 1rem 56px;
   border: none;
   border-radius: 25px;
-  font-size: 1.6rem;
-  color: #1f2937;
+  font-size: 1.5rem;
+  color: #1e242d;
   background: white;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: all 0.2s ease;
+  text-align: left;
 }
 
 .search-input:focus {
@@ -211,7 +215,79 @@
 }
 
 .location-button:hover {
-  background-color: #359830;
+  background-color: #44b100;
   box-shadow: 0 0 0 4px rgba(43, 125, 39, 0.2);
 }
 
+.leaflet-control-zoom {
+  display: none !important;
+}
+
+.route-info-popup {
+  position: fixed;
+  width: 550px;
+  display: block;
+  left: 1540px;
+  background-color: transparent;
+  padding: 16px;
+  animation: slideUp 0.3s ease-out;
+  z-index: 9999;
+  transition: opacity 0.5s ease-out, visibility 0.3s;
+  margin-top: 1000px;
+}
+
+.route-info-card {
+  background-color: white;
+  padding: 20px;
+  border-radius: 30px;
+
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.route-details {
+  font-size: 20px;
+  margin-bottom: 16px;
+}
+
+.route-details h3 {
+  margin: 0 0 12px 0;
+  color: #333;
+}
+
+.route-details p {
+  margin: 8px 0;
+  color: #666;
+}
+
+.create-order-button {
+  width: 100%;
+  padding: 12px;
+  background-color: #2b7d27;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  font-size: 20px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.create-order-button:hover {
+  background-color: #44b100;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(400px);
+  }
+  to {
+    transform: translateY(900px);
+  }
+}
+
+.current-location-marker {
+  filter: hue-rotate(300deg);
+}
+
+.destination-marker {
+  filter: hue-rotate(150deg);
+}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "../styles/driverHome.css";
 import "../styles/drawer_menu.css";
 import mapImage from "../images/map.jpg";
@@ -12,83 +12,151 @@ import back from "../images/back.png";
 import pay from "../images/pay.png";
 import support from "../images/support.png";
 import about from "../images/about.png";
-import logout from "../images/logout.png";
+import logoutIcon from "../images/logout.png";
+
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../slices/loginSlice.ts";
+import { fetchDriverByEmail } from "../api/driverRetrievalByEmail.ts";
+import { updateDriver } from "../api/driverUpdate.ts";
+import { toggleDriverStatus } from "../api/toggleDriverStatus.ts";
+import {Driver} from "../types/driver.ts";
+import {AppDispatch} from "../store/store.ts";
 
 function DriverHomePage() {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [isDrawerVisible, setIsDrawerVisible] = useState(false);
+  const [driverStatus, setDriverStatus] = useState<"OFFLINE" | "AVAILABLE">("OFFLINE");
+
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
+  const userEmail = useSelector((state: any) => state.auth.userEmail)!;
 
   const handleMenuToggle = () => {
     setIsMenuVisible(!isMenuVisible);
   };
 
+  const handleLogout = async () => {
+    if (!userEmail) {
+      console.error("User email not found in state");
+      return;
+    }
+
+    try {
+      const driver = await fetchDriverByEmail(userEmail);
+
+      if (!driver || typeof driver !== "object" || !("id" in driver)) {
+        console.error("Driver not found or invalid response");
+        return;
+      }
+
+      const updatedDriver = {
+        ...driver,
+        status: "OFFLINE",
+      };
+
+      await updateDriver(updatedDriver);
+
+      dispatch(logout());
+      navigate("/");
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
+  };
+
+  const handleToggleStatus = async () => {
+    try {
+      const resultAction = await dispatch(toggleDriverStatus());
+      if (toggleDriverStatus.fulfilled.match(resultAction)) {
+        setDriverStatus(resultAction.payload.status);
+      }
+    } catch (error) {
+      console.error("Error toggling driver status:", error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchDriver = async () => {
+      try {
+        const driver : Driver = await fetchDriverByEmail(userEmail);
+        if (driver && driver.status) {
+          setDriverStatus(driver.status);
+        }
+      } catch (error) {
+        console.error("Error fetching driver data:", error);
+      }
+    };
+
+    fetchDriver();
+  }, [userEmail]);
+
   return (
-    <div className="drivercontainer">
-      <div id="drawer" className={`drawer ${isDrawerVisible ? "visible" : ""}`}>
-        <div className="drawer-content">
-          <button onClick={() => setIsDrawerVisible(false)}>
-            <img src={back} alt="back" className="back-icon" />
-          </button>
-          <ul>
-            <li onClick={() => navigate("/payment")}>
-              <img src={pay} alt="pay" className="pay-icon" />
-              Payment
-            </li>
-            <li onClick={() => navigate("/support")}>
-              <img src={support} alt="pay" className="pay-icon" />
-              Support
-            </li>
-            <li onClick={() => navigate("/about")}>
-              <img src={about} alt="pay" className="pay-icon" />
-              About
-            </li>
-            <li>
-              <img src={logout} alt="pay" className="pay-icon" />
-              Logout
-            </li>
-          </ul>
+      <div className="drivercontainer">
+        <div id="drawer" className={`drawer ${isDrawerVisible ? "visible" : ""}`}>
+          <div className="drawer-content">
+            <button onClick={() => setIsDrawerVisible(false)}>
+              <img src={back} alt="back" className="back-icon" />
+            </button>
+            <ul>
+              <li onClick={() => navigate("/payment")}>
+                <img src={pay} alt="pay" className="pay-icon" />
+                Payment
+              </li>
+              <li onClick={() => navigate("/support")}>
+                <img src={support} alt="support" className="pay-icon" />
+                Support
+              </li>
+              <li onClick={() => navigate("/about")}>
+                <img src={about} alt="about" className="pay-icon" />
+                About
+              </li>
+              <li onClick={handleLogout}>
+                <img src={logoutIcon} alt="logout" className="pay-icon" />
+                Logout
+              </li>
+            </ul>
+          </div>
         </div>
-      </div>
-      <div className="map-container">
-        <img src={mapImage} alt="map" className="map-image" />
-        <button
-          onClick={() => setIsDrawerVisible(true)}
-          className="drawer-menu-button"
-        >
-          <img src={menu} alt="menu" className="menu-icon" />
-        </button>
-      </div>
-      <div className="button-bar">
-        <button className="location-button">
-          <img src={locationIcon} alt="location" />
-        </button>
-        <button className="online-toggle">Go Online</button>
-        <div className="menu-wrapper">
-          <div className={`expanded-menu ${isMenuVisible ? "visible" : ""}`}>
-            <button className="menu-item">
-              <img src={homeIcon} alt="home" className="home-icon" />
-            </button>
+        <div className="map-container">
+          <img src={mapImage} alt="map" className="map-image" />
+          <button
+              onClick={() => setIsDrawerVisible(true)}
+              className="drawer-menu-button"
+          >
+            <img src={menu} alt="menu" className="menu-icon" />
+          </button>
+        </div>
+        <div className="button-bar">
+          <button className="location-button">
+            <img src={locationIcon} alt="location" />
+          </button>
+          <button className="online-toggle" onClick={handleToggleStatus}>
+            {driverStatus === "OFFLINE" ? "Go Online" : "Go Offline"}
+          </button>
+          <div className="menu-wrapper">
+            <div className={`expanded-menu ${isMenuVisible ? "visible" : ""}`}>
+              <button className="menu-item">
+                <img src={homeIcon} alt="home" className="home-icon" />
+              </button>
+              <button
+                  onClick={() => navigate("/my-account-driver")}
+                  className="menu-item"
+              >
+                <img src={accountIcon} alt="account" className="account-icon" />
+              </button>
+              <button className="menu-item">
+                <img src={historyIcon} alt="history" className="history-icon" />
+              </button>
+            </div>
             <button
-              onClick={() => navigate("/my-account-driver")}
-              className="menu-item"
+                className={`expand-button ${isMenuVisible ? "expanded" : ""}`}
+                onClick={handleMenuToggle}
             >
-              <img src={accountIcon} alt="home" className="account-icon" />
-            </button>
-            <button className="menu-item">
-              <img src={historyIcon} alt="history" className="history-icon" />
+              <img src={arrowIcon} alt="expand" />
             </button>
           </div>
-          <button
-            className={`expand-button ${isMenuVisible ? "expanded" : ""}`}
-            onClick={handleMenuToggle}
-          >
-            <img src={arrowIcon} alt="expand" />
-          </button>
         </div>
       </div>
-    </div>
   );
 }
 
