@@ -317,7 +317,10 @@ function DriverHomePage() {
                         >
                             <img src={accountIcon} alt="account" className="account-icon"/>
                         </button>
-                        <button className="menu-item">
+                        <button
+                            className="menu-item"
+                            onClick={() => navigate("/driver-rides-history")}
+                        >
                             <img src={historyIcon} alt="history" className="history-icon"/>
                         </button>
                     </div>
