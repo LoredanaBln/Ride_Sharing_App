@@ -3,28 +3,30 @@ import { API_ENDPOINTS } from "./apiEndpoints.ts";
 
 export const toggleDriverStatus = createAsyncThunk(
     "driver/toggleDriverStatus",
-    async () => {
+    async (_, { rejectWithValue }) => {
         try {
+            const token = localStorage.getItem("token");
+
             const response = await fetch(API_ENDPOINTS.TOGGLE_ONLINE, {
-                method: "POST",
+                method: "PUT",
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    "Authorization": `Bearer ${token}`,
                     "Content-Type": "application/json",
                 },
+                credentials: 'include'
             });
 
             if (!response.ok) {
-                throw new Error(`Error toggling driver status: ${response.statusText}`);
+                const errorData = await response.text();
+                console.error("Toggle status failed:", response.status, errorData);
+                return rejectWithValue(errorData);
             }
 
             const data = await response.json();
-
             return { status: data.status };
         } catch (err: unknown) {
-            if (err instanceof Error) {
-                throw err;
-            }
-            throw new Error("Driver status update failed");
+            console.error("Toggle status error:", err);
+            return rejectWithValue(err instanceof Error ? err.message : "Unknown error");
         }
     }
 );
