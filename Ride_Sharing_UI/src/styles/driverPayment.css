@@ -1,0 +1,69 @@
+/* Similar to passengerPayment.css but with some modifications for bank accounts */
+.bank-account-card {
+    background: #f8f9fa;
+    border-radius: 16px;
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.add-bank-form {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-top: 2rem;
+}
+
+.add-bank-form input {
+    width: 100%;
+    padding: 1rem;
+    margin: 0.5rem 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1.6rem;
+}
+
+.add-bank-button {
+    width: 100%;
+    padding: 1.2rem;
+    background: #2b7d27;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.6rem;
+    cursor: pointer;
+    margin-top: 2rem;
+}
+
+.default-account {
+    border: 2px solid #4CAF50;
+    background-color: rgba(76, 175, 80, 0.05);
+}
+
+.account-holder-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.default-badge {
+    background-color: #4CAF50;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.bank-account-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.default-account:hover {
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+} 

@@ -1,4 +1,4 @@
-import { API_ENDPOINTS } from "../apiEndpoints";
+import { API_ENDPOINTS } from "../../apiEndpoints.ts";
 
 const cachedCustomerId: { [key: number]: string } = {};
 

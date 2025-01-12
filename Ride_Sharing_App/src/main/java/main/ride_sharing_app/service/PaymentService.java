@@ -6,16 +6,26 @@ import com.stripe.model.Customer;
 import com.stripe.model.PaymentIntent;
 import com.stripe.model.PaymentMethod;
 import com.stripe.model.PaymentMethodCollection;
+import com.stripe.model.Account;
+import com.stripe.model.ExternalAccount;
+import com.stripe.model.ExternalAccountCollection;
+import com.stripe.model.BankAccount;
 import com.stripe.param.CustomerCreateParams;
 import com.stripe.param.PaymentIntentCreateParams;
 import com.stripe.param.PaymentMethodAttachParams;
 import main.ride_sharing_app.model.Order;
 import main.ride_sharing_app.model.Passenger;
+import main.ride_sharing_app.model.Driver;
 import main.ride_sharing_app.model.payment.StripeCustomer;
+import main.ride_sharing_app.model.payment.StripeConnectAccount;
 import main.ride_sharing_app.repository.StripeCustomerRepository;
+import main.ride_sharing_app.repository.StripeConnectRepository;
+import main.ride_sharing_app.repository.DriverRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.PostConstruct;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Optional;
 import java.util.List;
 import java.util.Map;
@@ -31,12 +41,23 @@ public class PaymentService {
     @Value("${stripe.secret.key}")
     private String stripeSecretKey;
 
+    @Value("${stripe.webhook.secret}")
+    private String webhookSecret;
+
     private final StripeCustomerRepository stripeCustomerRepository;
+    private final StripeConnectRepository stripeConnectRepository;
+    private final DriverRepository driverRepository;
     private final Cache<String, Customer> customerCache;
     private final Cache<String, List<PaymentMethod>> paymentMethodsCache;
 
-    public PaymentService(StripeCustomerRepository stripeCustomerRepository) {
+    public PaymentService(
+        StripeCustomerRepository stripeCustomerRepository,
+        StripeConnectRepository stripeConnectRepository,
+        DriverRepository driverRepository
+    ) {
         this.stripeCustomerRepository = stripeCustomerRepository;
+        this.stripeConnectRepository = stripeConnectRepository;
+        this.driverRepository = driverRepository;
         this.customerCache = Caffeine.newBuilder()
             .expireAfterWrite(5, TimeUnit.MINUTES)
             .maximumSize(1000)
@@ -308,5 +329,119 @@ public class PaymentService {
             "type", "CASH",
             "isDefault", "true"
         );
+    }
+
+    @Transactional
+    public String getOrCreateStripeConnectAccount(Long driverId) throws StripeException {
+        Driver driver = driverRepository.findById(driverId)
+            .orElseThrow(() -> new RuntimeException("Driver not found"));
+
+        // Try to find existing account with lock
+        Optional<StripeConnectAccount> existingAccount = stripeConnectRepository.findByDriverWithLock(driver);
+        
+        if (existingAccount.isPresent()) {
+            return existingAccount.get().getStripeConnectId();
+        }
+
+        // If no account exists, create one
+        try {
+            return createStripeConnectAccount(driver);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to create Stripe Connect account", e);
+        }
+    }
+
+    private String createStripeConnectAccount(Driver driver) throws StripeException {
+        // First check if an account already exists to prevent race conditions
+        if (stripeConnectRepository.findByDriver(driver).isPresent()) {
+            throw new RuntimeException("Account already exists for this driver");
+        }
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("type", "custom");
+        params.put("country", "RO");
+        params.put("email", driver.getEmail());
+        
+        // Simplify capabilities configuration
+        Map<String, Object> capabilities = new HashMap<>();
+        capabilities.put("card_payments", Map.of("requested", true));
+        capabilities.put("transfers", Map.of("requested", true));
+        params.put("capabilities", capabilities);
+
+        // Add business profile
+        params.put("business_profile", Map.of(
+            "mcc", "4121",  // Taxi/Limousine services
+            "url", "https://your-ride-sharing-app.com",
+            "product_description", "Ride-sharing services"
+        ));
+
+        // Add Terms of Service acceptance
+        params.put("tos_acceptance", Map.of(
+            "date", System.currentTimeMillis() / 1000L,
+            "ip", "127.0.0.1"
+        ));
+
+        // Add business type
+        params.put("business_type", "individual");
+
+        Account account = Account.create(params);
+        
+        StripeConnectAccount connectAccount = new StripeConnectAccount();
+        connectAccount.setDriver(driver);
+        connectAccount.setStripeConnectId(account.getId());
+        stripeConnectRepository.save(connectAccount);
+        
+        return account.getId();
+    }
+
+    public String attachBankAccount(
+        String accountNumber,
+        String routingNumber,
+        String accountHolderName,
+        String connectAccountId
+    ) throws StripeException {
+        Map<String, Object> bankAccountParams = new HashMap<>();
+        bankAccountParams.put("object", "bank_account");
+        bankAccountParams.put("country", "RO");
+        bankAccountParams.put("currency", "ron");
+        bankAccountParams.put("account_holder_name", accountHolderName);
+        bankAccountParams.put("account_holder_type", "individual");
+        bankAccountParams.put("account_number", accountNumber);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("external_account", bankAccountParams);
+
+        Account account = Account.retrieve(connectAccountId);
+        ExternalAccount bankAccount = account.getExternalAccounts().create(params);
+
+        return bankAccount.getId();
+    }
+
+    public List<Map<String, String>> getBankAccounts(String connectAccountId) throws StripeException {
+        Account account = Account.retrieve(connectAccountId);
+        Map<String, Object> params = new HashMap<>();
+        params.put("object", "bank_account");
+        params.put("limit", 100);
+
+        ExternalAccountCollection bankAccounts = account.getExternalAccounts().list(params);
+
+        return bankAccounts.getData().stream()
+            .map(externalAccount -> {
+                BankAccount bankAccount = (BankAccount) externalAccount;
+                Map<String, String> accountData = new HashMap<>();
+                accountData.put("id", bankAccount.getId());
+                accountData.put("accountNumber", "****" + bankAccount.getLast4());
+                accountData.put("routingNumber", bankAccount.getRoutingNumber());
+                accountData.put("accountHolderName", bankAccount.getAccountHolderName());
+                accountData.put("bankName", bankAccount.getBankName());
+                return accountData;
+            })
+            .collect(Collectors.toList());
+    }
+
+    public void deleteBankAccount(String bankAccountId, String connectAccountId) throws StripeException {
+        Account account = Account.retrieve(connectAccountId);
+        ExternalAccount bankAccount = account.getExternalAccounts().retrieve(bankAccountId);
+        bankAccount.delete();
     }
 } 

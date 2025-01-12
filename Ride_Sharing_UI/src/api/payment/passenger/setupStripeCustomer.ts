@@ -1,4 +1,4 @@
-import { API_ENDPOINTS } from "../apiEndpoints";
+import { API_ENDPOINTS } from "../../apiEndpoints.ts";
 
 export const setupStripeCustomer = async (passengerId: number): Promise<string> => {
     const response = await fetch(`${API_ENDPOINTS.SETUP_STRIPE_CUSTOMER}/${passengerId}`, {

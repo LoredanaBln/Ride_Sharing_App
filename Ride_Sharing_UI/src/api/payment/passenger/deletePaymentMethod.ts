@@ -1,4 +1,4 @@
-import { API_ENDPOINTS } from "../apiEndpoints";
+import { API_ENDPOINTS } from "../../apiEndpoints.ts";
 
 export const deletePaymentMethod = async (paymentMethodId: string): Promise<void> => {
     const response = await fetch(`${API_ENDPOINTS.DELETE_PAYMENT_METHOD}/${paymentMethodId}`, {

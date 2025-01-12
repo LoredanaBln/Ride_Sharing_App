@@ -1,5 +1,5 @@
-import { API_ENDPOINTS } from "../apiEndpoints";
-import { PaymentMethod } from "../../types/PaymentMethod";
+import { API_ENDPOINTS } from "../../apiEndpoints.ts";
+import { PaymentMethod } from "../../../types/PaymentMethod.ts";
 
 export const getPaymentMethods = async (customerId: string): Promise<PaymentMethod[]> => {
     const response = await fetch(`${API_ENDPOINTS.GET_PAYMENT_METHODS}/${customerId}`, {

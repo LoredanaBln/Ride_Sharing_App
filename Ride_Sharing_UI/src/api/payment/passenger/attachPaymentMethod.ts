@@ -1,4 +1,4 @@
-import { API_ENDPOINTS } from "../apiEndpoints";
+import { API_ENDPOINTS } from "../../apiEndpoints.ts";
 
 export const attachPaymentMethod = async (paymentMethodId: string, customerId: string): Promise<string> => {
     const response = await fetch(

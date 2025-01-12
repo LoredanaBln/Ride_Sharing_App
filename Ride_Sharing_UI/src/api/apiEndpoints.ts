@@ -21,4 +21,10 @@ export const API_ENDPOINTS = {
     GET_ROUTE: `${BASE_URL}location/route`,
     TOGGLE_ONLINE: `${BASE_URL}driver/toggleOnline`,
     CREATE_ORDER: `${BASE_URL}order/create`,
+    SETUP_STRIPE_CONNECT: `${BASE_URL}payment/driver/setupConnect`,
+    ATTACH_BANK_ACCOUNT: `${BASE_URL}payment/driver/attachBankAccount`,
+    DELETE_BANK_ACCOUNT: `${BASE_URL}payment/driver/bankAccount`,
+    GET_BANK_ACCOUNTS: `${BASE_URL}payment/driver/bankAccounts`,
+    SET_DEFAULT_BANK_ACCOUNT: `${BASE_URL}payment/driver/bankAccount/setDefault`,
+    DRIVER_PAYMENT: `${BASE_URL}payment/driver`,
 }

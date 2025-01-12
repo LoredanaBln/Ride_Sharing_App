@@ -14,7 +14,7 @@ import {
     getPaymentMethods,
     getOrCreateStripeCustomer,
     setDefaultPaymentMethod
-} from '../api/payment';
+} from '../api/payment/passenger';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { STRIPE_CONFIG } from '../config/stripe.ts';
 import { PaymentMethod } from '../types/PaymentMethod';

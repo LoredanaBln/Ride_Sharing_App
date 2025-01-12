@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import main.ride_sharing_app.model.Driver;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +15,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Arrays;
 
 @Component
 public class JwtUtils {
@@ -75,5 +77,15 @@ public class JwtUtils {
     private Key getSigningKey() {
         byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    public String generateDriverToken(Driver driver) {
+        return Jwts.builder()
+            .setSubject(driver.getEmail())
+            .claim("roles", Arrays.asList("ROLE_DRIVER"))
+            .setIssuedAt(new Date())
+            .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+            .signWith(getSigningKey())
+            .compact();
     }
 } 

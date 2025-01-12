@@ -16,10 +16,8 @@ const Login: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const result = await dispatch(login({ email, password }));
-        console.log(result);
 
         if (login.fulfilled.match(result)) {
-
             if (result.payload.role === 'ROLE_PASSENGER') {
                 navigate('/passenger-home');
             } else if (result.payload.role === 'ROLE_DRIVER') {
