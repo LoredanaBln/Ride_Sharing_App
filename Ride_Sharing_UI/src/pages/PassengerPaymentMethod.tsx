@@ -9,7 +9,6 @@ import deleteIcon from '../images/delete.png';
 import { loadStripe } from '@stripe/stripe-js';
 import { API_ENDPOINTS } from '../api/apiEndpoints';
 import {
-    setupStripeCustomer,
     attachPaymentMethod,
     deletePaymentMethod,
     getPaymentMethods,
@@ -167,50 +166,6 @@ function PassengerPaymentMethod() {
         }
     };
 
-    const handleAddCard = async (e: React.FormEvent) => {
-        e.preventDefault();
-        try {
-            setLoading(true);
-            const stripe = await stripePromise;
-            if (!stripe) throw new Error('Stripe not loaded');
-
-            // Create payment method
-            const { paymentMethod, error } = await stripe.createPaymentMethod({
-                type: 'card',
-                card: {
-                    number: newCard.cardNumber,
-                    exp_month: parseInt(newCard.expiryDate.split('/')[0]),
-                    exp_year: parseInt(newCard.expiryDate.split('/')[1]),
-                    cvc: newCard.cvv,
-                },
-                billing_details: {
-                    name: newCard.cardholderName,
-                }
-            });
-
-            if (error) throw error;
-            if (!paymentMethod) throw new Error('Failed to create payment method');
-
-            // Attach payment method to customer
-            const customerId = await setupStripeCustomer(userEmail!);
-            await attachPaymentMethod(paymentMethod.id, customerId);
-
-            // Refresh payment methods list
-            await fetchPaymentMethods();
-            setShowAddCard(false);
-            setNewCard({
-                cardNumber: '',
-                expiryDate: '',
-                cvv: '',
-                cardholderName: ''
-            });
-        } catch (err) {
-            setError(err instanceof Error ? err.message : 'Failed to add card');
-        } finally {
-            setLoading(false);
-        }
-    };
-
     const handleDeleteCard = async (id: string) => {
         try {
             setLoadingCards(prev => ({ ...prev, [id]: true }));
@@ -244,17 +199,10 @@ function PassengerPaymentMethod() {
         }
     };
 
-    const [newCard, setNewCard] = useState({
-        cardNumber: '',
-        expiryDate: '',
-        cvv: '',
-        cardholderName: ''
-    });
-
     return (
         <div className="payment-method-container">
             <button className="back-button" onClick={() => navigate('/passenger-home')}>
-                <img src={backIcon} alt="back" />
+                <img src={backIcon as string} alt="back" />
             </button>
 
             <div className="payment-content">
@@ -265,7 +213,7 @@ function PassengerPaymentMethod() {
                         <div key={method.id} 
                              className={`payment-method-card ${method.isDefault ? 'default-card' : ''}`}>
                             <div className="card-info">
-                                <img src={cardIcon} alt="card" className="card-icon" />
+                                <img src={cardIcon as string} alt="card" className="card-icon" />
                                 <div className="card-details">
                                     <p className="card-type">
                                         {method.type}
@@ -298,7 +246,7 @@ function PassengerPaymentMethod() {
                                     {loadingCards[method.id] ? (
                                         <span className="button-spinner"></span>
                                     ) : (
-                                        <img src={deleteIcon} alt="delete" />
+                                        <img src={deleteIcon as string} alt="delete" />
                                     )}
                                 </button>
                             </div>

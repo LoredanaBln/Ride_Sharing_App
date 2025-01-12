@@ -25,7 +25,9 @@
   "include": [
     "src",
     "src/**/*.png",
-    "src/**/*.jpg"
+    "src/**/*.jpg",
+    "src/**/*",
+    "src/**/*.d.ts"
   ],
   "references": [
     {

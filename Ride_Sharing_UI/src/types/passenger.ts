@@ -1,6 +1,8 @@
 export interface Passenger {
-    id: string;
+    id: number;
+    name: string;
     email: string;
     phoneNumber: string;
-    rating: number;
+    rating?: number;
+    imageData?: string;
 }
