@@ -13,12 +13,13 @@ import logoutIcon from "../images/logout.png";
 import homeIcon from "../images/home.png";
 import accountIcon from "../images/account.png";
 import historyIcon from "../images/history.png";
+import markerIconPng from "leaflet/dist/images/marker-icon.png";
 
 import {useNavigate} from "react-router-dom";
-import {RootState} from "../store/store.ts";
+import {RootState, AppDispatch} from "../store/store.ts";
 import {useDispatch, useSelector} from "react-redux";
 import {fetchPassengerByEmail} from "../api/passengerRetrievalByEmail.ts";
-import { logout } from "../slices/loginSlice.ts";
+import {logout} from "../slices/loginSlice.ts";
 import {MapContainer, TileLayer, Marker, Polyline} from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import {GeoLocation} from "../types/location.ts";
@@ -28,18 +29,38 @@ import {getRouteApi} from "../api/getRouteApi.ts";
 import L from "leaflet";
 import {RouteInfo} from "../types/locationInfo.ts";
 import {Passenger} from "../types/passenger.ts";
+import {createOrderApi} from "../api/createOrderApi.ts";
+import {Order} from "../types/order.ts";
+import {getLocationName} from "../api/getLocationName.ts";
+
+const currentLocationIcon = new L.Icon({
+    iconUrl: markerIconPng,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    className: "current-location-marker",
+});
+
+const destinationIcon = new L.Icon({
+    iconUrl: markerIconPng,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    className: "destination-marker",
+});
 
 function PassengerHome() {
     const navigate = useNavigate();
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<AppDispatch>();
 
     const [isMenuVisible, setIsMenuVisible] = useState(false);
     const [isDrawerVisible, setIsDrawerVisible] = useState(false);
+    const [isRouteInfoVisible, setIsRouteInfoVisible] = useState(false);
 
     const userEmail = useSelector((state: RootState) => state.auth.userEmail)!;
     const [passenger, setPassenger] = useState<Passenger | null>(null);
     const [, setError] = useState<string | null>(null);
-    const [defaultPosition] = useState<[number, number]>([46.7712, 23.6236,]); // Cluj-Napoca
+    const [defaultPosition] = useState<[number, number]>([46.7712, 23.6236]); // Cluj-Napoca
     const [searchValue, setSearchValue] = useState("");
     const [currentLocation, setCurrentLocation] = useState<GeoLocation | null>(
         null
@@ -60,7 +81,9 @@ function PassengerHome() {
                 setError(null);
             } catch (err: unknown) {
                 if (err instanceof Error) {
-                    setError(err.message || "An error occurred while fetching passenger data");
+                    setError(
+                        err.message || "An error occurred while fetching passenger data"
+                    );
                 }
             }
         };
@@ -92,6 +115,8 @@ function PassengerHome() {
                 }
 
                 setRouteInfo(route);
+                console.log(route);
+                setIsRouteInfoVisible(true);
             }
         } catch (error) {
             console.error("Error searching location or getting route:", error);
@@ -112,7 +137,29 @@ function PassengerHome() {
 
         dispatch(logout());
 
-        navigate('/');
+        navigate("/");
+    };
+
+    const handleCreateOrder = async () => {
+        if (!passenger || !currentLocation || !destination || !routeInfo) {
+            console.error("Missing required data for order creation");
+            return;
+        }
+
+        const startLocationName = await getLocationName(currentLocation.latitude, currentLocation.longitude);
+        const newOrder: Order = {
+            passengerId: Number(passenger.id),
+            startLocation: startLocationName,
+            endLocation: searchValue,
+            startLatitude: currentLocation.latitude,
+            startLongitude: currentLocation.longitude,
+            endLatitude: destination.latitude,
+            endLongitude: destination.longitude,
+            paymentType: "CASH",
+            estimatedPrice: Number(routeInfo.distanceInKm.toFixed(2)),
+        };
+
+        await dispatch(createOrderApi(newOrder));
     };
 
     const handleMyLocationClick = () => {
@@ -191,7 +238,6 @@ function PassengerHome() {
                 <MapContainer
                     center={defaultPosition}
                     zoom={13}
-                    zoomControl={false}
                     style={{height: "100%", width: "100%"}}
                     ref={setMap}
                 >
@@ -202,10 +248,14 @@ function PassengerHome() {
                     {currentLocation && (
                         <Marker
                             position={[currentLocation.latitude, currentLocation.longitude]}
+                            icon={currentLocationIcon}
                         />
                     )}
                     {destination && (
-                        <Marker position={[destination.latitude, destination.longitude]}/>
+                        <Marker
+                            position={[destination.latitude, destination.longitude]}
+                            icon={destinationIcon}
+                        />
                     )}
                     {routeCoordinates.length > 0 && (
                         <Polyline
@@ -257,6 +307,22 @@ function PassengerHome() {
                     </button>
                 </div>
             </div>
+
+            {isRouteInfoVisible && routeInfo && (
+                <div className="route-info-popup">
+                    <div className="route-info-card">
+                        <div className="route-details">
+                            <h3>Ride Details</h3>
+                            <p>Distance: {routeInfo.distanceInKm.toFixed(2)} km</p>
+                            <p>Duration: {Math.round(routeInfo.durationInMinutes)} minutes</p>
+                            <p>Estimated Price: ${routeInfo.distanceInKm.toFixed(2)}</p>
+                        </div>
+                        <button className="create-order-button" onClick={handleCreateOrder}>
+                            Create Order
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
