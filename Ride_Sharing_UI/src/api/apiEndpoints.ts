@@ -14,6 +14,7 @@ export const API_ENDPOINTS = {
     GET_OR_CREATE_CUSTOMER: `${BASE_URL}payment/customer`,
     SET_DEFAULT_PAYMENT_METHOD: `${BASE_URL}payment/methods`,
     PASSENGER_GET_BY_EMAIL: `${BASE_URL}passenger/email/`,
+    PASSENGER_UPDATE: `${BASE_URL}passenger/update`,
     DRIVER_GET_BY_EMAIL: `${BASE_URL}driver/email/`,
     DRIVER_UPDATE: `${BASE_URL}driver/update`,
     GET_LOCATION: `${BASE_URL}location/geocode`,

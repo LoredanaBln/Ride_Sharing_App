@@ -15,11 +15,11 @@ import logoutIcon from "../images/logout.png";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../slices/loginSlice.ts";
-import { fetchDriverByEmail } from "../api/driverRetrievalByEmail.ts";
 import { updateDriver } from "../api/driverUpdate.ts";
 import { toggleDriverStatus } from "../api/toggleDriverStatus.ts";
 import {Driver} from "../types/driver.ts";
 import {AppDispatch} from "../store/store.ts";
+import {fetchDriverByEmail} from "../api/driverRetrievalByEmail.ts";
 import {useCurrentLocation} from "../hooks/useCurrentLocation.ts";
 import L from "leaflet";
 import Map from "../components/Map.tsx";
@@ -33,6 +33,26 @@ function DriverHomePage() {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const userEmail = useSelector((state: any) => state.auth.userEmail)!;
+  const [driver, setDriver] = useState<Driver | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchDriver = async () => {
+      try {
+        const data: Driver | null = await fetchDriverByEmail(userEmail);
+        setDriver(data);
+        console.log("Fetched driver data:", data);
+        setError(null);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(
+              err.message || "An error occurred while fetching passenger data"
+          );
+        }
+      }
+    };
+    fetchDriver();
+  }, [userEmail]);
 
   const [map, setMap] = useState<L.Map | null>(null);
   const { currentLocation, handleMyLocationClick } =
@@ -64,6 +84,8 @@ function DriverHomePage() {
 
       await updateDriver(updatedDriver);
 
+      setDriver(null);
+      setError(null);
       dispatch(logout());
       navigate("/");
     } catch (error) {
@@ -162,7 +184,7 @@ function DriverHomePage() {
                 <img src={homeIcon} alt="home" className="home-icon"/>
               </button>
               <button
-                  onClick={() => navigate("/my-account-driver")}
+                  onClick={() => navigate("/my-account-driver", {state: {driver}})}
                   className="menu-item"
               >
                 <img src={accountIcon} alt="account" className="account-icon"/>

@@ -9,6 +9,8 @@
     align-items: center;
     background: url('../images/login_page.jpg');
     gap: 20px;
+    position: relative;
+    margin-left: -100px;
 }
 
 .profile-section {
@@ -20,7 +22,7 @@
     border-radius: 20px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     width: calc(100% - 60px);
-    margin-top: -200px;
+    margin-top: 100px;
 }
 
 .profile-picture img {
@@ -100,14 +102,16 @@
 }
 
 .edit-button {
-    padding: 8px 16px;
+    width: 260px;
+    padding: 12px 24px;
     border: none;
-    border-radius: 10px;
+    border-radius: 15px;
     background: #2b7d27;
     color: white;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 16px;
     transition: all 0.2s ease;
+    margin-top: 20px;
 }
 
 .edit-button:hover {
@@ -132,7 +136,7 @@
 }
 
 .delete-button {
-    width: 200px;
+    width: 260px;
     padding: 12px 24px;
     border: none;
     border-radius: 15px;
@@ -150,7 +154,7 @@
 }
 
 .change-password-button {
-    width: 200px;
+    width: 260px;
     padding: 12px 24px;
     border: none;
     border-radius: 15px;
@@ -231,7 +235,7 @@
     width: calc(100% - 60px);
     margin: 0 auto;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: flex-start;
     gap: 15px;
 }
@@ -316,47 +320,48 @@
     padding: 8px;
     font-size: 16px;
     color: #1a1a1a;
-    width: 100%;
-    max-width: 250px;
-    margin-left: 0px;
+    width: 240px;
+    margin: 0;
 }
 
 .button-group {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 10px;
 }
 
 .cancel-edit-button {
-    padding: 8px 16px;
+    width: 260px;
+    padding: 12px 24px;
     border: none;
     border-radius: 10px;
-    background: #666;
+    background: #d9534f;
     color: white;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 16px;
     transition: all 0.2s ease;
-    width: 80px;
+    margin-top: 30px;
 }
 
 .cancel-edit-button:hover {
-    background: #777;
-    box-shadow: 0 0 0 4px rgba(102, 102, 102, 0.2);
+    background: #c9302c;
+    box-shadow: 0 0 0 4px rgba(217, 83, 79, 0.2);
 }
 
 .save-button {
-    padding: 8px 16px;
+    width: 260px;
+    padding: 12px 24px;
     border: none;
     border-radius: 10px;
     background: #2b7d27;
     color: white;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 16px;
     transition: all 0.2s ease;
-    width: 80px;
+    margin-top: 30px;
 }
 
 .save-button:hover {
     background: #359830;
-    box-shadow: 0 0 0 4px rgba(43, 125, 39, 0.2);
+    box-shadow: 0 0 0 4px rgba(91, 192, 222, 0.2);
 }
