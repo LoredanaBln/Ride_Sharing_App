@@ -1,12 +1,16 @@
 package main.ride_sharing_app.service;
 
 import main.ride_sharing_app.model.Driver;
+import main.ride_sharing_app.model.DriverStatus;
 import main.ride_sharing_app.repository.DriverRepository;
 import main.ride_sharing_app.repository.PasswordResetTokenRepository;
 import main.ride_sharing_app.service.EmailService;
 import main.ride_sharing_app.model.PasswordResetToken;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,6 +19,7 @@ import java.util.UUID;
 @Service
 public class DriverService {
 
+    private static final Logger logger = LoggerFactory.getLogger(DriverService.class);
     private final DriverRepository driverRepository;
     private final PasswordEncoder passwordEncoder;
     private final PasswordResetTokenRepository tokenRepository;
@@ -117,5 +122,24 @@ public class DriverService {
 
     private String generateRandomToken() {
         return UUID.randomUUID().toString();
+    }
+
+    @Transactional
+    public Driver toggleDriverStatus(String email) {
+        logger.info("Toggling driver status for email: {}", email);
+        
+        Driver driver = driverRepository.findByEmail(email)
+            .orElseThrow(() -> {
+                logger.error("Driver not found for email: {}", email);
+                return new RuntimeException("Driver not found");
+            });
+
+        driver.setStatus(driver.getStatus().equals(DriverStatus.OFFLINE) ? DriverStatus.AVAILABLE : DriverStatus.OFFLINE);
+        logger.info("New driver status: {}", driver.getStatus());
+        
+        Driver updatedDriver = driverRepository.save(driver);
+        logger.info("Driver status updated successfully");
+        
+        return updatedDriver;
     }
 }

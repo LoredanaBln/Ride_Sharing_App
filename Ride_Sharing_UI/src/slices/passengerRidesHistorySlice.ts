@@ -1,38 +1,41 @@
-import {Ride} from "../types/ride.ts";
-import {createSlice} from "@reduxjs/toolkit";
-import {fetchPassengerRides} from "../api/passengerGetOrders.ts";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { Ride } from "../types/ride";
+import { fetchPassengerRides } from "../api/passengerGetOrders";
 
-interface RideState {
-    rides: Ride[];
-    loading: boolean;
-    error: string | null;
+interface RidesState {
+  rides: Ride[];
+  loading: boolean;
+  error: string | null;
 }
 
-const initialState: RideState = {
-    rides: [],
-    loading: false,
-    error: null,
+const initialState: RidesState = {
+  rides: [],
+  loading: false,
+  error: null,
 };
 
 const ridesSlice = createSlice({
-    name: 'rides',
-    initialState,
-    reducers: {},
-    extraReducers: (builder) => {
-        builder
-            .addCase(fetchPassengerRides.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-            .addCase(fetchPassengerRides.fulfilled, (state, action) => {
-                state.loading = false;
-                state.rides = action.payload as Ride[];
-            })
-            .addCase(fetchPassengerRides.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.error.message || 'Failed to fetch rides';
-            });
-    },
+  name: "rides",
+  initialState,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchPassengerRides.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        fetchPassengerRides.fulfilled,
+        (state, action: PayloadAction<Ride[]>) => {
+          state.loading = false;
+          state.rides = action.payload;
+        }
+      )
+      .addCase(fetchPassengerRides.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch rides";
+      });
+  },
 });
 
 export default ridesSlice.reducer;

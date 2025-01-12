@@ -1,14 +1,10 @@
 import {configureStore} from '@reduxjs/toolkit';
-import loginReducer from '../slices/loginSlice.ts'
-import signUpDriverReducer from '../slices/signUpDriverSlice';
-import signUpPassengerReducer from '../slices/signUpPassengerSlice';
-import ridesReducer from '../slices/passengerRidesHistorySlice.ts'
+import authReducer from '../slices/loginSlice';
+import ridesReducer from '../slices/passengerRidesHistorySlice';
 
 export const store = configureStore({
     reducer: {
-        auth: loginReducer,
-        driverSignUp: signUpDriverReducer,
-        passengerSignUp: signUpPassengerReducer,
+        auth: authReducer,
         rides: ridesReducer,
     },
 });

@@ -5,6 +5,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import main.ride_sharing_app.model.Driver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +21,7 @@ import java.util.Arrays;
 
 @Component
 public class JwtUtils {
+    private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
     private final String secretKey;
     private static final long EXPIRATION_TIME = 86400000; // 24 hours
 
@@ -41,22 +44,39 @@ public class JwtUtils {
     }
 
     public String getUsernameFromToken(String token) {
-        return getClaimFromToken(token, Claims::getSubject);
+        try {
+            String username = getClaimFromToken(token, Claims::getSubject);
+            logger.info("Extracted username from token: {}", username);
+            return username;
+        } catch (Exception e) {
+            logger.error("Failed to extract username from token: {}", e.getMessage());
+            throw e;
+        }
     }
 
     public String getRoleFromToken(String token) {
-        Claims claims = getAllClaimsFromToken(token);
-        return claims.get("role", String.class);
+        try {
+            Claims claims = getAllClaimsFromToken(token);
+            String role = claims.get("role", String.class);
+            logger.info("Extracted role from token: {}", role);
+            return role;
+        } catch (Exception e) {
+            logger.error("Failed to extract role from token: {}", e.getMessage());
+            throw e;
+        }
     }
 
     public boolean validateToken(String token) {
         try {
+            logger.info("Validating token: {}", token);
             Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
                 .build()
                 .parseClaimsJws(token);
+            logger.info("Token validation successful");
             return true;
         } catch (Exception e) {
+            logger.error("Token validation failed: {}", e.getMessage());
             return false;
         }
     }

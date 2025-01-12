@@ -14,12 +14,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/order")
+@Slf4j
 public class OrderController {
     private final OrderService orderService;
     private final JwtUtils jwtUtils;
@@ -65,14 +68,28 @@ public class OrderController {
     }
 
     @GetMapping("/passengerOrder")
-    public ResponseEntity<List<Order>> getLoggedPassengerOrders(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<?> getLoggedPassengerOrders(Authentication authentication) {
         try {
-            Passenger passenger = passengerRepository.findByEmail(userDetails.getUsername())
-                    .orElseThrow(() -> new RuntimeException("Passenger not found"));
+            if (authentication == null) {
+                log.error("No authentication provided");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Authentication required");
+            }
+
+            String passengerEmail = authentication.getName();
+            log.info("Fetching orders for passenger: {}", passengerEmail);
+
+            Passenger passenger = passengerRepository.findByEmail(passengerEmail)
+                    .orElseThrow(() -> new RuntimeException("Passenger not found: " + passengerEmail));
+
             List<Order> orders = orderService.getOrdersByPassenger(passenger.getId());
+            log.info("Found {} orders for passenger {}", orders.size(), passengerEmail);
+
             return ResponseEntity.ok(orders);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            log.error("Error fetching passenger orders: {}", e.getMessage(), e);
+            return ResponseEntity.badRequest()
+                .body("Error fetching orders: " + e.getMessage());
         }
     }
 
@@ -131,37 +148,25 @@ public class OrderController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{orderId}/accept")
-    public ResponseEntity<?> acceptOrder(
-            @PathVariable Long orderId,
-            @RequestHeader("Authorization") String token) {
-        
-        // Get driver email from JWT token
-        String driverEmail = jwtUtils.getUsernameFromToken(token.substring(7));
-        
-        // Find driver by email
-        Driver driver = driverRepository.findByEmail(driverEmail)
-            .orElseThrow(() -> new RuntimeException("Driver not found"));
-            
+    @PostMapping("/accept/{orderId}")
+    public ResponseEntity<?> acceptOrder(@PathVariable Long orderId, Authentication authentication) {
         try {
-            Order updatedOrder = orderService.handleDriverResponse(orderId, driver.getId(), true);
+            String driverEmail = authentication.getName();
+            log.info("Received accept request for order {} from driver {}", orderId, driverEmail);
+            
+            Order updatedOrder = orderService.acceptOrder(orderId, driverEmail);
             return ResponseEntity.ok(updatedOrder);
         } catch (Exception e) {
+            log.error("Error accepting order {}: {}", orderId, e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    @PostMapping("/{orderId}/reject")
-    public ResponseEntity<?> rejectOrder(
-            @PathVariable Long orderId,
-            @RequestHeader("Authorization") String token) {
-        
-        String driverEmail = jwtUtils.getUsernameFromToken(token.substring(7));
-        Driver driver = driverRepository.findByEmail(driverEmail)
-            .orElseThrow(() -> new RuntimeException("Driver not found"));
-            
+    @PostMapping("/reject/{orderId}")
+    public ResponseEntity<?> rejectOrder(@PathVariable Long orderId, Authentication authentication) {
         try {
-            Order updatedOrder = orderService.handleDriverResponse(orderId, driver.getId(), false);
+            String driverEmail = authentication.getName();
+            Order updatedOrder = orderService.rejectOrder(orderId, driverEmail);
             return ResponseEntity.ok(updatedOrder);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
