@@ -54,7 +54,7 @@ public class SecurityConfig {
                         .requestMatchers("driver/update").permitAll()
                         .requestMatchers("passenger/update").permitAll()
                         .requestMatchers("/auth/login").permitAll()
-                        .requestMatchers("order/passengerOrder").permitAll()
+                        .requestMatchers("/order/passengerOrder").hasAuthority("ROLE_PASSENGER")
                         .requestMatchers("/passenger/requestPasswordReset", "/passenger/confirmPasswordReset").permitAll()
                         .requestMatchers("/driver/requestPasswordReset", "/driver/confirmPasswordReset").permitAll()
                         .requestMatchers("/order/nearbyDrivers").permitAll()
@@ -74,6 +74,7 @@ public class SecurityConfig {
                         .requestMatchers("/payment/driver/bankAccounts/**").hasAuthority("ROLE_DRIVER")
                         .requestMatchers("/payment/driver/bankAccount/**").hasAuthority("ROLE_DRIVER")
                         .requestMatchers("/test/auth").authenticated()
+                        .requestMatchers("/order/passenger/**").hasAuthority("ROLE_PASSENGER")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtUtils, userDetailsService),

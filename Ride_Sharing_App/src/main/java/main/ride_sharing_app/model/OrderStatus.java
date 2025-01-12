@@ -6,5 +6,7 @@ public enum OrderStatus {
     IN_PROGRESS,        // Driver has started the ride
     COMPLETED,          // Ride is completed
     CANCELED,           // Order was canceled
-    REJECTED            // Driver rejected the order
+    REJECTED,         // Driver rejected the order
+    DRIVER_TIMEOUT,
+    PENDING_DRIVER
 }

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchPassengerRides } from "../api/passengerGetOrders.ts";
-import { AppDispatch, RootState } from "../store/store.ts";
+import { fetchPassengerRides } from "../api/passengerGetOrders";
+import { AppDispatch, RootState } from "../store/store";
 import "../styles/passengerRidesHistory.css";
 import { motion } from "framer-motion";
 
@@ -13,7 +13,7 @@ function PassengerRidesHistory() {
 
   useEffect(() => {
     dispatch(fetchPassengerRides());
-  }, []);
+  }, [dispatch]);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;

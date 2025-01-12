@@ -68,14 +68,28 @@ public class OrderController {
     }
 
     @GetMapping("/passengerOrder")
-    public ResponseEntity<List<Order>> getLoggedPassengerOrders(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<?> getLoggedPassengerOrders(Authentication authentication) {
         try {
-            Passenger passenger = passengerRepository.findByEmail(userDetails.getUsername())
-                    .orElseThrow(() -> new RuntimeException("Passenger not found"));
+            if (authentication == null) {
+                log.error("No authentication provided");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Authentication required");
+            }
+
+            String passengerEmail = authentication.getName();
+            log.info("Fetching orders for passenger: {}", passengerEmail);
+
+            Passenger passenger = passengerRepository.findByEmail(passengerEmail)
+                    .orElseThrow(() -> new RuntimeException("Passenger not found: " + passengerEmail));
+
             List<Order> orders = orderService.getOrdersByPassenger(passenger.getId());
+            log.info("Found {} orders for passenger {}", orders.size(), passengerEmail);
+
             return ResponseEntity.ok(orders);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            log.error("Error fetching passenger orders: {}", e.getMessage(), e);
+            return ResponseEntity.badRequest()
+                .body("Error fetching orders: " + e.getMessage());
         }
     }
 
