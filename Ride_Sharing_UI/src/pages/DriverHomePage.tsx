@@ -260,7 +260,7 @@ function DriverHomePage() {
                         <img src={back} alt="back" className="back-icon" />
                     </button>
                     <ul>
-                        <li onClick={() => navigate("/payment")}>
+                        <li onClick={() => navigate("/driver-payment")}>
                             <img src={pay} alt="pay" className="pay-icon" />
                             Payment
                         </li>
