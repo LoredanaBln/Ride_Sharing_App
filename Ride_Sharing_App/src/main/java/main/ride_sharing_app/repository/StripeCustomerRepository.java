@@ -10,5 +10,6 @@ import java.util.Optional;
 @Repository
 public interface StripeCustomerRepository extends JpaRepository<StripeCustomer, Long> {
     Optional<StripeCustomer> findByPassenger(Passenger passenger);
+    Optional<StripeCustomer> findByPassengerId(Long passengerId);
     Optional<StripeCustomer> findByStripeCustomerId(String stripeCustomerId);
 } 

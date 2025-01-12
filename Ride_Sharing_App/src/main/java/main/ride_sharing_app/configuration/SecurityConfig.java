@@ -60,6 +60,7 @@ public class SecurityConfig {
                         .requestMatchers("/auth/admin/login").permitAll()
                         .requestMatchers("/ws/**").permitAll()
                         .requestMatchers("/payment/methods/{paymentMethodId}/setDefault").authenticated()
+                        .requestMatchers("/payment/defaultMethod/{passengerId}").authenticated()
                         .requestMatchers("/payment/**").authenticated()
                         .anyRequest().authenticated()
                 )

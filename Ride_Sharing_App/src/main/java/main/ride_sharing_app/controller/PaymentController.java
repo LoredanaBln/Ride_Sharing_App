@@ -33,7 +33,7 @@ public class PaymentController {
     public ResponseEntity<PaymentIntent> createPaymentIntent(@PathVariable Long orderId) {
         try {
             Order order = orderService.getOrderById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+                    .orElseThrow(() -> new RuntimeException("Order not found"));
             PaymentIntent paymentIntent = paymentService.createPaymentIntent(order);
             return ResponseEntity.ok(paymentIntent);
         } catch (StripeException e) {
@@ -42,8 +42,8 @@ public class PaymentController {
     }
 
     @PostMapping("/webhook")
-    public ResponseEntity<String> handleStripeWebhook(@RequestBody String payload, 
-                                                    @RequestHeader("Stripe-Signature") String sigHeader) {
+    public ResponseEntity<String> handleStripeWebhook(@RequestBody String payload,
+                                                      @RequestHeader("Stripe-Signature") String sigHeader) {
         try {
             // Handle webhook event
             // Verify signature and process payment status
@@ -66,8 +66,8 @@ public class PaymentController {
 
     @PostMapping("/attachPaymentMethod")
     public ResponseEntity<String> attachPaymentMethod(
-        @RequestParam("paymentMethodId") String paymentMethodId,
-        @RequestParam("customerId") String customerId
+            @RequestParam("paymentMethodId") String paymentMethodId,
+            @RequestParam("customerId") String customerId
     ) {
         try {
             PaymentMethod method = paymentService.attachPaymentMethod(paymentMethodId, customerId);
@@ -105,17 +105,17 @@ public class PaymentController {
             return ResponseEntity.ok().build();
         } catch (StripeException e) {
             return ResponseEntity.badRequest()
-                .body("Failed to delete payment method: " + e.getMessage());
+                    .body("Failed to delete payment method: " + e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.badRequest()
-                .body("An error occurred: " + e.getMessage());
+                    .body("An error occurred: " + e.getMessage());
         }
     }
 
     @PostMapping("/methods/{paymentMethodId}/setDefault")
     public ResponseEntity<Void> setDefaultPaymentMethod(
-        @PathVariable String paymentMethodId,
-        @RequestParam String customerId
+            @PathVariable String paymentMethodId,
+            @RequestParam String customerId
     ) {
         try {
             paymentService.setDefaultPaymentMethod(paymentMethodId, customerId);
@@ -124,4 +124,15 @@ public class PaymentController {
             return ResponseEntity.badRequest().build();
         }
     }
-} 
+
+    @GetMapping("/defaultMethod/{passengerId}")
+    public ResponseEntity<Map<String, String>> getDefaultPaymentMethod(@PathVariable Long passengerId) {
+        try {
+            Map<String, String> defaultMethod = paymentService.getDefaultPaymentMethod(passengerId);
+            return ResponseEntity.ok(defaultMethod);
+        } catch (StripeException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+}

@@ -1,12 +1,14 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {AppDispatch, RootState} from '../store/store';
 import {signUpPassenger} from '../api/signUpPassengerApi.ts';
 import '../styles/signUp.css';
+import {useNavigate} from "react-router-dom";
 
 function SignUpPassenger() {
     const dispatch = useDispatch<AppDispatch>();
     const {loading, error, success} = useSelector((state: RootState) => state.passengerSignUp);
+    const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
         name: '',
@@ -14,6 +16,12 @@ function SignUpPassenger() {
         password: '',
         phoneNumber: '',
     });
+
+    useEffect(() => {
+        if (success) {
+            navigate("/");
+        }
+    }, [success, navigate]);
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
