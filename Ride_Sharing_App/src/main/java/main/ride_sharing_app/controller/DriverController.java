@@ -59,11 +59,11 @@ public class DriverController {
        return ResponseEntity.status(HttpStatus.OK).body(driverService.updateDriver(driver));
     }
 
-    @PutMapping("/goOnline")
-    public ResponseEntity<Driver> goOnline(@AuthenticationPrincipal UserDetails userDetails) {
+    @PutMapping("/toggleOnline")
+    public ResponseEntity<Driver> toggleOnline(@AuthenticationPrincipal UserDetails userDetails) {
         try {
             Driver driver = driverService.findByEmail(userDetails.getUsername()).orElseThrow(() -> new RuntimeException("Driver not found"));
-            driver.setStatus(DriverStatus.AVAILABLE);
+            driver.setStatus(driver.getStatus() == DriverStatus.OFFLINE ? DriverStatus.AVAILABLE : DriverStatus.OFFLINE);
             return ResponseEntity.status(HttpStatus.OK).body(driverService.updateDriver(driver));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
