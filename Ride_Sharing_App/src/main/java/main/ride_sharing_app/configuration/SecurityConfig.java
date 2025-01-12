@@ -54,6 +54,7 @@ public class SecurityConfig {
                         .requestMatchers("driver/update").permitAll()
                         .requestMatchers("passenger/update").permitAll()
                         .requestMatchers("/auth/login").permitAll()
+                        .requestMatchers("order/driverOrder").permitAll()
                         .requestMatchers("/order/passengerOrder").hasAuthority("ROLE_PASSENGER")
                         .requestMatchers("/passenger/requestPasswordReset", "/passenger/confirmPasswordReset").permitAll()
                         .requestMatchers("/driver/requestPasswordReset", "/driver/confirmPasswordReset").permitAll()
