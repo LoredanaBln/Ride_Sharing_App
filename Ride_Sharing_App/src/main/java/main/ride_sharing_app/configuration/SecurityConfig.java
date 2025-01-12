@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -21,6 +22,7 @@ import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private final JwtUtils jwtUtils;
@@ -44,7 +46,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/driver/id/{id}", "/passenger/id/{id}").permitAll()
-                        .requestMatchers("/driver/toggleOnline").permitAll()
+                        .requestMatchers("/driver/toggleOnline").hasAuthority("ROLE_DRIVER")
                         .requestMatchers("/passenger/signUp", "/driver/signUp").permitAll()
                         .requestMatchers("/passenger/email/{email}").permitAll()
                         .requestMatchers("/driver/email/{email}").permitAll()
@@ -59,7 +61,9 @@ public class SecurityConfig {
                         .requestMatchers("/location/geocode", "/location/route").permitAll()
                         .requestMatchers("/testMap/geocode", "/testMap/route").permitAll()
                         .requestMatchers("/auth/admin/login").permitAll()
-                        .requestMatchers("/ws/**").permitAll()
+                        .requestMatchers("/ws/**", "/ws").permitAll()
+                        .requestMatchers("/topic/**").permitAll()
+                        .requestMatchers("/app/**").permitAll()
                         .requestMatchers("/payment/methods/{paymentMethodId}/setDefault").authenticated()
                         .requestMatchers("/payment/defaultMethod/{passengerId}").authenticated()
                         .requestMatchers("/payment/**").authenticated()
@@ -68,6 +72,7 @@ public class SecurityConfig {
                         .requestMatchers("/payment/driver/attachBankAccount").hasAuthority("ROLE_DRIVER")
                         .requestMatchers("/payment/driver/bankAccounts/**").hasAuthority("ROLE_DRIVER")
                         .requestMatchers("/payment/driver/bankAccount/**").hasAuthority("ROLE_DRIVER")
+                        .requestMatchers("/test/auth").authenticated()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtUtils, userDetailsService),
@@ -86,7 +91,8 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173", "http://localhost:5174"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept"));
+        configuration.setExposedHeaders(Arrays.asList("Authorization"));
         configuration.setAllowCredentials(true);
         
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

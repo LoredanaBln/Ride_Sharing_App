@@ -27,4 +27,6 @@ export const API_ENDPOINTS = {
     GET_BANK_ACCOUNTS: `${BASE_URL}payment/driver/bankAccounts`,
     SET_DEFAULT_BANK_ACCOUNT: `${BASE_URL}payment/driver/bankAccount/setDefault`,
     DRIVER_PAYMENT: `${BASE_URL}payment/driver`,
+    ACCEPT_ORDER: `${BASE_URL}order/accept`,
+    REJECT_ORDER: `${BASE_URL}order/reject`,
 }

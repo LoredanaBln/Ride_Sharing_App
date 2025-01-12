@@ -20,6 +20,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentIntent;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -32,6 +34,7 @@ import java.util.concurrent.TimeUnit;
 
 
 @Service
+@Slf4j
 public class OrderService {
     private static final int MAX_DRIVER_ATTEMPTS = 5;
     private static final long DRIVER_ACCEPT_TIMEOUT_SECONDS = 30;
@@ -44,6 +47,8 @@ public class OrderService {
     private final OrderNotificationController notificationController;
     private final LocationWebSocketController locationController;
     private final PaymentService paymentService;
+    private final DriverService driverService;
+    private final OrderNotificationService notificationService;
 
     public OrderService(OrderRepository orderRepository, 
                        DriverRepository driverRepository,
@@ -52,7 +57,9 @@ public class OrderService {
                        ScheduledExecutorService scheduledExecutorService,
                        OrderNotificationController notificationController,
                        LocationWebSocketController locationController,
-                       PaymentService paymentService) {
+                       PaymentService paymentService,
+                       DriverService driverService,
+                       OrderNotificationService notificationService) {
         this.orderRepository = orderRepository;
         this.driverRepository = driverRepository;
         this.passengerRepository = passengerRepository;
@@ -61,6 +68,8 @@ public class OrderService {
         this.notificationController = notificationController;
         this.locationController = locationController;
         this.paymentService = paymentService;
+        this.driverService = driverService;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -75,7 +84,11 @@ public class OrderService {
         order.setPassenger(passenger);
         order.setStartLocation(orderDTO.getStartLocation());
         order.setEndLocation(orderDTO.getEndLocation());
-        order.setStatus(OrderStatus.PENDING);
+        order.setStartLatitude(orderDTO.getStartLatitude());
+        order.setStartLongitude(orderDTO.getStartLongitude());
+        order.setEndLatitude(orderDTO.getEndLatitude());
+        order.setEndLongitude(orderDTO.getEndLongitude());
+        order.setStatus(OrderStatus.PENDING_ACCEPTANCE);
         order.setStartTime(LocalDateTime.now());
         order.setPaymentType(orderDTO.getPaymentType());
         order.setPrice(estimatedPrice);
@@ -117,7 +130,7 @@ public class OrderService {
         
         OrderNotificationDTO notification = new OrderNotificationDTO(
             order.getId(),
-            OrderStatus.PENDING.toString(),
+            OrderStatus.PENDING_ACCEPTANCE.toString(),
             "New ride request",
             System.currentTimeMillis()
         );
@@ -142,13 +155,16 @@ public class OrderService {
             return orderRepository.save(order);
         }
 
-        // Schedule a timeout task instead of polling
-        Order finalOrder = order;
-        scheduledExecutorService.schedule(() -> {
-            checkOrderTimeout(finalOrder.getId());
-        }, DRIVER_ACCEPT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        // After assigning a driver, keep status as PENDING_ACCEPTANCE
+        order.setDriver(assignedDriver);
+        order.setStatus(OrderStatus.PENDING_ACCEPTANCE);
+        assignedDriver.setStatus(DriverStatus.BUSY);
+        driverService.updateDriver(assignedDriver);
+        
+        // Send notification to the assigned driver
+        notificationService.sendOrderNotification(order);
 
-        return order;
+        return orderRepository.save(order);
     }
 
     private Double calculateEstimatedPrice(OrderDTO orderDTO) {
@@ -364,7 +380,7 @@ public class OrderService {
         
         // Save the temporary assignment
         order.setDriver(driver);
-        order.setStatus(OrderStatus.PENDING_DRIVER);
+        order.setStatus(OrderStatus.PENDING_ACCEPTANCE);
         Order savedOrder = orderRepository.save(order);
         
         // Return the order immediately so the client isn't blocked
@@ -374,14 +390,14 @@ public class OrderService {
     @Transactional
     public void checkOrderTimeout(Long orderId) {
         orderRepository.findById(orderId).ifPresent(order -> {
-            if (order.getStatus() == OrderStatus.PENDING_DRIVER) {
+            if (order.getStatus() == OrderStatus.PENDING_ACCEPTANCE) {
                 Driver driver = order.getDriver();
                 if (driver != null) {
                     driver.setStatus(DriverStatus.AVAILABLE);
                     driverRepository.save(driver);
                 }
                 order.setDriver(null);
-                order.setStatus(OrderStatus.DRIVER_TIMEOUT);
+                //order.setStatus(OrderStatus.DRIVER_TIMEOUT);
                 orderRepository.save(order);
             }
         });
@@ -464,6 +480,86 @@ public class OrderService {
         driver.setLastLongitude(longitude);
         driver.setLocationUpdatedAt(LocalDateTime.now());
         driverRepository.save(driver);
+    }
+
+    @Transactional
+    public Order acceptOrder(Long orderId, String driverEmail) {
+        log.info("Driver {} attempting to accept order {}", driverEmail, orderId);
+        
+        Order order = orderRepository.findById(orderId)
+            .orElseThrow(() -> new RuntimeException("Order not found"));
+            
+        log.info("Order {} current status: {}", orderId, order.getStatus());
+        
+        Driver driver = driverRepository.findByEmail(driverEmail)
+            .orElseThrow(() -> new RuntimeException("Driver not found"));
+
+        if (order.getStatus() != OrderStatus.PENDING_ACCEPTANCE) {
+            log.warn("Order {} cannot be accepted - status is {} instead of PENDING_ACCEPTANCE", 
+                orderId, order.getStatus());
+            throw new RuntimeException(
+                String.format("Order cannot be accepted - current status is %s", order.getStatus())
+            );
+        }
+
+        try {
+            // Confirm the payment when driver accepts
+            paymentService.confirmPayment(order);
+            order.setPaymentStatus(PaymentStatus.COMPLETED);
+        } catch (StripeException e) {
+            log.error("Payment confirmation failed for order {}: {}", orderId, e.getMessage());
+            order.setPaymentStatus(PaymentStatus.FAILED);
+            throw new RuntimeException("Payment failed: " + e.getMessage());
+        }
+
+        order.setDriver(driver);
+        order.setStatus(OrderStatus.IN_PROGRESS);
+        driver.setStatus(DriverStatus.BUSY);
+        
+        driverRepository.save(driver);
+        Order savedOrder = orderRepository.save(order);
+        log.info("Order {} successfully accepted by driver {}", orderId, driverEmail);
+        
+        // Notify passenger about acceptance
+        OrderNotificationDTO notification = new OrderNotificationDTO(
+            orderId,
+            OrderStatus.ACCEPTED.toString(),
+            "Driver accepted your ride",
+            System.currentTimeMillis()
+        );
+        notificationController.handleOrderNotification(orderId, notification);
+        
+        return savedOrder;
+    }
+
+    @Transactional
+    public Order rejectOrder(Long orderId, String driverEmail) {
+        log.info("Driver {} rejecting order {}", driverEmail, orderId);
+        
+        Order order = orderRepository.findById(orderId)
+            .orElseThrow(() -> new RuntimeException("Order not found"));
+            
+        Driver driver = driverRepository.findByEmail(driverEmail)
+            .orElseThrow(() -> new RuntimeException("Driver not found"));
+
+        if (order.getStatus() != OrderStatus.PENDING_ACCEPTANCE) {
+            throw new RuntimeException("Order is not in PENDING_ACCEPTANCE state");
+        }
+
+        // Try to find another available driver
+        Driver newDriver = findAndAssignDriver(
+            order,
+            order.getStartLatitude(),
+            order.getStartLongitude()
+        );
+
+        if (newDriver == null) {
+            order.setStatus(OrderStatus.CANCELED);
+            order.setCancellationReason("No available drivers");
+        }
+
+        log.info("Order {} rejected by driver {}", orderId, driverEmail);
+        return orderRepository.save(order);
     }
 }
 

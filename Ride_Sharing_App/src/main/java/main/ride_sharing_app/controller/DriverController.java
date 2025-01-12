@@ -8,10 +8,14 @@ import main.ride_sharing_app.model.DriverStatus;
 import main.ride_sharing_app.model.Order;
 import main.ride_sharing_app.service.DriverService;
 import main.ride_sharing_app.service.OrderService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,6 +26,7 @@ import java.time.LocalDateTime;
 @RestController
 @RequestMapping("/driver")
 public class DriverController {
+    private static final Logger logger = LoggerFactory.getLogger(DriverController.class);
     @Autowired
     private final DriverService driverService;
     @Autowired
@@ -60,13 +65,21 @@ public class DriverController {
     }
 
     @PutMapping("/toggleOnline")
-    public ResponseEntity<Driver> toggleOnline(@AuthenticationPrincipal UserDetails userDetails) {
+    @PreAuthorize("hasAuthority('ROLE_DRIVER')")
+    public ResponseEntity<?> toggleOnline(Authentication authentication) {
         try {
-            Driver driver = driverService.findByEmail(userDetails.getUsername()).orElseThrow(() -> new RuntimeException("Driver not found"));
-            driver.setStatus(driver.getStatus() == DriverStatus.OFFLINE ? DriverStatus.AVAILABLE : DriverStatus.OFFLINE);
-            return ResponseEntity.status(HttpStatus.OK).body(driverService.updateDriver(driver));
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            logger.info("Attempting to toggle online status for user: {}", authentication.getName());
+            logger.info("User authorities: {}", authentication.getAuthorities());
+            
+            String email = authentication.getName();
+            Driver driver = driverService.toggleDriverStatus(email);
+            
+            logger.info("Successfully toggled status to: {}", driver.getStatus());
+            return ResponseEntity.ok(driver);
+        } catch (Exception e) {
+            logger.error("Error toggling driver status: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error toggling driver status: " + e.getMessage());
         }
     }
 

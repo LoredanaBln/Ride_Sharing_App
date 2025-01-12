@@ -24,11 +24,18 @@ import {useCurrentLocation} from "../hooks/useCurrentLocation.ts";
 import L from "leaflet";
 import Map from "../components/Map.tsx";
 import my_location from "../images/my_location.png";
+import { Client } from '@stomp/stompjs';
+import { OrderNotification } from "../types/OrderNotification";
+import SockJS from 'sockjs-client';
+import { API_ENDPOINTS } from "../api/apiEndpoints";
+import { toast } from "react-hot-toast";
 
 function DriverHomePage() {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [isDrawerVisible, setIsDrawerVisible] = useState(false);
   const [driverStatus, setDriverStatus] = useState<"OFFLINE" | "AVAILABLE">("OFFLINE");
+  const [orderRequest, setOrderRequest] = useState<OrderNotification | null>(null);
+  const [stompClient, setStompClient] = useState<Client | null>(null);
 
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
@@ -124,6 +131,150 @@ function DriverHomePage() {
     handleMyLocationClick();
   }, []);
 
+  useEffect(() => {
+    if (!userEmail) {
+        console.log('No user email found, skipping WebSocket connection');
+        return;
+    }
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+        console.error('No authentication token found');
+        return;
+    }
+
+    console.log('Initializing WebSocket connection for user:', userEmail);
+
+    const client = new Client({
+        brokerURL: 'ws://localhost:8080/ws',
+        connectHeaders: {
+            'Authorization': `Bearer ${token}`
+        },
+        debug: function (str) {
+            console.log('STOMP:', str);
+        },
+        reconnectDelay: 5000,
+        heartbeatIncoming: 4000,
+        heartbeatOutgoing: 4000,
+        webSocketFactory: () => {
+            const socket = new SockJS('http://localhost:8080/ws');
+            console.log('Created SockJS instance:', socket);
+            return socket;
+        },
+        onConnect: () => {
+            console.log('Connected to WebSocket');
+            const destination = `/topic/drivers/${userEmail}/orders`;
+            console.log('Subscribing to:', destination);
+            
+            try {
+                const subscription = client.subscribe(destination, (message) => {
+                    console.log('Received message:', message);
+                    try {
+                        const notification: OrderNotification = JSON.parse(message.body);
+                        console.log('Parsed notification:', notification);
+                        setOrderRequest(notification);
+                    } catch (error) {
+                        console.error('Error parsing message:', error);
+                        console.error('Message body:', message.body);
+                    }
+                });
+                console.log('Subscribed successfully:', subscription);
+            } catch (error) {
+                console.error('Error subscribing to destination:', error);
+            }
+        },
+        onStompError: (frame) => {
+            console.error('STOMP error:', frame);
+        },
+        onWebSocketError: (event) => {
+            console.error('WebSocket error:', event);
+        },
+        onDisconnect: () => {
+            console.log('Disconnected from WebSocket');
+        }
+    });
+
+    try {
+        console.log('Activating STOMP client...');
+        client.activate();
+        setStompClient(client);
+        console.log('STOMP client activated successfully');
+    } catch (error) {
+        console.error('Error activating STOMP client:', error);
+    }
+
+    return () => {
+        if (client.active) {
+            console.log('Deactivating STOMP client');
+            client.deactivate();
+        }
+    };
+  }, [userEmail]);
+
+  const handleAcceptOrder = async () => {
+    if (!orderRequest) return;
+
+    try {
+        const response = await fetch(`${API_ENDPOINTS.ACCEPT_ORDER}/${orderRequest.orderId}`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Failed to accept order:', {
+                status: response.status,
+                statusText: response.statusText,
+                error: errorText
+            });
+            throw new Error(`Failed to accept order: ${errorText}`);
+        }
+
+        const updatedOrder = await response.json();
+        console.log('Order accepted successfully:', updatedOrder);
+        
+        setOrderRequest(null);
+        setDriverStatus("BUSY");
+        
+        // Show success notification
+        toast.success('Order accepted successfully!');
+    } catch (error) {
+        console.error('Error accepting order:', error);
+        // Show error notification
+        toast.error(error instanceof Error ? error.message : 'Failed to accept order');
+    }
+  };
+
+  const handleRejectOrder = async () => {
+    if (!orderRequest) return;
+
+    try {
+        const response = await fetch(`${API_ENDPOINTS.REJECT_ORDER}/${orderRequest.orderId}`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Failed to reject order: ${errorText}`);
+        }
+
+        setOrderRequest(null);
+    } catch (error) {
+        console.error('Error rejecting order:', error);
+    }
+  };
+
+  useEffect(() => {
+    console.log('Order request changed:', orderRequest);
+  }, [orderRequest]);
+
   return (
       <div className="drivercontainer">
         <div id="drawer" className={`drawer ${isDrawerVisible ? "visible" : ""}`}>
@@ -201,6 +352,35 @@ function DriverHomePage() {
             </button>
           </div>
         </div>
+
+        {orderRequest && (
+            <div className="order-request-popup">
+                {console.log('Rendering popup with order:', orderRequest)}
+                <div className="order-request-card">
+                    <h3>New Ride Request</h3>
+                    <div className="order-details">
+                        <p>From: {orderRequest.startLocation}</p>
+                        <p>To: {orderRequest.endLocation}</p>
+                        <p>Estimated Price: ${orderRequest.estimatedPrice}</p>
+                        <p>Distance: {orderRequest.distance} km</p>
+                    </div>
+                    <div className="order-actions">
+                        <button 
+                            className="accept-button"
+                            onClick={handleAcceptOrder}
+                        >
+                            Accept
+                        </button>
+                        <button 
+                            className="reject-button"
+                            onClick={handleRejectOrder}
+                        >
+                            Reject
+                        </button>
+                    </div>
+                </div>
+            </div>
+        )}
       </div>
   );
 }
