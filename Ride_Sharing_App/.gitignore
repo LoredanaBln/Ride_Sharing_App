@@ -62,3 +62,6 @@ mvnw.cmd
 *.iml
 *.ipr
 .idea_modules/
+
+
+node_modules/

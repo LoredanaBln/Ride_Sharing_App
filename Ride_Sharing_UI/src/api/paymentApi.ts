@@ -1,11 +1,5 @@
 import { API_ENDPOINTS } from "./apiEndpoints.ts";
-
-interface PaymentMethodResponse {
-    id: string;
-    type: 'CREDIT_CARD' | 'DEBIT_CARD';
-    lastFourDigits: string;
-    expiryDate: string;
-}
+import { PaymentMethod } from "../types/PaymentMethod";
 
 export const setupStripeCustomer = async (passengerId: number) => {
     const response = await fetch(`${API_ENDPOINTS.SETUP_STRIPE_CUSTOMER}/${passengerId}`, {

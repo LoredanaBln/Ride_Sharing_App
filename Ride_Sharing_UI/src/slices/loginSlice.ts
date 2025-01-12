@@ -52,25 +52,3 @@ const loginSlice = createSlice({
 
 export const { logout } = loginSlice.actions;
 export default loginSlice.reducer;
-
-export const loginUser = createAsyncThunk(
-    'auth/login',
-    async (credentials: LoginCredentials) => {
-        const response = await fetch(API_ENDPOINTS.LOGIN, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(credentials),
-        });
-
-        if (!response.ok) {
-            throw new Error('Login failed');
-        }
-
-        const data = await response.json();
-        console.log('Login response:', data); // Add this for debugging
-        localStorage.setItem('token', data.token);
-        return data;
-    }
-);

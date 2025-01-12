@@ -15,20 +15,13 @@ import {
     getPaymentMethods,
     getOrCreateStripeCustomer,
     setDefaultPaymentMethod
-} from '../api/paymentApi';
+} from '../api/payment';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { STRIPE_CONFIG } from '../config/stripe';
-
+import { PaymentMethod } from '../types/PaymentMethod';
 const stripePromise = loadStripe(STRIPE_CONFIG.publishableKey); // Replace with your Stripe publishable key
 
-interface PaymentMethod {
-    id: string;
-    type: string;
-    lastFourDigits: string;
-    expiryDate: string;
-    isDefault: boolean;
-    issuer?: string;
-}
+
 
 interface AddCardFormProps {
     onSuccess: () => void;
