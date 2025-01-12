@@ -62,6 +62,11 @@ public class SecurityConfig {
                         .requestMatchers("/payment/methods/{paymentMethodId}/setDefault").authenticated()
                         .requestMatchers("/payment/defaultMethod/{passengerId}").authenticated()
                         .requestMatchers("/payment/**").authenticated()
+                        .requestMatchers("/payment/driver/**").authenticated()
+                        .requestMatchers("/payment/driver/setupConnect/**").hasAuthority("ROLE_DRIVER")
+                        .requestMatchers("/payment/driver/attachBankAccount").hasAuthority("ROLE_DRIVER")
+                        .requestMatchers("/payment/driver/bankAccounts/**").hasAuthority("ROLE_DRIVER")
+                        .requestMatchers("/payment/driver/bankAccount/**").hasAuthority("ROLE_DRIVER")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtUtils, userDetailsService),

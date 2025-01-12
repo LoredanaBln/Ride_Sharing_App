@@ -13,6 +13,10 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import java.util.Collections;
+import java.util.List;
 
 import java.io.IOException;
 
@@ -33,26 +37,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         try {
             String jwt = getJwtFromRequest(request);
-            System.out.println("Request URL: " + request.getRequestURL()); // Debug log
-            System.out.println("JWT Token: " + jwt); // Debug log
-
+            
             if (StringUtils.hasText(jwt) && jwtUtils.validateToken(jwt)) {
                 String username = jwtUtils.getUsernameFromToken(jwt);
-                System.out.println("Username from token: " + username); // Debug log
-
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                String role = jwtUtils.getRoleFromToken(jwt);
+                
+                List<GrantedAuthority> authorities = Collections.singletonList(
+                    new SimpleGrantedAuthority(role)  // This should be "ROLE_DRIVER"
+                );
+                
                 UsernamePasswordAuthenticationToken authentication = 
-                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
+                    new UsernamePasswordAuthenticationToken(username, null, authorities);
+                
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-                System.out.println("Authentication successful"); // Debug log
             }
         } catch (Exception e) {
-            System.out.println("Authentication error: " + e.getMessage()); // Debug log
-            e.printStackTrace();
+            logger.error("Cannot set user authentication: {}", e);
         }
-
+        
         filterChain.doFilter(request, response);
     }
 

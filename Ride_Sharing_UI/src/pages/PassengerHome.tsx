@@ -28,7 +28,7 @@ import { Order } from "../types/order.ts";
 import { getLocationName } from "../api/getLocationName.ts";
 import { useCurrentLocation } from "../hooks/useCurrentLocation";
 import { useSearch } from "../hooks/useSearch.ts";
-import { getDefaultPaymentMethod } from "../api/payment/getDefaultPaymentMethod.ts";
+import { getDefaultPaymentMethod } from "../api/payment/passenger/getDefaultPaymentMethod.ts";
 
 function PassengerHome() {
   const navigate = useNavigate();
@@ -134,7 +134,7 @@ function PassengerHome() {
             <img src={back} alt="back" className="back-icon" />
           </button>
           <ul>
-            <li onClick={() => navigate("/payment")}>
+            <li onClick={() => navigate("/passenger-payment")}>
               <img src={pay} alt="pay" className="pay-icon" />
               Payment
             </li>

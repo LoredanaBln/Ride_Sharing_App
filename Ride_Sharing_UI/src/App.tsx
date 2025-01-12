@@ -11,6 +11,7 @@ import DriverAccountPage from "./pages/DriverAccountPage.tsx";
 import PassengerRidesHistory from "./pages/PassengerRidesHistory.tsx";
 import PassengerAccountPage from "./pages/PassengerAccountPage.tsx";
 import PassengerPaymentMethod from "./pages/PassengerPaymentMethod.tsx";
+import DriverPaymentMethod from "./pages/DriverPaymentMethod.tsx";
 
 function App() {
     return (
@@ -18,18 +19,25 @@ function App() {
             <BrowserRouter>
                 <Routes>
                     <Route path="/" element={<Login/>}/>
+                    
+                    {/* Passenger Routes */}
                     <Route path="/passenger-home" element={<PassengerHome/>}/>
+                    <Route path="/passenger-payment" element={<PassengerPaymentMethod/>}/>
+                    <Route path="/my-account-passenger" element={<PassengerAccountPage/>}/>
+                    <Route path="/passenger-rides-history" element={<PassengerRidesHistory/>}/>
+
+                    {/* Driver Routes */}
+                    <Route path="/driver-home" element={<DriverHomePage/>}/>
+                    <Route path="/driver-payment" element={<DriverPaymentMethod/>}/>
+                    <Route path="/my-account-driver" element={<DriverAccountPage/>}/>
+                    <Route path="/driver-rides-history" element={<div>Driver rides History Page</div>}/>
+
+                    {/* Public Routes */}
                     <Route path="/signup-passenger" element={<SignUpPassenger/>}/>
                     <Route path="/signup-driver" element={<SignUpDriver/>}/>
                     <Route path="/reset-password" element={<ChangePassword/>}/>
-                    <Route path="/driver-home" element={<DriverHomePage/>}/>
-                    <Route path="/my-account-driver" element={<DriverAccountPage/>}/>
-                    <Route path="/my-account-passenger" element={<PassengerAccountPage/>}/>
-                    <Route path="/payment" element={<PassengerPaymentMethod/>}/>
                     <Route path="/support" element={<div>Support Page</div>}/>
                     <Route path="/about" element={<div>About Page</div>}/>
-                    <Route path="/driver-rides-history" element={<div>Driver rides History Page</div>}/>
-                    <Route path="/passenger-rides-history" element={<PassengerRidesHistory/>}/>
                 </Routes>
             </BrowserRouter>
         </Provider>
