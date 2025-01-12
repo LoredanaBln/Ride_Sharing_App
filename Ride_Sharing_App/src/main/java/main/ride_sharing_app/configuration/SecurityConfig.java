@@ -49,6 +49,7 @@ public class SecurityConfig {
                         .requestMatchers("/driver/toggleOnline").hasAuthority("ROLE_DRIVER")
                         .requestMatchers("/passenger/signUp", "/driver/signUp").permitAll()
                         .requestMatchers("/passenger/email/{email}").permitAll()
+                        .requestMatchers("/passenger/update").permitAll()
                         .requestMatchers("/driver/email/{email}").permitAll()
                         .requestMatchers("driver/update").permitAll()
                         .requestMatchers("passenger/update").permitAll()
