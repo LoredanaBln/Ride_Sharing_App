@@ -56,8 +56,9 @@ public class SecurityConfig {
                         .requestMatchers("/location/geocode", "/location/route").permitAll()
                         .requestMatchers("/testMap/geocode", "/testMap/route").permitAll()
                         .requestMatchers("/auth/admin/login").permitAll()
-                        .requestMatchers("/payment/setupCustomer/**", "/payment/attachPaymentMethod/**", "/payment/createPaymentIntent/**", "/payment/webhook").permitAll()
                         .requestMatchers("/ws/**").permitAll()
+                        .requestMatchers("/payment/methods/{paymentMethodId}/setDefault").authenticated()
+                        .requestMatchers("/payment/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtUtils, userDetailsService),

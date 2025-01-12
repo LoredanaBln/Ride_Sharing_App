@@ -1,0 +1,283 @@
+.payment-method-container {
+    height: 1190px;
+    width: 550px;
+    position: relative;
+    background: white;
+    border-radius: 40px;
+    margin: 20px auto;
+    padding: 2rem;
+    overflow-y: auto;
+}
+
+.loading-spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #2b7d27;
+    font-size: 1.4rem;
+}
+
+.error-message {
+    color: #dc2626;
+    text-align: center;
+    padding: 1rem;
+    margin: 1rem 0;
+    background: #fee2e2;
+    border-radius: 8px;
+}
+
+.payment-content {
+    padding-top: 3rem;
+}
+
+.payment-content h1 {
+    font-size: 2.4rem;
+    color: #1a1a1a;
+    margin-bottom: 2rem;
+    text-align: left;
+}
+
+.payment-methods-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.payment-method-card {
+    background: #f8f9fa;
+    border-radius: 16px;
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.card-info {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.card-icon {
+    width: 40px;
+    height: 40px;
+}
+
+.card-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.card-type {
+    font-size: 1.4rem;
+    color: #1a1a1a;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.card-type::after {
+    content: '';
+    display: inline-block;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background-color: #718096;
+    margin: 0 4px;
+}
+
+.card-number {
+    font-size: 1.6rem;
+    color: #4a5568;
+}
+
+.expiry {
+    font-size: 1.2rem;
+    color: #718096;
+}
+
+.card-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.action-button {
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.action-button:hover {
+    transform: scale(1.1);
+}
+
+.action-button img {
+    width: 24px;
+    height: 24px;
+}
+
+.add-card-button {
+    width: 100%;
+    padding: 1.5rem;
+    background: #2b7d27;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.6rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.add-card-button:hover {
+    background: #236b1f;
+}
+
+.add-card-form {
+    background: #f8f9fa;
+    padding: 2rem;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-row {
+    display: flex;
+    gap: 1rem;
+}
+
+.form-row input {
+    width: 50%;
+}
+
+.add-card-form input {
+    padding: 1.2rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1.4rem;
+}
+
+.form-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.form-buttons button {
+    flex: 1;
+    padding: 1.2rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.4rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.form-buttons button[type="button"] {
+    background: #e2e8f0;
+    color: #4a5568;
+}
+
+.form-buttons button[type="submit"] {
+    background: #2b7d27;
+    color: white;
+}
+
+.form-buttons button:hover {
+    filter: brightness(0.95);
+}
+
+.back-button {
+    position: absolute;
+    top: 2rem;
+    left: 2rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+}
+
+.back-button img {
+    width: 30px;
+    height: 30px;
+}
+
+.payment-method-card.default-card {
+    border: 2px solid #2b7d27;
+    background: #f0f9f0;
+}
+
+.default-badge {
+    margin-left: 8px;
+    padding: 2px 8px;
+    background: #2b7d27;
+    color: white;
+    border-radius: 12px;
+    font-size: 0.8em;
+}
+
+.card-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.action-button.delete {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.action-button.delete:hover {
+    background: #fee2e2;
+    border-radius: 50%;
+}
+
+.action-button.delete img {
+    width: 20px;
+    height: 20px;
+}
+
+.action-button.set-default {
+    background: #2b7d27;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    margin-right: 8px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.action-button.set-default:hover {
+    background: #236b1f;
+}
+
+.button-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.action-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+} 

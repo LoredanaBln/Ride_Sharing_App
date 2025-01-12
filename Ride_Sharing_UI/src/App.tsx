@@ -10,6 +10,7 @@ import DriverHomePage from "./pages/DriverHomePage.tsx";
 import DriverAccountPage from "./pages/DriverAccountPage.tsx";
 import PassengerRidesHistory from "./pages/PassengerRidesHistory.tsx";
 import PassengerAccountPage from "./pages/PassengerAccountPage.tsx";
+import PassengerPaymentMethod from "./pages/PassengerPaymentMethod.tsx";
 
 function App() {
     return (
@@ -24,7 +25,7 @@ function App() {
                     <Route path="/driver-home" element={<DriverHomePage/>}/>
                     <Route path="/my-account-driver" element={<DriverAccountPage/>}/>
                     <Route path="/my-account-passenger" element={<PassengerAccountPage/>}/>
-                    <Route path="/payment" element={<div> Payment</div>}/>
+                    <Route path="/payment" element={<PassengerPaymentMethod/>}/>
                     <Route path="/support" element={<div>Support Page</div>}/>
                     <Route path="/about" element={<div>About Page</div>}/>
                     <Route path="/driver-rides-history" element={<div>Driver rides History Page</div>}/>

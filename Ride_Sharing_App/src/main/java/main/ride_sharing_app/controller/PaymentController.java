@@ -12,6 +12,9 @@ import main.ride_sharing_app.service.PassengerService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/payment")
 public class PaymentController {
@@ -63,14 +66,62 @@ public class PaymentController {
 
     @PostMapping("/attachPaymentMethod")
     public ResponseEntity<String> attachPaymentMethod(
-        @RequestParam String paymentMethodId,
-        @RequestParam String customerId
+        @RequestParam("paymentMethodId") String paymentMethodId,
+        @RequestParam("customerId") String customerId
     ) {
         try {
             PaymentMethod method = paymentService.attachPaymentMethod(paymentMethodId, customerId);
             return ResponseEntity.ok(method.getId());
         } catch (StripeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/customer/{passengerId}")
+    public ResponseEntity<String> getOrCreateCustomer(@PathVariable Long passengerId) {
+        try {
+            Passenger passenger = passengerService.getPassengerById(passengerId);
+            String customerId = paymentService.getOrCreateStripeCustomer(passenger);
+            return ResponseEntity.ok(customerId);
+        } catch (StripeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/methods/{customerId}")
+    public ResponseEntity<List<Map<String, String>>> getPaymentMethods(@PathVariable String customerId) {
+        try {
+            List<Map<String, String>> methods = paymentService.getPaymentMethods(customerId);
+            return ResponseEntity.ok(methods);
+        } catch (StripeException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @DeleteMapping("/methods/{paymentMethodId}")
+    public ResponseEntity<String> deletePaymentMethod(@PathVariable String paymentMethodId) {
+        try {
+            paymentService.deletePaymentMethod(paymentMethodId);
+            return ResponseEntity.ok().build();
+        } catch (StripeException e) {
+            return ResponseEntity.badRequest()
+                .body("Failed to delete payment method: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                .body("An error occurred: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/methods/{paymentMethodId}/setDefault")
+    public ResponseEntity<Void> setDefaultPaymentMethod(
+        @PathVariable String paymentMethodId,
+        @RequestParam String customerId
+    ) {
+        try {
+            paymentService.setDefaultPaymentMethod(paymentMethodId, customerId);
+            return ResponseEntity.ok().build();
+        } catch (StripeException e) {
+            return ResponseEntity.badRequest().build();
         }
     }
 } 
