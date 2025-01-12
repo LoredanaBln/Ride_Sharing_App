@@ -1,13 +1,15 @@
 .payment-method-container {
-    height: 1190px;
-    width: 550px;
+    height: 1220px;
+    width: 520px;
     position: relative;
     background: white;
     border-radius: 40px;
-    margin: 20px auto;
+    margin-top: 22px;
     padding: 2rem;
-    overflow-y: auto;
-}
+    overflow-y: scroll;
+    overflow-x: hidden;
+    -ms-overflow-style: none !important;
+    scrollbar-width: none !important;}
 
 .loading-spinner {
     position: absolute;

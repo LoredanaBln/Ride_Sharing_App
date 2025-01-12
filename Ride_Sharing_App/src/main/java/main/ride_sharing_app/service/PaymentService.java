@@ -279,4 +279,34 @@ public class PaymentService {
         stripeCustomer.setDefaultPaymentMethodId(paymentMethodId);
         stripeCustomerRepository.save(stripeCustomer);
     }
+
+    public Map<String, String> getDefaultPaymentMethod(Long passengerId) throws StripeException {
+        StripeCustomer stripeCustomer = stripeCustomerRepository.findByPassengerId(passengerId)
+                .orElse(null);
+
+        if (stripeCustomer == null || stripeCustomer.getDefaultPaymentMethodId() == null) {
+            return Map.of(
+                "type", "CASH",
+                "isDefault", "true"
+            );
+        }
+
+        PaymentMethod defaultMethod = PaymentMethod.retrieve(stripeCustomer.getDefaultPaymentMethodId());
+        
+        if (defaultMethod != null && defaultMethod.getCard() != null) {
+            return Map.of(
+                "id", defaultMethod.getId(),
+                "type", "CARD",
+                "lastFourDigits", defaultMethod.getCard().getLast4(),
+                "expiryDate", defaultMethod.getCard().getExpMonth() + "/" + defaultMethod.getCard().getExpYear(),
+                "issuer", defaultMethod.getCard().getBrand(),
+                "isDefault", "true"
+            );
+        }
+
+        return Map.of(
+            "type", "CASH",
+            "isDefault", "true"
+        );
+    }
 } 

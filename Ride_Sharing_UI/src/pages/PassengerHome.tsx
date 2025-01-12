@@ -27,7 +27,8 @@ import { createOrderApi } from "../api/createOrderApi.ts";
 import { Order } from "../types/order.ts";
 import { getLocationName } from "../api/getLocationName.ts";
 import { useCurrentLocation } from "../hooks/useCurrentLocation";
-import {useSearch} from "../hooks/useSearch.ts";
+import { useSearch } from "../hooks/useSearch.ts";
+import { getDefaultPaymentMethod } from "../api/payment/getDefaultPaymentMethod.ts";
 
 function PassengerHome() {
   const navigate = useNavigate();
@@ -44,15 +45,12 @@ function PassengerHome() {
   const [searchValue, setSearchValue] = useState("");
 
   const [map, setMap] = useState<L.Map | null>(null);
-  const { currentLocation, handleMyLocationClick } =
-      useCurrentLocation(map);
+  const { currentLocation, handleMyLocationClick } = useCurrentLocation(map);
 
-  const {
-    destination,
-    routeCoordinates,
-    routeInfo,
-    handleSearch
-  } = useSearch({ currentLocation, map });
+  const { destination, routeCoordinates, routeInfo, handleSearch } = useSearch({
+    currentLocation,
+    map,
+  });
 
   useEffect(() => {
     const fetchPassenger = async () => {
@@ -102,23 +100,30 @@ function PassengerHome() {
       return;
     }
 
-    const startLocationName = await getLocationName(
-      currentLocation.latitude,
-      currentLocation.longitude
-    );
-    const newOrder: Order = {
-      passengerId: Number(passenger.id),
-      startLocation: startLocationName,
-      endLocation: searchValue,
-      startLatitude: currentLocation.latitude,
-      startLongitude: currentLocation.longitude,
-      endLatitude: destination.latitude,
-      endLongitude: destination.longitude,
-      paymentType: "CASH",
-      estimatedPrice: Number(routeInfo.distanceInKm.toFixed(2)),
-    };
+    try {
+      const defaultPaymentMethod = await getDefaultPaymentMethod(Number(passenger.id));
 
-    await dispatch(createOrderApi(newOrder));
+      const startLocationName = await getLocationName(
+        currentLocation.latitude,
+        currentLocation.longitude
+      );
+
+      const newOrder: Order = {
+        passengerId: Number(passenger.id),
+        startLocation: startLocationName,
+        endLocation: searchValue,
+        startLatitude: currentLocation.latitude,
+        startLongitude: currentLocation.longitude,
+        endLatitude: destination.latitude,
+        endLongitude: destination.longitude,
+        paymentType: defaultPaymentMethod ? "CREDIT_CARD" : "CASH",
+        estimatedPrice: Number(routeInfo.distanceInKm.toFixed(2)),
+      };
+
+      await dispatch(createOrderApi(newOrder));
+    } catch (error) {
+      console.error("Error creating order:", error);
+    }
   };
 
   return (
@@ -226,6 +231,12 @@ function PassengerHome() {
       {isRouteInfoVisible && routeInfo && (
         <div className="route-info-popup">
           <div className="route-info-card">
+            <button
+              className="close-button"
+              onClick={() => setIsRouteInfoVisible(false)}
+            >
+              ×
+            </button>
             <div className="route-details">
               <h3>Ride Details</h3>
               <p>Distance: {routeInfo.distanceInKm.toFixed(2)} km</p>
