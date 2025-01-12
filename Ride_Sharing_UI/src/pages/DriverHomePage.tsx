@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "../styles/driverHome.css";
 import "../styles/drawer_menu.css";
 import mapImage from "../images/map.jpg";
@@ -19,15 +19,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../slices/loginSlice.ts";
 import { fetchDriverByEmail } from "../api/driverRetrievalByEmail.ts";
 import { updateDriver } from "../api/driverUpdate.ts";
-
+import { toggleDriverStatus } from "../api/toggleDriverStatus.ts";
+import {Driver} from "../types/driver.ts";
+import {AppDispatch} from "../store/store.ts";
 
 function DriverHomePage() {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [isDrawerVisible, setIsDrawerVisible] = useState(false);
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const [driverStatus, setDriverStatus] = useState<"OFFLINE" | "AVAILABLE">("OFFLINE");
 
-  const userEmail = useSelector((state: any)=> state.auth.userEmail)!;
+  const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
+  const userEmail = useSelector((state: any) => state.auth.userEmail)!;
 
   const handleMenuToggle = () => {
     setIsMenuVisible(!isMenuVisible);
@@ -55,12 +58,37 @@ function DriverHomePage() {
       await updateDriver(updatedDriver);
 
       dispatch(logout());
-
       navigate("/");
     } catch (error) {
       console.error("Error during logout:", error);
     }
   };
+
+  const handleToggleStatus = async () => {
+    try {
+      const resultAction = await dispatch(toggleDriverStatus());
+      if (toggleDriverStatus.fulfilled.match(resultAction)) {
+        setDriverStatus(resultAction.payload.status);
+      }
+    } catch (error) {
+      console.error("Error toggling driver status:", error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchDriver = async () => {
+      try {
+        const driver : Driver = await fetchDriverByEmail(userEmail);
+        if (driver && driver.status) {
+          setDriverStatus(driver.status);
+        }
+      } catch (error) {
+        console.error("Error fetching driver data:", error);
+      }
+    };
+
+    fetchDriver();
+  }, [userEmail]);
 
   return (
       <div className="drivercontainer">
@@ -75,15 +103,15 @@ function DriverHomePage() {
                 Payment
               </li>
               <li onClick={() => navigate("/support")}>
-                <img src={support} alt="pay" className="pay-icon" />
+                <img src={support} alt="support" className="pay-icon" />
                 Support
               </li>
               <li onClick={() => navigate("/about")}>
-                <img src={about} alt="pay" className="pay-icon" />
+                <img src={about} alt="about" className="pay-icon" />
                 About
               </li>
               <li onClick={handleLogout}>
-                <img src={logoutIcon} alt="pay" className="pay-icon" />
+                <img src={logoutIcon} alt="logout" className="pay-icon" />
                 Logout
               </li>
             </ul>
@@ -102,7 +130,9 @@ function DriverHomePage() {
           <button className="location-button">
             <img src={locationIcon} alt="location" />
           </button>
-          <button className="online-toggle">Go Online</button>
+          <button className="online-toggle" onClick={handleToggleStatus}>
+            {driverStatus === "OFFLINE" ? "Go Online" : "Go Offline"}
+          </button>
           <div className="menu-wrapper">
             <div className={`expanded-menu ${isMenuVisible ? "visible" : ""}`}>
               <button className="menu-item">
@@ -112,7 +142,7 @@ function DriverHomePage() {
                   onClick={() => navigate("/my-account-driver")}
                   className="menu-item"
               >
-                <img src={accountIcon} alt="home" className="account-icon" />
+                <img src={accountIcon} alt="account" className="account-icon" />
               </button>
               <button className="menu-item">
                 <img src={historyIcon} alt="history" className="history-icon" />
