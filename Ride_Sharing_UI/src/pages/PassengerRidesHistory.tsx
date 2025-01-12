@@ -8,7 +8,7 @@ import { motion } from "framer-motion";
 function PassengerRidesHistory() {
   const dispatch = useDispatch<AppDispatch>();
   const { rides, loading, error } = useSelector(
-    (state: RootState) => state.rides
+    (state: RootState) => state.passengerRides
   );
 
   useEffect(() => {

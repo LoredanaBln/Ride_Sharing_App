@@ -93,6 +93,19 @@ public class OrderController {
         }
     }
 
+    @GetMapping("/driverOrder")
+    public ResponseEntity<List<Order>> getLoggedDriverOrders(@AuthenticationPrincipal UserDetails userDetails) {
+        try {
+            Driver driver = driverRepository.findByEmail(userDetails.getUsername())
+                    .orElseThrow(() -> new RuntimeException("Driver not found"));
+            List<Order> orders = orderService.getOrdersByDriver(driver.getId());
+            System.out.println(orders);
+            return ResponseEntity.ok(orders);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
     @GetMapping("/driver/{driverId}")
     public ResponseEntity<List<Order>> getDriverOrders(@PathVariable Long driverId) {
         return ResponseEntity.ok(orderService.getOrdersByDriver(driverId));

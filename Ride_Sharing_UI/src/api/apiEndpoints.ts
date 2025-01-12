@@ -7,7 +7,7 @@ export const API_ENDPOINTS = {
     PASSENGER_REQUEST_RESET_PASSWORD: `${BASE_URL}passenger/requestPasswordReset`,
     PASSENGER_CONFIRM_RESET_PASSWORD: `${BASE_URL}passenger/confirmPasswordReset`,
     PASSENGER_GET_ORDERS: `${BASE_URL}order/passengerOrder`,
-    PASSENGER_UPDATE: `${BASE_URL}passenger/update`,
+    DRIVER_GET_ORDERS: `${BASE_URL}order/driverOrder`,
     SETUP_STRIPE_CUSTOMER: `${BASE_URL}payment/setupCustomer`,
     ATTACH_PAYMENT_METHOD: `${BASE_URL}payment/attachPaymentMethod`,
     DELETE_PAYMENT_METHOD: `${BASE_URL}payment/methods`,

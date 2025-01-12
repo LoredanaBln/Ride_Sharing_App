@@ -13,11 +13,12 @@ import PassengerAccountPage from "./pages/PassengerAccountPage.tsx";
 import PassengerPaymentMethod from "./pages/PassengerPaymentMethod.tsx";
 import DriverPaymentMethod from "./pages/DriverPaymentMethod.tsx";
 import { Toaster } from 'react-hot-toast';
+import DriverRidesHistory from "./pages/DriverRidesHistory.tsx";
 
 function App() {
     return (
         <>
-            <Toaster 
+            <Toaster
                 position="top-right"
                 toastOptions={{
                     duration: 3000,
@@ -41,7 +42,7 @@ function App() {
                 <BrowserRouter>
                     <Routes>
                         <Route path="/" element={<Login/>}/>
-                        
+
                         {/* Passenger Routes */}
                         <Route path="/passenger-home" element={<PassengerHome/>}/>
                         <Route path="/passenger-payment" element={<PassengerPaymentMethod/>}/>
@@ -52,7 +53,7 @@ function App() {
                         <Route path="/driver-home" element={<DriverHomePage/>}/>
                         <Route path="/driver-payment" element={<DriverPaymentMethod/>}/>
                         <Route path="/my-account-driver" element={<DriverAccountPage/>}/>
-                        <Route path="/driver-rides-history" element={<div>Driver rides History Page</div>}/>
+                        <Route path="/driver-rides-history" element={<DriverRidesHistory/>}/>
 
                         {/* Public Routes */}
                         <Route path="/signup-passenger" element={<SignUpPassenger/>}/>
