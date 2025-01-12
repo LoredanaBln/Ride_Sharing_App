@@ -14,7 +14,6 @@ import {
     deleteBankAccount,
     getBankAccounts,
     getOrCreateStripeConnectAccount,
-    setDefaultBankAccount
 } from '../api/payment/driver/index';
 import { BankAccount } from '../types/BankAccount';
 import { Driver } from '../types/driver';
