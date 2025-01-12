@@ -16,7 +16,7 @@ function DriverAccountPage() {
 
     const [originalDriverData, setOriginalDriverData] = useState(driver);
 
-    // States for form inputs
+
     const [name, setName] = useState(driver?.name || '');
     const [phone, setPhone] = useState(driver?.phoneNumber || '');
     const [email, setEmail] = useState(driver?.email || '');

@@ -16,7 +16,7 @@ import {
     setDefaultPaymentMethod
 } from '../api/payment';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
-import { STRIPE_CONFIG } from '../config/stripe';
+import { STRIPE_CONFIG } from '../config/stripe.ts';
 import { PaymentMethod } from '../types/PaymentMethod';
 const stripePromise = loadStripe(STRIPE_CONFIG.publishableKey); // Replace with your Stripe publishable key
 
