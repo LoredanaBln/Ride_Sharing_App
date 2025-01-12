@@ -32,4 +32,7 @@ out/
 !**/src/test/**/out/
 
 ### VS Code ###
-.vscode/ 
+.vscode/
+
+
+node_modules/

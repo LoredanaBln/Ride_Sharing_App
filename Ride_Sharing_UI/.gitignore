@@ -56,3 +56,6 @@ package-lock.json
 
 # Optional eslint cache
 .eslintcache
+
+# Config files with sensitive data
+/src/config/stripe.ts
