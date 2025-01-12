@@ -12,5 +12,6 @@ export const API_ENDPOINTS = {
     DRIVER_UPDATE: `${BASE_URL}driver/update`,
     GET_LOCATION: `${BASE_URL}location/geocode`,
     GET_ROUTE: `${BASE_URL}location/route`,
+    TOGGLE_ONLINE: `${BASE_URL}driver/toggleOnline`,
     CREATE_ORDER: `${BASE_URL}order/create`,
 }
