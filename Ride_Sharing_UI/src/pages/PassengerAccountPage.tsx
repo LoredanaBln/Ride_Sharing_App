@@ -1,9 +1,9 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useState } from 'react';
+import {useEffect, useState} from 'react';
 import '../styles/passengerAccount.css';
 import avatarIcon from '../images/avatar.png';
 import backIcon from '../images/backGreen.png';
-import editIcon from '../images/edit.png';
+import {updatePassenger} from "../api/passengerUpdate.ts";
 
 function PassengerAccountPage() {
     const navigate = useNavigate();
@@ -11,156 +11,122 @@ function PassengerAccountPage() {
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
     const passenger = location.state?.passenger || null;
-    
-    // Edit states
-    const [isEditingName, setIsEditingName] = useState(false);
-    const [isEditingPhone, setIsEditingPhone] = useState(false);
-    const [isEditingEmail, setIsEditingEmail] = useState(false);
 
-    // Data states
-    const [name, setName] = useState(passenger?.name);
-    const [phone, setPhone] = useState(passenger?.phoneNumber);
-    const [email, setEmail] = useState(passenger?.email);
+    const [isEditing, setIsEditing] = useState(false);
 
-    // Edit handlers
-    const handleEditName = () => setIsEditingName(true);
-    const handleEditPhone = () => setIsEditingPhone(true);
-    const handleEditEmail = () => setIsEditingEmail(true);
+    const [originalPassengerData, setOriginalPassengerData] = useState(passenger);
 
-    // Cancel handlers
-    const handleCancelName = () => setIsEditingName(false);
-    const handleCancelPhone = () => setIsEditingPhone(false);
-    const handleCancelEmail = () => setIsEditingEmail(false);
+    const [name, setName] = useState(passenger?.name || '');
+    const [phone, setPhone] = useState(passenger?.phoneNumber || '');
+    const [email, setEmail] = useState(passenger?.email || '');
+    const rating = useState(passenger?.rating || '');
 
-    // Change handlers
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value);
     const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => setPhone(e.target.value);
     const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value);
 
+    const handleSaveClick = async () => {
+        if (!passenger) {
+            console.error("Passenger data not found");
+            return;
+        }
+
+        const updatedPassengerData = {
+            ...passenger,
+            name: name !== passenger.name ? name : passenger.name,
+            phoneNumber: phone !== passenger.phoneNumber ? phone : passenger.phoneNumber,
+            email: email !== passenger.email ? email : passenger.email,
+        };
+
+        try {
+            await updatePassenger(updatedPassengerData);
+            setIsEditing(false);
+            alert("Passenger information updated successfully!");
+        } catch (error) {
+            console.error("Failed to update passenger:", error);
+            alert("Failed to update passenger information.");
+        }
+    };
+
+    const handleCancelClick = () => {
+        if (originalPassengerData) {
+            setName(originalPassengerData.name);
+            setPhone(originalPassengerData.phoneNumber);
+            setEmail(originalPassengerData.email);
+        }
+        setIsEditing(false);
+    };
+
+    useEffect(() => {
+        if (passenger) {
+            setOriginalPassengerData(passenger);
+        }
+    }, [passenger]);
+
     return (
         <div className="account-container">
             <button className="back-button" onClick={() => navigate('/passenger-home')}>
-                <img src={backIcon} alt="back" />
+                <img src={backIcon} alt="back"/>
             </button>
 
             <div className="profile-section">
                 <div className="profile-picture">
-                    <img src={avatarIcon} alt="Profile" />
+                    <img src={avatarIcon} alt="Profile"/>
                 </div>
                 <div className="profile-info">
                     <h2>{name}</h2>
                     <div className="rating">
                         <span className="stars">★★★★★</span>
-                        <span className="rating-value">4.8</span>
+                        <span className="rating-value">{rating}</span>
                     </div>
                 </div>
             </div>
 
             <div className="personal-data-section">
                 <h3>Personal Information</h3>
-                
-                <div className="data-field">
-                    <div className="field-content">
-                        <label>Name</label>
-                        {isEditingName ? (
-                            <input
-                                type="text"
-                                value={name}
-                                onChange={handleNameChange}
-                                className="edit-input"
-                                autoFocus
-                            />
-                        ) : (
-                            <p>{name}</p>
-                        )}
-                    </div>
-                    <div className="button-group">
-                        {isEditingName ? (
-                            <>
-                                <button className="cancel-edit-button" onClick={handleCancelName}>
-                                    Cancel
-                                </button>
-                                <button className="save-button" onClick={() => setIsEditingName(false)}>
-                                    Save
-                                </button>
-                            </>
-                        ) : (
-                            <button className="edit-button" onClick={handleEditName}>
-                                <img src={editIcon} alt="edit" />
-                            </button>
-                        )}
-                    </div>
-                </div>
 
-                <div className="data-field">
-                    <div className="field-content">
-                        <label>Phone</label>
-                        {isEditingPhone ? (
-                            <input
-                                type="tel"
-                                value={phone}
-                                onChange={handlePhoneChange}
-                                className="edit-input"
-                                autoFocus
-                            />
-                        ) : (
-                            <p>{phone}</p>
-                        )}
+                {[
+                    {label: 'Name', value: name, onChange: handleNameChange},
+                    {label: 'Phone', value: phone, onChange: handlePhoneChange},
+                    {label: 'Email', value: email, onChange: handleEmailChange},
+                ].map((field, index) => (
+                    <div className="data-field" key={index}>
+                        <div className="field-content">
+                            <label>{field.label}</label>
+                            {isEditing ? (
+                                <input
+                                    type="text"
+                                    value={field.value}
+                                    onChange={field.onChange}
+                                    className="edit-input"
+                                />
+                            ) : (
+                                <p>{field.value}</p>
+                            )}
+                        </div>
                     </div>
-                    <div className="button-group">
-                        {isEditingPhone ? (
-                            <>
-                                <button className="cancel-edit-button" onClick={handleCancelPhone}>
-                                    Cancel
-                                </button>
-                                <button className="save-button" onClick={() => setIsEditingPhone(false)}>
-                                    Save
-                                </button>
-                            </>
-                        ) : (
-                            <button className="edit-button" onClick={handleEditPhone}>
-                                <img src={editIcon} alt="edit" />
-                            </button>
-                        )}
-                    </div>
-                </div>
+                ))}
 
-                <div className="data-field">
-                    <div className="field-content">
-                        <label>Email</label>
-                        {isEditingEmail ? (
-                            <input
-                                type="email"
-                                value={email}
-                                onChange={handleEmailChange}
-                                className="edit-input"
-                                autoFocus
-                            />
-                        ) : (
-                            <p>{email}</p>
-                        )}
-                    </div>
-                    <div className="button-group">
-                        {isEditingEmail ? (
-                            <>
-                                <button className="cancel-edit-button" onClick={handleCancelEmail}>
-                                    Cancel
-                                </button>
-                                <button className="save-button" onClick={() => setIsEditingEmail(false)}>
-                                    Save
-                                </button>
-                            </>
-                        ) : (
-                            <button className="edit-button" onClick={handleEditEmail}>
-                                <img src={editIcon} alt="edit" />
+                <div className="button-group">
+                    {isEditing ? (
+                        <>
+                            <button className="save-button" onClick={handleSaveClick}>
+                                Save All
                             </button>
-                        )}
-                    </div>
+                            <button className="cancel-edit-button" onClick={handleCancelClick}>
+                                Cancel
+                            </button>
+                        </>
+                    ) : (
+                        <button className="edit-button" onClick={() => setIsEditing(true)}>
+                            Edit information
+                        </button>
+                    )}
                 </div>
             </div>
 
             <div className="actions-section">
-                <button className="change-password-button">Change Password</button>
+            <button className="change-password-button">Change Password</button>
                 <button className="delete-button" onClick={() => setShowDeleteConfirm(true)}>Delete Account</button>
             </div>
 
