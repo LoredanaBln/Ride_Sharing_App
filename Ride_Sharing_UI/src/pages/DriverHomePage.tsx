@@ -33,7 +33,7 @@ import { toast } from "react-hot-toast";
 function DriverHomePage() {
     const [isMenuVisible, setIsMenuVisible] = useState(false);
     const [isDrawerVisible, setIsDrawerVisible] = useState(false);
-    const [driverStatus, setDriverStatus] = useState<"OFFLINE" | "AVAILABLE">("OFFLINE");
+    const [driverStatus, setDriverStatus] = useState<"OFFLINE" | "AVAILABLE" | "BUSY">("OFFLINE");
 
     const navigate = useNavigate();
     const dispatch = useDispatch<AppDispatch>();
