@@ -1,13 +1,11 @@
 import { useState, useEffect } from "react";
 import "../styles/driverHome.css";
 import "../styles/drawer_menu.css";
-import mapImage from "../images/map.jpg";
 import arrowIcon from "../images/arrow.png";
 import homeIcon from "../images/home.png";
 import accountIcon from "../images/account.png";
 import historyIcon from "../images/history.png";
 import menu from "../images/menu_icon.png";
-import locationIcon from "../images/location.png";
 import back from "../images/back.png";
 import pay from "../images/pay.png";
 import support from "../images/support.png";
@@ -22,6 +20,10 @@ import { updateDriver } from "../api/driverUpdate.ts";
 import { toggleDriverStatus } from "../api/toggleDriverStatus.ts";
 import {Driver} from "../types/driver.ts";
 import {AppDispatch} from "../store/store.ts";
+import {useCurrentLocation} from "../hooks/useCurrentLocation.ts";
+import L from "leaflet";
+import Map from "../components/Map.tsx";
+import my_location from "../images/my_location.png";
 
 function DriverHomePage() {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
@@ -31,6 +33,11 @@ function DriverHomePage() {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const userEmail = useSelector((state: any) => state.auth.userEmail)!;
+
+  const [map, setMap] = useState<L.Map | null>(null);
+  const { currentLocation, handleMyLocationClick } =
+      useCurrentLocation(map);
+  const [defaultPosition] = useState<[number, number]>([46.7712, 23.6236]); // Cluj-Napoca
 
   const handleMenuToggle = () => {
     setIsMenuVisible(!isMenuVisible);
@@ -90,6 +97,11 @@ function DriverHomePage() {
     fetchDriver();
   }, [userEmail]);
 
+
+  useEffect(() => {
+    handleMyLocationClick();
+  }, []);
+
   return (
       <div className="drivercontainer">
         <div id="drawer" className={`drawer ${isDrawerVisible ? "visible" : ""}`}>
@@ -118,17 +130,28 @@ function DriverHomePage() {
           </div>
         </div>
         <div className="map-container">
-          <img src={mapImage} alt="map" className="map-image" />
+
+          <div className="map-container">
+            <Map
+                currentLocation={currentLocation}
+                onMapReady={setMap}
+                defaultPosition={defaultPosition}
+            />
+          </div>
+
           <button
               onClick={() => setIsDrawerVisible(true)}
               className="drawer-menu-button"
           >
-            <img src={menu} alt="menu" className="menu-icon" />
+            <img src={menu} alt="menu" className="menu-icon"/>
           </button>
         </div>
         <div className="button-bar">
-          <button className="location-button">
-            <img src={locationIcon} alt="location" />
+          <button
+              className="location-button-pass"
+              onClick={handleMyLocationClick}
+          >
+            <img src={my_location} alt="expand" className="location-icon"/>
           </button>
           <button className="online-toggle" onClick={handleToggleStatus}>
             {driverStatus === "OFFLINE" ? "Go Online" : "Go Offline"}
@@ -136,23 +159,23 @@ function DriverHomePage() {
           <div className="menu-wrapper">
             <div className={`expanded-menu ${isMenuVisible ? "visible" : ""}`}>
               <button className="menu-item">
-                <img src={homeIcon} alt="home" className="home-icon" />
+                <img src={homeIcon} alt="home" className="home-icon"/>
               </button>
               <button
                   onClick={() => navigate("/my-account-driver")}
                   className="menu-item"
               >
-                <img src={accountIcon} alt="account" className="account-icon" />
+                <img src={accountIcon} alt="account" className="account-icon"/>
               </button>
               <button className="menu-item">
-                <img src={historyIcon} alt="history" className="history-icon" />
+                <img src={historyIcon} alt="history" className="history-icon"/>
               </button>
             </div>
             <button
                 className={`expand-button ${isMenuVisible ? "expanded" : ""}`}
                 onClick={handleMenuToggle}
             >
-              <img src={arrowIcon} alt="expand" />
+              <img src={arrowIcon} alt="expand"/>
             </button>
           </div>
         </div>
