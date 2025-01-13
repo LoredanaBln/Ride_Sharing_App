@@ -57,24 +57,34 @@
 }
 
 .ride-status {
-    margin-bottom: 1rem;
+    margin-bottom: 10px;
 }
 
 .status-badge {
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
+    padding: 4px 12px;
+    border-radius: 12px;
     font-size: 0.9rem;
     font-weight: 500;
 }
 
-.completed {
-    background-color: #e8f5e9;
-    color: #2e7d32;
+.status-badge.completed {
+    background-color: #4caf50;
+    color: white;
 }
 
-.cancelled {
-    background-color: #ffebee;
-    color: #c62828;
+.status-badge.canceled {
+    background-color: #f44336;
+    color: white;
+}
+
+.status-badge.in_progress {
+    background-color: #2196f3;
+    color: white;
+}
+
+.status-badge.accepted {
+    background-color: #ff9800;
+    color: white;
 }
 
 .location-group {

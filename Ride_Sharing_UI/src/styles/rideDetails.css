@@ -1,0 +1,101 @@
+.ride-details-card {
+    position: absolute;
+    bottom: 120px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    width: 90%;
+    max-width: 400px;
+    z-index: 500;
+    animation: slideIn 0.3s ease-out;
+}
+
+.ride-details-card h3 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+.details-content {
+    margin-bottom: 25px;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.detail-item .label {
+    color: #666;
+    font-weight: 500;
+}
+
+.detail-item .value {
+    color: #333;
+    font-weight: 600;
+}
+
+.create-order-button {
+    width: 100%;
+    padding: 12px;
+    background: #2b7d27;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(43, 125, 39, 0.2);
+}
+
+.create-order-button:hover {
+    background: #236b1f;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(43, 125, 39, 0.3);
+}
+
+.create-order-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(43, 125, 39, 0.3);
+}
+
+.close-button {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #666;
+    cursor: pointer;
+    padding: 5px;
+    line-height: 1;
+}
+
+.close-button:hover {
+    color: #333;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translate(-50%, 20px);
+        opacity: 0;
+    }
+    to {
+        transform: translate(-50%, 0);
+        opacity: 1;
+    }
+} 

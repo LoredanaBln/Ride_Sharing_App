@@ -3,11 +3,13 @@ package main.ride_sharing_app.controller;
 import main.ride_sharing_app.dto.PasswordChangeRequest;
 import main.ride_sharing_app.dto.PasswordResetRequest;
 import main.ride_sharing_app.dto.PasswordResetConfirmation;
+import main.ride_sharing_app.dto.RatingRequest;
 import main.ride_sharing_app.model.Driver;
 import main.ride_sharing_app.model.DriverStatus;
 import main.ride_sharing_app.model.Order;
 import main.ride_sharing_app.service.DriverService;
 import main.ride_sharing_app.service.OrderService;
+import main.ride_sharing_app.service.RatingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,10 +32,17 @@ public class DriverController {
     @Autowired
     private final DriverService driverService;
     @Autowired
+    private final RatingService ratingService;
+    @Autowired
     private final OrderService orderService;
 
-    public DriverController(DriverService driverService, OrderService orderService) {
+    public DriverController(
+        DriverService driverService, 
+        RatingService ratingService,
+        OrderService orderService
+    ) {
         this.driverService = driverService;
+        this.ratingService = ratingService;
         this.orderService = orderService;
     }
 
@@ -150,5 +159,21 @@ public class DriverController {
         return driverService.findByEmail(email)
                 .map(driver -> ResponseEntity.ok().body(driver))
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @PostMapping("/rate/{orderId}")
+    @PreAuthorize("hasRole('ROLE_PASSENGER')")
+    public ResponseEntity<?> rateDriver(
+        @PathVariable Long orderId,
+        @RequestBody RatingRequest rating,
+        Authentication authentication
+    ) {
+        try {
+            String passengerEmail = authentication.getName();
+            ratingService.rateDriver(orderId, rating.getRating(), passengerEmail);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

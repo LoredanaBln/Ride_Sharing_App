@@ -265,7 +265,7 @@ function DriverPaymentMethod() {
                     </button>
                 </div>
             )}
-            {loading && <div className="loading-spinner">Loading...</div>}
+            {loading && <div className="loading-spinner"></div>}
         </div>
     );
 }

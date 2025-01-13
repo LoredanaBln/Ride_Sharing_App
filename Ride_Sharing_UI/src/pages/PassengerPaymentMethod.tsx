@@ -272,7 +272,7 @@ function PassengerPaymentMethod() {
                 )}
             </div>
             {error && <div className="error-message">{error}</div>}
-            {loading && <div className="loading-spinner">Loading...</div>}
+            {loading && <div className="loading-spinner"></div>}
         </div>
     );
 }

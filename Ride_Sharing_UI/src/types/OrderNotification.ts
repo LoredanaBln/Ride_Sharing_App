@@ -7,9 +7,8 @@ export interface OrderNotification {
   timestamp: number;
   driverInfo?: DriverInfoDTO;
   estimatedArrival?: number;
-  canClose?: boolean;
-  startLocation: string;
-  endLocation: string;
-  estimatedPrice: number;
-  distance: number;
+  startLocation?: string;
+  endLocation?: string;
+  estimatedPrice?: number;
+  distance?: number;
 }

@@ -203,22 +203,26 @@ public class OrderService {
     public Order completeOrder(Long orderId) {
         Order order = orderRepository.findById(orderId)
             .orElseThrow(() -> new RuntimeException("Order not found"));
-        
+            
         if (order.getDriver() == null) {
             throw new RuntimeException("Cannot complete order: no driver assigned");
         }
         
         order.setStatus(OrderStatus.COMPLETED);
         order.setEndTime(LocalDateTime.now());
-        order.setActualDurationMinutes(
-            (int) ChronoUnit.MINUTES.between(order.getStartTime(), order.getEndTime())
-        );
         
+        // Update driver status
         Driver driver = order.getDriver();
         driver.setStatus(DriverStatus.AVAILABLE);
         driverRepository.save(driver);
         
-        return orderRepository.save(order);
+        Order savedOrder = orderRepository.save(order);
+        
+        // Send notification
+        System.out.println("Sending ride completed notification for order: " + orderId);
+        notificationController.sendRideCompletedNotification(savedOrder);
+        
+        return savedOrder;
     }
 
     @Transactional
@@ -236,7 +240,12 @@ public class OrderService {
             driverRepository.save(driver);
         }
         
-        return orderRepository.save(order);
+        Order savedOrder = orderRepository.save(order);
+        
+        // Send notification to passenger about cancellation
+        notificationController.sendRideCanceledNotification(savedOrder, reason);
+        
+        return savedOrder;
     }
 
     public List<Driver> findNearbyDrivers(Double latitude, Double longitude, Double radiusKm) {

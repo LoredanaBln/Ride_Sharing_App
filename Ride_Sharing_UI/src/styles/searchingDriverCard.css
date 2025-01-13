@@ -1,0 +1,76 @@
+.searching-driver-card {
+    position: absolute;
+    bottom: 120px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    padding: 30px 25px;
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    width: 90%;
+    max-width: 400px;
+    z-index: 500;
+    text-align: center;
+    animation: slideIn 0.3s ease-out;
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #2b7d27;
+    border-radius: 50%;
+    margin: 0 auto 30px;
+    animation: spin 1s linear infinite;
+}
+
+.searching-driver-card h3 {
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: #333;
+}
+
+.searching-driver-card p {
+    color: #666;
+    margin-bottom: 35px;
+}
+
+.searching-driver-card .cancel-button {
+    background: #e53935;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 80%;
+    max-width: 200px;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(229, 57, 53, 0.2);
+}
+
+.searching-driver-card .cancel-button:hover {
+    background: #c62828;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(198, 40, 40, 0.3);
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translate(-50%, 20px);
+        opacity: 0;
+    }
+    to {
+        transform: translate(-50%, 0);
+        opacity: 1;
+    }
+} 

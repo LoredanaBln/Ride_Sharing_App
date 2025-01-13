@@ -78,6 +78,9 @@ public class SecurityConfig {
                         .requestMatchers("/payment/driver/bankAccount/**").hasAuthority("ROLE_DRIVER")
                         .requestMatchers("/test/auth").authenticated()
                         .requestMatchers("/order/passenger/**").hasAuthority("ROLE_PASSENGER")
+                        .requestMatchers(HttpMethod.POST, "/order/*/complete").hasAnyRole("DRIVER")
+                        .requestMatchers("/order/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/driver/rate/**").hasRole("PASSENGER")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtUtils, userDetailsService),

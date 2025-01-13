@@ -2,6 +2,7 @@ package main.ride_sharing_app.service;
 
 import main.ride_sharing_app.model.Driver;
 import main.ride_sharing_app.model.DriverStatus;
+import main.ride_sharing_app.model.Order;
 import main.ride_sharing_app.repository.DriverRepository;
 import main.ride_sharing_app.repository.PasswordResetTokenRepository;
 import main.ride_sharing_app.service.EmailService;

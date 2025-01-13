@@ -33,6 +33,10 @@ import { getDefaultPaymentMethod } from "../api/payment/passenger/getDefaultPaym
 import { Client } from '@stomp/stompjs';
 import OrderStatusCard from '../components/OrderStatusCard';
 import SockJS from 'sockjs-client';
+import { rateDriver } from '../api/rateDriver';
+import { toast } from 'react-hot-toast';
+import RideDetails from '../components/RideDetails';
+import SearchingDriverCard from '../components/SearchingDriverCard';
 
 function PassengerHome() {
   const navigate = useNavigate();
@@ -41,6 +45,8 @@ function PassengerHome() {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [isDrawerVisible, setIsDrawerVisible] = useState(false);
   const [isRouteInfoVisible, setIsRouteInfoVisible] = useState(false);
+  const [showRideDetails, setShowRideDetails] = useState(false);
+  const [isSearchingDriver, setIsSearchingDriver] = useState(false);
 
   const userEmail = useSelector((state: RootState) => state.auth.userEmail)!;
   const [passenger, setPassenger] = useState<Passenger | null>(null);
@@ -79,7 +85,7 @@ function PassengerHome() {
   const handleSearchInput = async () => {
     const success = await handleSearch(searchValue);
     if (success) {
-      setIsRouteInfoVisible(true);
+        setShowRideDetails(true);
     }
   };
 
@@ -101,11 +107,8 @@ function PassengerHome() {
   };
 
   const handleCreateOrder = async () => {
-    if (!passenger || !currentLocation || !destination || !routeInfo) {
-      console.error("Missing required data for order creation");
-      return;
-    }
-
+    setShowRideDetails(false);
+    setIsSearchingDriver(true);
     try {
       const defaultPaymentMethod = await getDefaultPaymentMethod(Number(passenger.id));
 
@@ -128,59 +131,93 @@ function PassengerHome() {
 
       await dispatch(createOrderApi(newOrder));
     } catch (error) {
-      console.error("Error creating order:", error);
+      console.error('Error creating order:', error);
+      setIsSearchingDriver(false);
+      toast.error('Failed to create order');
     }
+  };
+
+  const handleCancelSearch = async () => {
+    setIsSearchingDriver(false);
+    // Add logic to cancel the order if needed
   };
 
   useEffect(() => {
     if (!passenger) return;
 
+    console.log('Setting up WebSocket connection for passenger:', passenger);
+
     const client = new Client({
-      webSocketFactory: () => new SockJS('http://localhost:8080/ws'),
-      connectHeaders: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`
-      },
-      debug: (str) => {
-        console.log('STOMP:', str);
-      },
-      reconnectDelay: 5000,
-      heartbeatIncoming: 4000,
-      heartbeatOutgoing: 4000,
-      onConnect: () => {
-        console.log('Connected to WebSocket');
-        const destination = `/topic/passengers/${passenger.id}/orders`;
-        console.log('Subscribing to:', destination);
-        
-        try {
-          client.subscribe(destination, (message) => {
-            console.log('Received message:', message);
-            const notification = JSON.parse(message.body);
-            dispatch(setOrderNotification(notification));
-            setIsRouteInfoVisible(false);
-          });
-        } catch (error) {
-          console.error('Error subscribing to destination:', error);
+        webSocketFactory: () => new SockJS('http://localhost:8080/ws'),
+        connectHeaders: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+        },
+        debug: (str) => {
+            console.log('STOMP:', str);
+        },
+        onConnect: () => {
+            console.log('WebSocket Connected');
+            try {
+                const destination = `/topic/passengers/${userEmail}/orders`;
+                console.log('Subscribing to:', destination);
+                
+                client.subscribe(destination, (message) => {
+                    console.log('Received message:', message);
+                    try {
+                        const notification = JSON.parse(message.body);
+                        console.log('Parsed notification:', notification);
+                        if (notification.status === 'COMPLETED') {
+                            console.log('Received COMPLETED status notification');
+                        }
+                        dispatch(setOrderNotification(notification));
+                    } catch (error) {
+                        console.error('Error parsing message:', error);
+                    }
+                });
+            } catch (error) {
+                console.error('Error subscribing to destination:', error);
+            }
+        },
+        onDisconnect: () => {
+            console.log('WebSocket Disconnected');
         }
-      },
-      onStompError: (frame) => {
-        console.error('STOMP error:', frame);
-      }
     });
 
-    try {
-      console.log('Activating STOMP client...');
-      client.activate();
-    } catch (error) {
-      console.error('Error activating STOMP client:', error);
-    }
+    client.activate();
 
     return () => {
-      if (client.active) {
-        console.log('Deactivating STOMP client');
-        client.deactivate();
-      }
+        if (client.active) {
+            console.log('Cleaning up WebSocket connection');
+            client.deactivate();
+        }
     };
-  }, [passenger, dispatch]);
+  }, [passenger, dispatch, userEmail]);
+
+  const handleRateDriver = async (rating: number) => {
+    if (!orderNotification?.driverInfo) return;
+    
+    try {
+      await rateDriver(orderNotification.orderId, rating);
+      toast.success('Thank you for your rating!');
+    } catch (error) {
+      console.error('Error rating driver:', error);
+      toast.error('Failed to submit rating. Please try again.');
+    }
+  };
+
+  useEffect(() => {
+    if (orderNotification) {
+      if (orderNotification.status === 'ACCEPTED') {
+        setIsSearchingDriver(false);
+      }
+      setShowRideDetails(false);
+    }
+  }, [orderNotification]);
+
+  const handleRouteInfoClick = () => {
+    setIsRouteInfoVisible(false);
+    setShowRideDetails(true);
+  };
 
   return (
     <div className="passenger-container">
@@ -284,38 +321,25 @@ function PassengerHome() {
         </div>
       </div>
 
-      {isRouteInfoVisible && routeInfo && (
-        <div className="route-info-popup">
-          <div className="route-info-card">
-            <button
-              className="close-button"
-              onClick={() => setIsRouteInfoVisible(false)}
-            >
-              ×
-            </button>
-            <div className="route-details">
-              <h3>Ride Details</h3>
-              <p>Distance: {routeInfo.distanceInKm.toFixed(2)} km</p>
-              <p>Duration: {Math.round(routeInfo.durationInMinutes)} minutes</p>
-              <p>Estimated Price: ${routeInfo.distanceInKm.toFixed(2)}</p>
-            </div>
-            <button className="create-order-button" onClick={handleCreateOrder}>
-              Create Order
-            </button>
-          </div>
-        </div>
+      {showRideDetails && routeInfo && (
+        <RideDetails
+          distance={routeInfo.distanceInKm}
+          duration={routeInfo.durationInMinutes}
+          price={routeInfo.distanceInKm}
+          onCreateOrder={handleCreateOrder}
+          onClose={() => setShowRideDetails(false)}
+        />
+      )}
+
+      {isSearchingDriver && !orderNotification && (
+        <SearchingDriverCard onCancel={handleCancelSearch} />
       )}
 
       {orderNotification && (
-        <OrderStatusCard 
+        <OrderStatusCard
           notification={orderNotification}
-          onClose={() => {
-            const isRideActive = orderNotification.status === 'ACCEPTED' || 
-                                orderNotification.status === 'IN_PROGRESS';
-            if (!isRideActive) {
-              dispatch(setOrderNotification(null));
-            }
-          }}
+          onClose={() => dispatch(setOrderNotification(null))}
+          onRateDriver={handleRateDriver}
         />
       )}
     </div>
