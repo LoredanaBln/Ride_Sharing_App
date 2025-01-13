@@ -1,0 +1,117 @@
+.support-container {
+    max-width: 580px;
+    height: 1280px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #ffffff;
+    overflow-y: auto;
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    &::-webkit-scrollbar {
+        display: none;
+    }
+    /* Hide scrollbar for IE, Edge and Firefox */
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+.support-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+    position: relative;
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 100;
+    padding: 10px 0;
+}
+
+.back-button {
+    background: none;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    margin-right: 15px;
+}
+
+.back-button img {
+    width: 24px;
+    height: 24px;
+}
+
+.support-header h1 {
+    margin: 0;
+    color: #2b7d27;
+    font-size: 24px;
+    flex-grow: 1;
+    text-align: center;
+}
+
+.support-content {
+    padding: 20px;
+}
+
+.support-section {
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.support-section h2 {
+    color: #2b7d27;
+    margin-bottom: 15px;
+    font-size: 20px;
+}
+
+.contact-info {
+    display: grid;
+    gap: 20px;
+}
+
+.contact-item {
+    padding: 15px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.contact-item h3 {
+    color: #333;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.contact-item p {
+    color: #666;
+    margin: 5px 0;
+}
+
+.faq-list {
+    display: grid;
+    gap: 15px;
+}
+
+.faq-item {
+    padding: 15px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.faq-item h3 {
+    color: #333;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.faq-item p {
+    color: #666;
+    line-height: 1.5;
+}
+
+.support-section p {
+    line-height: 1.6;
+    color: #666;
+} 

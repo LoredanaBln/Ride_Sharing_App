@@ -14,6 +14,8 @@ import PassengerPaymentMethod from "./pages/PassengerPaymentMethod.tsx";
 import DriverPaymentMethod from "./pages/DriverPaymentMethod.tsx";
 import { Toaster } from 'react-hot-toast';
 import DriverRidesHistory from "./pages/DriverRidesHistory.tsx";
+import About from "./pages/About";
+import Support from "./pages/Support";
 
 function App() {
     return (
@@ -59,8 +61,8 @@ function App() {
                         <Route path="/signup-passenger" element={<SignUpPassenger/>}/>
                         <Route path="/signup-driver" element={<SignUpDriver/>}/>
                         <Route path="/reset-password" element={<ChangePassword/>}/>
-                        <Route path="/support" element={<div>Support Page</div>}/>
-                        <Route path="/about" element={<div>About Page</div>}/>
+                        <Route path="/support" element={<Support/>}/>
+                        <Route path="/about" element={<About/>}/>
                     </Routes>
                 </BrowserRouter>
             </Provider>
