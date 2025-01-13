@@ -39,6 +39,9 @@ public class Driver {
     @Column(name = "rating")
     private Double rating;
 
+    @Column(name = "total_ratings")
+    private Integer totalRatings;
+
     @Column(name = "car_type", nullable = false)
     private String carType;
 

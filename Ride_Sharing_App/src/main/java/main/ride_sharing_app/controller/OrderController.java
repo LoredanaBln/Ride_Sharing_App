@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 import java.util.Optional;
@@ -127,9 +128,24 @@ public class OrderController {
         return ResponseEntity.ok(orderService.updateOrderStatus(orderId, status));
     }
 
-    @PutMapping("/{orderId}/complete")
-    public ResponseEntity<Order> completeOrder(@PathVariable Long orderId) {
-        return ResponseEntity.ok(orderService.completeOrder(orderId));
+    @PostMapping("/{orderId}/complete")
+    @PreAuthorize("hasRole('ROLE_DRIVER')")
+    public ResponseEntity<Order> completeOrder(
+        @PathVariable Long orderId,
+        Authentication authentication
+    ) {
+        try {
+            System.out.println("Received request to complete order: " + orderId);
+            String driverEmail = authentication.getName();
+            System.out.println("Driver email: " + driverEmail);
+            
+            Order completedOrder = orderService.completeOrder(orderId);
+            System.out.println("Order completed successfully: " + orderId);
+            return ResponseEntity.ok(completedOrder);
+        } catch (Exception e) {
+            System.err.println("Error completing order: " + e.getMessage());
+            return ResponseEntity.badRequest().body(null);
+        }
     }
 
     @PutMapping("/{orderId}/cancel")

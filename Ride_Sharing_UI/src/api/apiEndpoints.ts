@@ -32,4 +32,5 @@ export const API_ENDPOINTS = {
     REJECT_ORDER: `${BASE_URL}order/reject`,
     COMPLETE_ORDER: `${BASE_URL}order/`,
     CANCEL_ORDER: `${BASE_URL}order/`,
+    RATE_DRIVER: `${BASE_URL}driver/rate`,
 }

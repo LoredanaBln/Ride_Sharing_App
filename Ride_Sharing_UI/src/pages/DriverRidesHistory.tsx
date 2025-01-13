@@ -43,11 +43,11 @@ function DriverRidesHistory() {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
-            {/*<div className="ride-status">*/}
-            {/*  <span className={`status-badge ${ride.status?.toLowerCase()}`}>*/}
-            {/*    {ride.status || "Completed"}*/}
-            {/*  </span>*/}
-            {/*</div>*/}
+            <div className={`ride-status ${ride.status?.toLowerCase()}`}>
+              <span className={`status-badge ${ride.status?.toLowerCase()}`}>
+                {ride.status || "COMPLETED"}
+              </span>
+            </div>
             <div className="ride-details">
               <div className="location-group">
                 <p className="location">

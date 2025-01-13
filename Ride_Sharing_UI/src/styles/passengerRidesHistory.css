@@ -57,24 +57,47 @@
 }
 
 .ride-status {
-    margin-bottom: 1rem;
+    margin-bottom: 10px;
+    border-radius: 12px;
+    padding: 8px 16px;
+    width: 100%;
+}
+
+.ride-status.completed {
+    background-color: #e8f5e9;
+}
+
+.ride-status.canceled {
+    background-color: #ffebee;
+}
+
+.ride-status.accepted, .ride-status.in_progress {
+    background-color: #e3f2fd;
+}
+
+.ride-status.pending {
+    background-color: #fff3e0;
 }
 
 .status-badge {
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
     font-size: 0.9rem;
     font-weight: 500;
 }
 
-.completed {
-    background-color: #e8f5e9;
+.status-badge.completed {
     color: #2e7d32;
 }
 
-.cancelled {
-    background-color: #ffebee;
+.status-badge.canceled {
     color: #c62828;
+}
+
+.status-badge.accepted, .status-badge.in_progress {
+    color: #1565c0;
+}
+
+.status-badge.pending {
+    color: #ef6c00;
 }
 
 .location-group {
