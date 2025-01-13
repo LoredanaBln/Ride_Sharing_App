@@ -1,7 +1,6 @@
 package main.ride_sharing_app.websocket;
 
 import main.ride_sharing_app.model.OrderStatus;
-import main.ride_sharing_app.websocket.message.ChatMessage;
 import main.ride_sharing_app.websocket.message.LocationUpdateMessage;
 import main.ride_sharing_app.websocket.message.OrderNotificationMessage;
 import main.ride_sharing_app.model.UserType;

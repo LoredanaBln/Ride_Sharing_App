@@ -1,16 +1,12 @@
 package main.ride_sharing_app.websocket.util;
-
-import main.ride_sharing_app.websocket.dto.ChatMessageDTO;
 import main.ride_sharing_app.websocket.dto.LocationUpdateDTO;
 import main.ride_sharing_app.websocket.dto.OrderNotificationDTO;
-import main.ride_sharing_app.websocket.message.ChatMessage;
 import main.ride_sharing_app.websocket.message.LocationUpdateMessage;
 import main.ride_sharing_app.websocket.message.OrderNotificationMessage;
 import main.ride_sharing_app.model.OrderStatus;
 
 public class WebSocketConverter {
 
-    // Order Notification conversions
     public static OrderNotificationDTO toDTO(OrderNotificationMessage message) {
         return OrderNotificationDTO.builder()
             .orderId(message.getOrderId())
@@ -28,7 +24,6 @@ public class WebSocketConverter {
         );
     }
 
-    // Location Update conversions
     public static LocationUpdateDTO toDTO(LocationUpdateMessage message) {
         return new LocationUpdateDTO(
             message.getDriverId(),
@@ -48,23 +43,4 @@ public class WebSocketConverter {
         );
     }
 
-    // Chat Message conversions
-    public static ChatMessageDTO toDTO(ChatMessage message) {
-        return new ChatMessageDTO(
-            message.getOrderId(),
-            message.getSenderId(),
-            message.getSenderType().toString(),
-            message.getContent(),
-            System.currentTimeMillis()
-        );
-    }
-
-    public static ChatMessage toMessage(ChatMessageDTO dto) {
-        return new ChatMessage(
-            dto.getOrderId(),
-            dto.getSenderId(),
-            ChatMessage.SenderType.valueOf(dto.getSenderType()),
-            dto.getContent()
-        );
-    }
-} 
+}
