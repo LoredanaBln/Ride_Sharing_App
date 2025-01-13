@@ -252,6 +252,19 @@ function DriverHomePage() {
         }
     };
 
+    const handleRedirectToMaps = () => {
+        if (!currentLocation || !orderRequest) {
+            console.error("Current location or order request data is missing.");
+            return "";
+        }
+
+        const { latitude, longitude } = currentLocation;
+        const startLocation = encodeURIComponent(orderRequest.startLocation);
+        const endLocation = encodeURIComponent(orderRequest.endLocation);
+
+        return `https://www.google.com/maps/dir/?api=1&origin=${latitude},${longitude}&destination=${endLocation}&waypoints=${startLocation}`;
+    };
+
     return (
         <div className="drivercontainer">
             <div id="drawer" className={`drawer ${isDrawerVisible ? "visible" : ""}`}>
