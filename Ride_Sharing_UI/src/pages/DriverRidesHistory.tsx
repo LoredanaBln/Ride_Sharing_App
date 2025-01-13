@@ -43,7 +43,7 @@ function DriverRidesHistory() {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
-            <div className="ride-status">
+            <div className={`ride-status ${ride.status?.toLowerCase()}`}>
               <span className={`status-badge ${ride.status?.toLowerCase()}`}>
                 {ride.status || "COMPLETED"}
               </span>
@@ -67,7 +67,7 @@ function DriverRidesHistory() {
                 </p>
                 <p className="price">
                   <i className="fas fa-dollar-sign"></i>
-                  ${(ride.estimatedDistance * 2).toFixed(2)}
+                  {Number(ride.price).toFixed(2)}
                 </p>
               </div>
             </div>
