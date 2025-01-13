@@ -1,6 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import '../styles/passengerAccount.css';
+import '../styles/myAccount.css';
 import avatarIcon from '../images/avatar.png';
 import backIcon from '../images/backGreen.png';
 import { updateDriver } from "../api/driverUpdate.ts";

@@ -32,7 +32,6 @@ import { useSearch } from "../hooks/useSearch.ts";
 import { getDefaultPaymentMethod } from "../api/payment/passenger/getDefaultPaymentMethod.ts";
 import { Client } from '@stomp/stompjs';
 import OrderStatusCard from '../components/OrderStatusCard';
-import { OrderNotification } from '../types/OrderNotification';
 import SockJS from 'sockjs-client';
 
 function PassengerHome() {

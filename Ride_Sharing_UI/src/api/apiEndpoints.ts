@@ -30,4 +30,6 @@ export const API_ENDPOINTS = {
     DRIVER_PAYMENT: `${BASE_URL}payment/driver`,
     ACCEPT_ORDER: `${BASE_URL}order/accept`,
     REJECT_ORDER: `${BASE_URL}order/reject`,
+    COMPLETE_ORDER: `${BASE_URL}order/`,
+    CANCEL_ORDER: `${BASE_URL}order/`,
 }

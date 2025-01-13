@@ -1,4 +1,3 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/support.css';
 import backIcon from '../images/back.png';

@@ -13,7 +13,7 @@
 .add-bank-form {
     background: white;
     padding: 2rem;
-    border-radius: 16px;
+    border-radius: 20px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     margin-top: 2rem;
 }
@@ -33,7 +33,7 @@
     background: #2b7d27;
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 20px;
     font-size: 1.6rem;
     cursor: pointer;
     margin-top: 2rem;
