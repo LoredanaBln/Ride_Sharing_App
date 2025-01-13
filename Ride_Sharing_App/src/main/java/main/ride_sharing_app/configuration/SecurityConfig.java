@@ -60,6 +60,8 @@ public class SecurityConfig {
                         .requestMatchers("/driver/requestPasswordReset", "/driver/confirmPasswordReset").permitAll()
                         .requestMatchers("/order/nearbyDrivers").permitAll()
                         .requestMatchers("/order/id/{id}").permitAll()
+                        .requestMatchers("/order/{orderId}/complete").permitAll()
+                        .requestMatchers("/order/{orderId}/cancel").permitAll()
                         .requestMatchers("/location/geocode", "/location/route").permitAll()
                         .requestMatchers("/testMap/geocode", "/testMap/route").permitAll()
                         .requestMatchers("/auth/admin/login").permitAll()

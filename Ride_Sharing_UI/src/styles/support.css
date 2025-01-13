@@ -1,17 +1,18 @@
 .support-container {
-    max-width: 580px;
-    height: 1280px;
-    margin: 0 auto;
+    max-width: 550px;
+    height: 1250px;
+    margin-top: 20px;
     padding: 20px;
+    border-radius: 60px;
     background-color: #ffffff;
     overflow-y: auto;
-    /* Hide scrollbar for Chrome, Safari and Opera */
+
     &::-webkit-scrollbar {
         display: none;
     }
-    /* Hide scrollbar for IE, Edge and Firefox */
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
 
 .support-header {
@@ -19,7 +20,6 @@
     align-items: center;
     margin-bottom: 30px;
     position: relative;
-    position: sticky;
     top: 0;
     background: white;
     z-index: 100;

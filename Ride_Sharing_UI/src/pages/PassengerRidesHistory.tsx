@@ -63,7 +63,7 @@ function PassengerRidesHistory() {
               <div className="ride-info">
                 <p>
                   <i className="far fa-calendar"></i>
-                  {new Date(ride.date).toLocaleDateString()}
+                  {new Date(ride.startTime).toLocaleString()}
                 </p>
                 <p className="price">
                   <i className="fas fa-dollar-sign"></i>
