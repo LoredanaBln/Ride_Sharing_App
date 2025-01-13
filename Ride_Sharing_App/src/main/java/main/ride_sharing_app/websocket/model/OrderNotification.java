@@ -1,4 +1,4 @@
-package main.ride_sharing_app.websocket.dto;
+package main.ride_sharing_app.websocket.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

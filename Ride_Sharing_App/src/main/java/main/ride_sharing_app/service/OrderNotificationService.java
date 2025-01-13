@@ -3,7 +3,7 @@ package main.ride_sharing_app.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import main.ride_sharing_app.model.Order;
-import main.ride_sharing_app.websocket.dto.OrderNotification;
+import main.ride_sharing_app.websocket.model.OrderNotification;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 

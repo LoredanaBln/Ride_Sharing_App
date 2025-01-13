@@ -1,37 +1,35 @@
 package main.ride_sharing_app.service;
 
+import com.stripe.exception.StripeException;
+import com.stripe.model.PaymentIntent;
+import lombok.extern.slf4j.Slf4j;
 import main.ride_sharing_app.dto.OrderDTO;
 import main.ride_sharing_app.model.*;
 import main.ride_sharing_app.model.location.GeoLocation;
 import main.ride_sharing_app.model.location.RouteInfo;
 import main.ride_sharing_app.model.payment.PaymentStatus;
-import main.ride_sharing_app.repository.OrderRepository;
 import main.ride_sharing_app.repository.DriverRepository;
+import main.ride_sharing_app.repository.OrderRepository;
 import main.ride_sharing_app.repository.PassengerRepository;
 import main.ride_sharing_app.websocket.controller.LocationWebSocketController;
 import main.ride_sharing_app.websocket.controller.OrderNotificationController;
 import main.ride_sharing_app.websocket.dto.DriverInfoDTO;
-import main.ride_sharing_app.websocket.dto.OrderNotificationDTO;
 import main.ride_sharing_app.websocket.dto.LocationUpdateDTO;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import main.ride_sharing_app.websocket.dto.OrderNotificationDTO;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import com.stripe.exception.StripeException;
-import com.stripe.model.PaymentIntent;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.ArrayList;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 
 @Service

@@ -8,7 +8,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.context.event.EventListener;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import main.ride_sharing_app.websocket.dto.OrderNotification;
+import main.ride_sharing_app.websocket.model.OrderNotification;
 
 @Component
 @Slf4j
