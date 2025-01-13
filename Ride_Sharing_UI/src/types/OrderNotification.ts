@@ -1,10 +1,9 @@
 export interface OrderNotification {
     orderId: number;
-    startLocation: string;
-    endLocation: string;
-    estimatedPrice: number;
-    distance: number;
-    timestamp: number;
     status: string;
     message: string;
+    timestamp: number;
+    driverInfo?: DriverInfoDTO;
+    estimatedArrival?: number;
+    canClose?: boolean;
 } 

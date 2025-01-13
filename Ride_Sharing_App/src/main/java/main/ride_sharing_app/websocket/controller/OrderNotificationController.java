@@ -1,7 +1,9 @@
 package main.ride_sharing_app.websocket.controller;
 
+import main.ride_sharing_app.model.Order;
 import main.ride_sharing_app.websocket.dto.OrderNotificationDTO;
 import main.ride_sharing_app.websocket.message.OrderNotificationMessage;
+import main.ride_sharing_app.websocket.dto.DriverInfoDTO;
 import main.ride_sharing_app.websocket.util.WebSocketConverter;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -38,5 +40,31 @@ public class OrderNotificationController {
                 notification
             );
         }
+    }
+
+    public void notifyPassenger(Long passengerId, OrderNotificationDTO notification) {
+        messagingTemplate.convertAndSend(
+            "/topic/passengers/" + passengerId + "/orders",
+            notification
+        );
+    }
+
+    public void sendDriverAcceptanceNotification(Order order) {
+        OrderNotificationDTO notification = OrderNotificationDTO.builder()
+            .orderId(order.getId())
+            .status(order.getStatus().toString())
+            .message("Driver " + order.getDriver().getName() + " has accepted your ride")
+            .timestamp(System.currentTimeMillis())
+            .driverInfo(new DriverInfoDTO(
+                order.getDriver().getName(),
+                order.getDriver().getPhoneNumber(),
+                order.getDriver().getCarType(),
+                order.getDriver().getCarColor(),
+                order.getDriver().getRating()
+            ))
+            .estimatedArrival(order.getEstimatedDurationMinutes())
+            .build();
+
+        notifyPassenger(order.getPassenger().getId(), notification);
     }
 } 

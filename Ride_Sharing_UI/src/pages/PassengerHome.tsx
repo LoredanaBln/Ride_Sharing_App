@@ -19,6 +19,7 @@ import { RootState, AppDispatch } from "../store/store.ts";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchPassengerByEmail } from "../api/passengerRetrievalByEmail.ts";
 import { logout } from "../slices/loginSlice.ts";
+import { setOrderNotification } from "../slices/orderNotificationSlice";
 import Map from "../components/Map";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
@@ -29,6 +30,10 @@ import { getLocationName } from "../api/getLocationName.ts";
 import { useCurrentLocation } from "../hooks/useCurrentLocation";
 import { useSearch } from "../hooks/useSearch.ts";
 import { getDefaultPaymentMethod } from "../api/payment/passenger/getDefaultPaymentMethod.ts";
+import { Client } from '@stomp/stompjs';
+import OrderStatusCard from '../components/OrderStatusCard';
+import { OrderNotification } from '../types/OrderNotification';
+import SockJS from 'sockjs-client';
 
 function PassengerHome() {
   const navigate = useNavigate();
@@ -51,6 +56,8 @@ function PassengerHome() {
     currentLocation,
     map,
   });
+
+  const orderNotification = useSelector((state: RootState) => state.orderNotification.notification);
 
   useEffect(() => {
     const fetchPassenger = async () => {
@@ -125,6 +132,55 @@ function PassengerHome() {
       console.error("Error creating order:", error);
     }
   };
+
+  useEffect(() => {
+    if (!passenger) return;
+
+    const client = new Client({
+      webSocketFactory: () => new SockJS('http://localhost:8080/ws'),
+      connectHeaders: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      },
+      debug: (str) => {
+        console.log('STOMP:', str);
+      },
+      reconnectDelay: 5000,
+      heartbeatIncoming: 4000,
+      heartbeatOutgoing: 4000,
+      onConnect: () => {
+        console.log('Connected to WebSocket');
+        const destination = `/topic/passengers/${passenger.id}/orders`;
+        console.log('Subscribing to:', destination);
+        
+        try {
+          client.subscribe(destination, (message) => {
+            console.log('Received message:', message);
+            const notification = JSON.parse(message.body);
+            dispatch(setOrderNotification(notification));
+          });
+        } catch (error) {
+          console.error('Error subscribing to destination:', error);
+        }
+      },
+      onStompError: (frame) => {
+        console.error('STOMP error:', frame);
+      }
+    });
+
+    try {
+      console.log('Activating STOMP client...');
+      client.activate();
+    } catch (error) {
+      console.error('Error activating STOMP client:', error);
+    }
+
+    return () => {
+      if (client.active) {
+        console.log('Deactivating STOMP client');
+        client.deactivate();
+      }
+    };
+  }, [passenger, dispatch]);
 
   return (
     <div className="passenger-container">
@@ -248,6 +304,19 @@ function PassengerHome() {
             </button>
           </div>
         </div>
+      )}
+
+      {orderNotification && (
+        <OrderStatusCard 
+          notification={orderNotification}
+          onClose={() => {
+            const isRideActive = orderNotification.status === 'ACCEPTED' || 
+                                orderNotification.status === 'IN_PROGRESS';
+            if (!isRideActive) {
+              dispatch(setOrderNotification(null));
+            }
+          }}
+        />
       )}
     </div>
   );

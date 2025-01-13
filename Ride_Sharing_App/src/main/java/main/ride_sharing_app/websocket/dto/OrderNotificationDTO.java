@@ -14,4 +14,6 @@ public class OrderNotificationDTO {
     private String status;  // String representation of OrderStatus enum
     private String message;
     private Long timestamp;
+    private DriverInfoDTO driverInfo;
+    private Integer estimatedArrival;
 } 
