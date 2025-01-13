@@ -4,6 +4,7 @@ import signUpDriverReducer from '../slices/signUpDriverSlice';
 import signUpPassengerReducer from '../slices/signUpPassengerSlice';
 import passengerRidesReducer from '../slices/passengerRidesHistorySlice.ts'
 import driverRidesReducer from '../slices/driverRidesHistorySlice.ts';
+import orderNotificationReducer from '../slices/orderNotificationSlice';
 
 export const store = configureStore({
     reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
         passengerRides: passengerRidesReducer,
         driverRides: driverRidesReducer,
         auth: authReducer,
+        orderNotification: orderNotificationReducer,
     },
 });
 

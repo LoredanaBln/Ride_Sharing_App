@@ -10,6 +10,7 @@ import main.ride_sharing_app.repository.DriverRepository;
 import main.ride_sharing_app.repository.PassengerRepository;
 import main.ride_sharing_app.websocket.controller.LocationWebSocketController;
 import main.ride_sharing_app.websocket.controller.OrderNotificationController;
+import main.ride_sharing_app.websocket.dto.DriverInfoDTO;
 import main.ride_sharing_app.websocket.dto.OrderNotificationDTO;
 import main.ride_sharing_app.websocket.dto.LocationUpdateDTO;
 import org.springframework.stereotype.Service;
@@ -128,12 +129,12 @@ public class OrderService {
             5.0 // 5km radius
         );
         
-        OrderNotificationDTO notification = new OrderNotificationDTO(
-            order.getId(),
-            OrderStatus.PENDING_ACCEPTANCE.toString(),
-            "New ride request",
-            System.currentTimeMillis()
-        );
+        OrderNotificationDTO notification = OrderNotificationDTO.builder()
+            .orderId(order.getId())
+            .status(OrderStatus.PENDING_ACCEPTANCE.toString())
+            .message("New ride request")
+            .timestamp(System.currentTimeMillis())
+            .build();
         
         notificationController.notifyNearbyDrivers(
             notification,
@@ -435,12 +436,12 @@ public class OrderService {
         Order savedOrder = orderRepository.save(order);
 
         // Notify passenger about driver's response
-        OrderNotificationDTO notification = new OrderNotificationDTO(
-            orderId,
-            savedOrder.getStatus().toString(),
-            accepted ? "Driver accepted your ride" : "Driver rejected your ride",
-            System.currentTimeMillis()
-        );
+        OrderNotificationDTO notification = OrderNotificationDTO.builder()
+            .orderId(orderId)
+            .status(savedOrder.getStatus().toString())
+            .message(accepted ? "Driver accepted your ride" : "Driver rejected your ride")
+            .timestamp(System.currentTimeMillis())
+            .build();
         notificationController.handleOrderNotification(orderId, notification);
 
         return savedOrder;
@@ -520,14 +521,25 @@ public class OrderService {
         Order savedOrder = orderRepository.save(order);
         log.info("Order {} successfully accepted by driver {}", orderId, driverEmail);
         
-        // Notify passenger about acceptance
-        OrderNotificationDTO notification = new OrderNotificationDTO(
-            orderId,
-            OrderStatus.ACCEPTED.toString(),
-            "Driver accepted your ride",
-            System.currentTimeMillis()
+        // Update notification to include driver info
+        DriverInfoDTO driverInfo = new DriverInfoDTO(
+            driver.getName(),
+            driver.getPhoneNumber(),
+            driver.getCarType(),
+            driver.getCarColor(),
+            driver.getRating()
         );
-        notificationController.handleOrderNotification(orderId, notification);
+        
+        OrderNotificationDTO notification = OrderNotificationDTO.builder()
+            .orderId(orderId)
+            .status(OrderStatus.ACCEPTED.toString())
+            .message("Driver accepted your ride")
+            .timestamp(System.currentTimeMillis())
+            .driverInfo(driverInfo)
+            .estimatedArrival(order.getEstimatedDurationMinutes())
+            .build();
+
+        notificationController.notifyPassenger(order.getPassenger().getId(), notification);
         
         return savedOrder;
     }

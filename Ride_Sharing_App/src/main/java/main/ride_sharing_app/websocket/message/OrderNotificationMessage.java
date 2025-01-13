@@ -20,11 +20,11 @@ public class OrderNotificationMessage extends WebSocketMessage {
     }
 
     public OrderNotificationDTO toDTO() {
-        return new OrderNotificationDTO(
-            this.orderId,
-            this.status.toString(),
-            this.message,
-            System.currentTimeMillis()
-        );
+        return OrderNotificationDTO.builder()
+            .orderId(this.orderId)
+            .status(this.status.toString())
+            .message(this.message)
+            .timestamp(System.currentTimeMillis())
+            .build();
     }
 } 

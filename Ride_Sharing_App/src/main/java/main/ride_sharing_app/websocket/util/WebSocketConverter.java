@@ -12,12 +12,12 @@ public class WebSocketConverter {
 
     // Order Notification conversions
     public static OrderNotificationDTO toDTO(OrderNotificationMessage message) {
-        return new OrderNotificationDTO(
-            message.getOrderId(),
-            message.getStatus().toString(),
-            message.getMessage(),
-            System.currentTimeMillis()
-        );
+        return OrderNotificationDTO.builder()
+            .orderId(message.getOrderId())
+            .status(message.getStatus().toString())
+            .message(message.getMessage())
+            .timestamp(System.currentTimeMillis())
+            .build();
     }
 
     public static OrderNotificationMessage toMessage(OrderNotificationDTO dto) {
