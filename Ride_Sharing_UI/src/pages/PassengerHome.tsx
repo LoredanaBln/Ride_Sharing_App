@@ -157,6 +157,7 @@ function PassengerHome() {
             console.log('Received message:', message);
             const notification = JSON.parse(message.body);
             dispatch(setOrderNotification(notification));
+            setIsRouteInfoVisible(false);
           });
         } catch (error) {
           console.error('Error subscribing to destination:', error);
