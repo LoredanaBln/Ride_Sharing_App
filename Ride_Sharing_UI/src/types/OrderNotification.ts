@@ -1,3 +1,5 @@
+import { DriverInfoDTO } from "./DriverInfoDTO";
+
 export interface OrderNotification {
     orderId: number;
     status: string;
@@ -6,4 +8,8 @@ export interface OrderNotification {
     driverInfo?: DriverInfoDTO;
     estimatedArrival?: number;
     canClose?: boolean;
-} 
+    startLocation: string;
+    endLocation: string;
+    estimatedPrice: number;
+    distance: number;
+}
